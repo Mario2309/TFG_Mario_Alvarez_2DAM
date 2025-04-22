@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'register.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -29,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text('Login App'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -78,6 +79,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: _submit,
                 child: Text('Submit'),
               ),
+              SizedBox(height: 20),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children:[
+                    Text("Don't have an account?"),
+                    TextButton(
+                      onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                      },
+                      child: Text(
+                        'Register',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+              ])
             ],
           ),
         ),
