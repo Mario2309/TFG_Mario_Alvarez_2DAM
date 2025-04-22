@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'register.dart';
+import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -20,10 +21,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      // Process login here
-      print('Email: ${_emailController.text}');
-      print('Password: ${_passwordController.text}');
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => MainPage()));
     }
+    
+      
+    
   }
 
   @override
