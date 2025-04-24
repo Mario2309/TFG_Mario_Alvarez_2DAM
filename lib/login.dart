@@ -1,6 +1,7 @@
+// lib/login_screen.dart
 import 'package:flutter/material.dart';
-import 'register.dart';
-import 'home.dart';
+import 'package:myapp/register_screen.dart'; // Asegúrate de que este archivo exista
+import 'package:myapp/main_page.dart'; // Importa la página principal con la bottom navigation
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -21,12 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      // Aquí iría la lógica de autenticación (por ejemplo, verificar con un servicio)
+      // Por ahora, navegamos directamente a la página principal
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => MainPage()));
+        context,
+        MaterialPageRoute(builder: (context) => MainPage()),
+      );
     }
-    
-      
-    
   }
 
   @override
@@ -84,19 +86,23 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
               Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children:[
-                    Text("Don't have an account?"),
-                    TextButton(
-                      onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
-                      },
-                      child: Text(
-                        'Register',
-                        style: TextStyle(color: Colors.blue),
-                      ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Don't have an account?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegisterScreen()));
+                    },
+                    child: Text(
+                      'Register',
+                      style: TextStyle(color: Colors.blue),
                     ),
-              ])
+                  ),
+                ],
+              )
             ],
           ),
         ),

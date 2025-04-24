@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+import 'package:myapp/inventory_page.dart';
+import 'package:myapp/employees_page.dart';
+
+class SearchPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Opciones'),
+      ),
+      body: GridView.count(
+        crossAxisCount: 2,
+        padding: const EdgeInsets.all(16.0),
+        crossAxisSpacing: 16.0,
+        mainAxisSpacing: 16.0,
+        children: <Widget>[
+          _buildOption(context, 'Inventario', Icons.storage, () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => InventoryPage()),
+            );
+          }),
+          _buildOption(context, 'Empleados', Icons.people, () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EmployeesPage()),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOption(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.blue[100],
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              icon,
+              size: 48.0,
+              color: Colors.blue[700],
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[700],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

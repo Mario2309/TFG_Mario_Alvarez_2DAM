@@ -27,7 +27,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
       final employee = Employee(
         name: _nameController.text,
         position: _positionController.text,
-        email: _emailController.text,
+        email: _emailController.text, id: '',
       );
       _employeeService.addEmployee(employee);
       Navigator.pop(context);

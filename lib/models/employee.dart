@@ -6,6 +6,6 @@ class Employee {
   Employee({
     required this.name,
     required this.position,
-    required this.email,
+    required this.email, required String id,
   });
 }
