@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
+  supabase_flutter: ^2.6.0 # Asegúrate de usar la versión más reciente
   flutter_test:
     sdk: flutter
 
