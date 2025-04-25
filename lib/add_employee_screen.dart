@@ -25,9 +25,10 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   void _submit() {
     if (_formKey.currentState!.validate()) {
       final employee = Employee(
+        id: DateTime.now().toString(), // Generate a temporary ID
         name: _nameController.text,
         position: _positionController.text,
-        email: _emailController.text, id: '',
+        email: _emailController.text,
       );
       _employeeService.addEmployee(employee);
       Navigator.pop(context);
@@ -38,17 +39,23 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Employee'),
+        title: const Text('Add Employee'),
+        backgroundColor: Colors.blue.shade700, // Consistent app bar color
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
+      body: SingleChildScrollView( // Added SingleChildScrollView for better keyboard handling
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person_outline), // Added name icon
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a name';
@@ -56,9 +63,14 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _positionController,
-                decoration: InputDecoration(labelText: 'Position'),
+                decoration: const InputDecoration(
+                  labelText: 'Position',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.work_outline), // Added position icon
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a position';
@@ -66,9 +78,14 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.email_outlined), // Added email icon
+                ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -80,10 +97,16 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _submit,
-                child: Text('Submit'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade400, // Distinct submit button color
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
+                child: const Text('Save Employee', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),

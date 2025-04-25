@@ -8,6 +8,6 @@ class Product {
     required this.name,
     required this.description,
     required this.price,
-    required this.quantity,
+    required this.quantity, required String id
   });
 }

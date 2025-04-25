@@ -34,75 +34,174 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login App'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
+      backgroundColor: Colors.white, // Fondo blanco como en la imagen
+      body: Center(
+        child: SingleChildScrollView( // Para evitar problemas con el teclado
+          padding: EdgeInsets.all(32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch, // Para que los widgets se expandan horizontalmente
             children: <Widget>[
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
+              // Logo (puedes reemplazarlo con tu propio widget de logo)
+              Text(
+                'NexusERP',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade700, // Un azul similar al de la imagen
                 ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
               ),
-              SizedBox(height: 20),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
+              SizedBox(height: 24.0),
+              Text(
+                'Create Account',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.grey.shade600,
                 ),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
               ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _submit,
-                child: Text('Submit'),
+              SizedBox(height: 8.0),
+              Text(
+                'Fill your information below or login with your social account.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.grey.shade500,
+                ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 32.0),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0), // Bordes redondeados
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(color: Colors.blue.shade700),
+                        ),
+                        contentPadding: EdgeInsets.all(16.0),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        if (!value.contains('@')) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide(color: Colors.blue.shade700),
+                        ),
+                        contentPadding: EdgeInsets.all(16.0),
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.visibility_off), // Puedes cambiar el icono
+                          onPressed: () {
+                            // Aquí iría la lógica para mostrar/ocultar la contraseña
+                          },
+                        ),
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 24.0),
+                    ElevatedButton(
+                      onPressed: _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade700,
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: Text(
+                        'Get Started',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        // Lógica para iniciar sesión con Google
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.grey.shade400),
+                        padding: EdgeInsets.symmetric(vertical: 12.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      icon: Icon(Icons.g_mobiledata, color: Colors.redAccent), // Icono de Google
+                      label: Text('Continue with Google', style: TextStyle(color: Colors.black87)),
+                    ),
+                    SizedBox(height: 12.0),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        // Lógica para iniciar sesión con Apple
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.grey.shade400),
+                        padding: EdgeInsets.symmetric(vertical: 12.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      icon: Icon(Icons.apple, color: Colors.black87), // Icono de Apple
+                      label: Text('Continue with Apple', style: TextStyle(color: Colors.black87)),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 32.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Don't have an account?"),
+                  Text("Already have an account?", style: TextStyle(color: Colors.grey.shade600)),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterScreen()));
+                      Navigator.pushReplacement( // Usamos pushReplacement para que no se pueda volver atrás fácilmente
+                        context,
+                        MaterialPageRoute(builder: (context) => RegisterScreen()),
+                      );
                     },
                     child: Text(
-                      'Register',
-                      style: TextStyle(color: Colors.blue),
+                      'Login',
+                      style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

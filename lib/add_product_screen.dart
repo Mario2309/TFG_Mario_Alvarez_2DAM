@@ -1,7 +1,6 @@
 // lib/add_product_screen.dart
 import 'package:flutter/material.dart';
 import 'package:myapp/models/product.dart';
-import 'package:myapp/services/inventory_service.dart';
 
 class AddProductScreen extends StatefulWidget {
   @override
@@ -12,20 +11,26 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
-  final InventoryService _inventoryService = InventoryService();
+  final _descriptionController = TextEditingController(); // Added description controller
+  final _stockController = TextEditingController(); // Added stock controller
 
   @override
   void dispose() {
     _nameController.dispose();
     _priceController.dispose();
+    _descriptionController.dispose();
+    _stockController.dispose();
     super.dispose();
   }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final newProduct = Product(
+        id: DateTime.now().toString(), // Generate a temporary ID
         name: _nameController.text,
-        price: double.tryParse(_priceController.text) ?? 0.0, description: '', quantity: 0,
+        price: double.tryParse(_priceController.text) ?? 0.0,
+        description: _descriptionController.text,
+        quantity: int.tryParse(_stockController.text) ?? 0,
       );
       // Aquí podrías llamar al servicio para guardar el producto en la base de datos
       // _inventoryService.addProduct(newProduct);
@@ -38,9 +43,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Agregar Nuevo Producto'),
+        title: const Text('Add New Product'),
+        backgroundColor: Colors.blue.shade700, // Consistent app bar color
       ),
-      body: Padding(
+      body: SingleChildScrollView( // Added SingleChildScrollView for better keyboard handling
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -49,39 +55,79 @@ class _AddProductScreenState extends State<AddProductScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Nombre del Producto',
+                decoration: const InputDecoration(
+                  labelText: 'Product Name',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce el nombre del producto';
+                    return 'Please enter the product name';
                   }
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _priceController,
-                decoration: InputDecoration(
-                  labelText: 'Precio',
+                decoration: const InputDecoration(
+                  labelText: 'Price',
                   border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.attach_money), // Added price icon
                 ),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce el precio';
+                    return 'Please enter the price';
                   }
                   if (double.tryParse(value) == null) {
-                    return 'Por favor, introduce un precio válido';
+                    return 'Please enter a valid price';
                   }
                   return null;
                 },
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _stockController,
+                decoration: const InputDecoration(
+                  labelText: 'Stock Level',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.store), // Added stock icon
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the stock level';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return 'Please enter a valid stock level';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Description (Optional)',
+                  border: OutlineInputBorder(),
+                  alignLabelWithHint: true, // Align label to top for multiline
+                ),
+                maxLines: 3, // Allow multiple lines for description
+                keyboardType: TextInputType.multiline,
+              ),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text('Guardar Producto'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade400, // Distinct save button color
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
+                child: const SizedBox(
+                  width: double.infinity, // Make button full width
+                  child: Center(child: Text('Save Product', style: TextStyle(color: Colors.white))),
+                ),
               ),
             ],
           ),

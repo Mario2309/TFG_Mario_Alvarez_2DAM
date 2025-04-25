@@ -21,7 +21,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   Future<void> _loadProducts() async {
     // Simulación de carga de productos (reemplaza con tu lógica real)
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 300));
     setState(() {
       _products = _inventoryService.getAllProducts();
     });
@@ -49,25 +49,72 @@ class _InventoryPageState extends State<InventoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Inventario'),
+        title: const Text('Inventory'),
+        backgroundColor: Colors.blue.shade700, // Consistent app bar color
       ),
       body: _products.isEmpty
-          ? Center(child: Text('No hay productos en el inventario.'))
+          ? const Center(
+              child: Text(
+                'No products in inventory.',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            )
           : ListView.builder(
               itemCount: _products.length,
+              padding: const EdgeInsets.all(8.0), // Add padding to the list
               itemBuilder: (context, index) {
+                final product = _products[index];
                 return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  elevation: 2, // Add a subtle shadow to the cards
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)), // Rounded corners
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text(_products[index].name, style: TextStyle(fontSize: 18)),
+                    child: Row(
+                      children: [
+                        Icon(Icons.inventory_2_outlined, size: 32, color: Colors.blue.shade300), // Leading icon
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product.name,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Stock: ${product.quantity}',
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                              if (product.description != null && product.description!.isNotEmpty)
+                                Text(
+                                  product.description!,
+                                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          '\$${product.price.toStringAsFixed(2)}',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddProductScreen,
-        child: Icon(Icons.add),
+        backgroundColor: Colors.green.shade400, // Distinct color for add button
+        child: const Icon(Icons.add, color: Colors.white),
+        elevation: 4,
       ),
     );
   }
