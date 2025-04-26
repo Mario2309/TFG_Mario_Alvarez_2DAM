@@ -7,7 +7,7 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Opciones'),
+        title: Text('Options'),
       ),
       body: GridView.count(
         crossAxisCount: 2,
@@ -15,13 +15,13 @@ class SearchPage extends StatelessWidget {
         crossAxisSpacing: 16.0,
         mainAxisSpacing: 16.0,
         children: <Widget>[
-          _buildOption(context, 'Inventario', Icons.storage, () {
+          _buildOption(context, 'Inventory', Icons.storage, () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => InventoryPage()),
             );
           }),
-          _buildOption(context, 'Empleados', Icons.people, () {
+          _buildOption(context, 'Employees', Icons.people, () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => EmployeesPage()),
