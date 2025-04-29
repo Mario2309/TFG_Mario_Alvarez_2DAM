@@ -1,17 +1,17 @@
-// lib/inventory_page.dart
+// lib/products_page.dart
 import 'package:flutter/material.dart';
 import 'package:myapp/add_product_screen.dart'; // Importa la AddProductScreen
 import 'package:myapp/models/product.dart';
-import 'package:myapp/services/inventory_service.dart';
+import 'package:myapp/services/product_service.dart'; // Asegúrate de tener este servicio adaptado
 
-class InventoryPage extends StatefulWidget {
+class ProductsPage extends StatefulWidget {
   @override
-  _InventoryPageState createState() => _InventoryPageState();
+  _ProductsPageState createState() => _ProductsPageState();
 }
 
-class _InventoryPageState extends State<InventoryPage> {
+class _ProductsPageState extends State<ProductsPage> {
   List<Product> _products = [];
-  final InventoryService _inventoryService = InventoryService();
+  final ProductService _productService = ProductService(); // Asegúrate de que este servicio use la nueva estructura de Product
 
   @override
   void initState() {
@@ -20,10 +20,10 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   Future<void> _loadProducts() async {
-    // Simulación de carga de productos (reemplaza con tu lógica real)
+    // Simulación de carga de productos (reemplaza con tu lógica real usando el servicio)
     await Future.delayed(const Duration(milliseconds: 300));
     setState(() {
-      _products = _inventoryService.getAllProducts();
+      _products = _productService.getAllProducts(); // Asegúrate de que getAllProducts() devuelva List<Product> con la nueva estructura
     });
   }
 
@@ -36,11 +36,11 @@ class _InventoryPageState extends State<InventoryPage> {
         setState(() {
           _products.add(newProduct);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${newProduct.name} added successfully!')),
+            SnackBar(content: Text('${newProduct.nombre} added successfully!')), // Usa product.nombre
           );
         });
         // Aquí deberías llamar al servicio para guardar el nuevo producto
-        // _inventoryService.addProduct(newProduct);
+        // _productService.addProduct(newProduct); // Asegúrate de que addProduct() acepte la nueva estructura de Product
       }
     });
   }
@@ -49,13 +49,13 @@ class _InventoryPageState extends State<InventoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inventory'),
-        backgroundColor: Colors.blue.shade700, // Consistent app bar color
+        title: const Text('Products'), // Changed title to 'Products'
+        backgroundColor: const Color.fromARGB(255, 189, 210, 25), // Consistent app bar color
       ),
       body: _products.isEmpty
           ? const Center(
               child: Text(
-                'No products in inventory.',
+                'No products available.', // Changed text to 'No products available.'
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             )
@@ -72,36 +72,46 @@ class _InventoryPageState extends State<InventoryPage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        Icon(Icons.inventory_2_outlined, size: 32, color: Colors.blue.shade300), // Leading icon
+                        Icon(Icons.shopping_bag_outlined, size: 32, color: Colors.blue.shade300), // Changed icon to something product-related
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                product.name,
+                                product.nombre, // Usa product.nombre
                                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Stock: ${product.quantity}',
+                                'Stock: ${product.cantidad}', // Usa product.cantidad
                                 style: TextStyle(color: Colors.grey.shade600),
                               ),
-                              if (product.description != null && product.description!.isNotEmpty)
+                              if (product.descripcion != null && product.descripcion!.isNotEmpty)
                                 Text(
-                                  product.description!,
+                                  product.descripcion!, // Usa product.descripcion
                                   style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
+                                ),
+                              if (product.tipo != null && product.tipo!.isNotEmpty)
+                                Text(
+                                  'Type: ${product.tipo}', // Usa product.tipo
+                                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                                ),
+                              if (product.proveedorId != null)
+                                Text(
+                                  'Supplier ID: ${product.proveedorId}', // Changed 'Proveedor' to 'Supplier'
+                                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                                 ),
                             ],
                           ),
                         ),
                         const SizedBox(width: 16),
                         Text(
-                          '\$${product.price.toStringAsFixed(2)}',
+                          '\$${product.precio.toStringAsFixed(2)}', // Usa product.precio
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
                         ),
                       ],

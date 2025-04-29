@@ -1,11 +1,17 @@
 class Employee {
-  String name;
-  String position;
-  String email;
+  int? id;
+  String nombreCompleto;
+  DateTime? nacimiento;
+  String correoElectronico;
+  String numeroTelefono;
+  String dni;
 
   Employee({
-    required this.name,
-    required this.position,
-    required this.email, required String id,
+    this.id,
+    required this.nombreCompleto,
+    this.nacimiento,
+    required this.correoElectronico,
+    required this.numeroTelefono,
+    required this.dni,
   });
 }

@@ -1,24 +1,27 @@
+// lib/search_page.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/inventory_page.dart';
 import 'package:myapp/employees_page.dart';
+import 'package:myapp/products_page.dart';
+import 'package:myapp/supplier_page.dart';
+import 'package:myapp/inventory_details_page.dart'; // Import the InventoryDetailsPage
 
 class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Options'),
-      ),
+      appBar: AppBar(title: Text('Options')),
       body: GridView.count(
         crossAxisCount: 2,
         padding: const EdgeInsets.all(16.0),
         crossAxisSpacing: 16.0,
         mainAxisSpacing: 16.0,
         children: <Widget>[
-          _buildOption(context, 'Inventory', Icons.storage, () {
+          _buildOption(context, 'Products', Icons.shopping_bag, () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => InventoryPage()),
+              MaterialPageRoute(
+                builder: (context) => ProductsPage(),
+              ),
             );
           }),
           _buildOption(context, 'Employees', Icons.people, () {
@@ -27,12 +30,29 @@ class SearchPage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => EmployeesPage()),
             );
           }),
+          _buildOption(context, 'Suppliers', Icons.local_shipping, () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SuppliersPage()),
+            );
+          }),
+          _buildOption(context, 'Inventory', Icons.inventory, () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => InventoryDetailsPage()),
+            );
+          }),
         ],
       ),
     );
   }
 
-  Widget _buildOption(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+  Widget _buildOption(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -43,11 +63,7 @@ class SearchPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              icon,
-              size: 48.0,
-              color: Colors.blue[700],
-            ),
+            Icon(icon, size: 48.0, color: Colors.blue[700]),
             SizedBox(height: 8.0),
             Text(
               title,

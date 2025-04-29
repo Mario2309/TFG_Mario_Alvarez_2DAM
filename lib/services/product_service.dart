@@ -1,6 +1,6 @@
 import 'package:myapp/models/product.dart';
 
-class InventoryService {
+class ProductService {
   final List<Product> _products = [];
 
   void addProduct(Product product) {

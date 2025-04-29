@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/employee.dart';
 import 'package:myapp/models/product.dart';
+import 'package:myapp/models/supplier.dart'; // Import the Supplier model
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,6 +12,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Employee> _employees = [];
   List<Product> _products = [];
+  List<Supplier> _suppliers = []; // List to hold supplier data
 
   @override
   void initState() {
@@ -24,65 +26,112 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _employees = [
         Employee(
-          id: '1',
-          name: 'Alice Smith',
-          position: 'Manager',
-          email: 'alice.smith@example.com',
+          id: 1,
+          nombreCompleto: 'Alice Smith',
+          nacimiento: DateTime(1988, 1, 10),
+          correoElectronico: 'alice.smith@example.com',
+          numeroTelefono: '555-111-2222',
+          dni: 'X1234567Y',
         ),
         Employee(
-          id: '2',
-          name: 'Bob Johnson',
-          position: 'Sales Representative',
-          email: 'bob.johnson@example.com',
+          id: 2,
+          nombreCompleto: 'Bob Johnson',
+          nacimiento: DateTime(1992, 8, 25),
+          correoElectronico: 'bob.johnson@example.com',
+          numeroTelefono: '555-333-4444',
+          dni: 'Z9876543A',
         ),
         Employee(
-          id: '3',
-          name: 'Charlie Brown',
-          position: 'Developer',
-          email: 'charlie.brown@example.com',
+          id: 3,
+          nombreCompleto: 'Charlie Brown',
+          nacimiento: DateTime(1995, 3, 15),
+          correoElectronico: 'charlie.brown@example.com',
+          numeroTelefono: '555-555-6666',
+          dni: 'W1122334B',
         ),
         Employee(
-          id: '4',
-          name: 'Diana Lee',
-          position: 'Marketing Specialist',
-          email: 'diana.lee@example.com',
+          id: 4,
+          nombreCompleto: 'Diana Lee',
+          nacimiento: DateTime(1990, 6, 20),
+          correoElectronico: 'diana.lee@example.com',
+          numeroTelefono: '555-777-8888',
+          dni: 'V4455667C',
         ),
       ];
       _products = [
         Product(
-          id: '101',
-          name: 'Laptop',
-          price: 1200.00,
-          quantity: 15,
-          description: 'High-performance laptop for professionals.',
+          id: 101,
+          nombre: 'Laptop',
+          tipo: 'Electrónico',
+          precio: 1200.00,
+          cantidad: 15,
+          descripcion: 'High-performance laptop for professionals.',
+          proveedorId: 1,
         ),
         Product(
-          id: '102',
-          name: 'Mouse',
-          price: 25.00,
-          quantity: 50,
-          description: 'Ergonomic wireless mouse.',
+          id: 102,
+          nombre: 'Mouse',
+          tipo: 'Periférico',
+          precio: 25.00,
+          cantidad: 50,
+          descripcion: 'Ergonomic wireless mouse.',
+          proveedorId: 2,
         ),
         Product(
-          id: '103',
-          name: 'Keyboard',
-          price: 75.00,
-          quantity: 30,
-          description: 'Mechanical keyboard with RGB lighting.',
+          id: 103,
+          nombre: 'Keyboard',
+          tipo: 'Periférico',
+          precio: 75.00,
+          cantidad: 30,
+          descripcion: 'Mechanical keyboard with RGB lighting.',
+          proveedorId: 1,
         ),
         Product(
-          id: '104',
-          name: 'Monitor',
-          price: 300.00,
-          quantity: 20,
-          description: '27-inch 4K UHD monitor.',
+          id: 104,
+          nombre: 'Monitor',
+          tipo: 'Electrónico',
+          precio: 300.00,
+          cantidad: 20,
+          descripcion: '27-inch 4K UHD monitor.',
+          proveedorId: 3,
         ),
         Product(
-          id: '105',
-          name: 'Webcam',
-          price: 50.00,
-          quantity: 40,
-          description: '1080p HD webcam with microphone.',
+          id: 105,
+          nombre: 'Webcam',
+          tipo: 'Accesorio',
+          precio: 50.00,
+          cantidad: 40,
+          descripcion: '1080p HD webcam with microphone.',
+          proveedorId: 2,
+        ),
+      ];
+      _suppliers = [
+        Supplier(
+          id: 1,
+          name: 'Tech Solutions Inc.',
+          taxId: 'TS12345',
+          contactPerson: 'John Smith',
+          phone: '555-987-6543',
+          email: 'john.smith@techsolutions.com',
+          address: '123 Main St',
+        ),
+        Supplier(
+          id: 2,
+          name: 'Global Supplies Co.',
+          taxId: 'GS67890',
+          contactPerson: 'Alice Brown',
+          phone: '555-111-2233',
+          email: 'alice.brown@globalsupplies.net',
+          address: '456 Industrial Ave',
+        ),
+        Supplier(
+          id: 3,
+          name: 'Electro Gadgets Ltd.',
+          taxId: 'EG13579',
+          contactPerson: 'Bob Green',
+          phone: '555-444-5566',
+          email: 'bob.green@electrogadgets.org',
+          address: '789 Commerce Blvd',
         ),
       ];
     });
@@ -136,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            employee.name,
+                            employee.nombreCompleto,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -146,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 4.0),
                           Text(
-                            employee.position,
+                            employee.correoElectronico ?? 'N/A',
                             style: TextStyle(
                               color: Colors.grey.shade600,
                               fontSize: 14,
@@ -154,7 +203,36 @@ class _HomePageState extends State<HomePage> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          // You can add more employee details here
+                          if (employee.numeroTelefono?.isNotEmpty ?? false)
+                            Text(
+                              employee.numeroTelefono!,
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          if (employee.dni?.isNotEmpty ?? false)
+                            Text(
+                              'DNI: ${employee.dni!}',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          if (employee.nacimiento != null)
+                            Text(
+                              'Nacimiento: ${employee.nacimiento!.day}/${employee.nacimiento!.month}/${employee.nacimiento!.year}',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                         ],
                       ),
                     );
@@ -165,7 +243,7 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              "Inventory",
+              "Products",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -178,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Text(
-                    "No inventory data available.",
+                    "No products data available.",
                     style: TextStyle(color: Colors.grey),
                   ),
                 ),
@@ -194,15 +272,46 @@ class _HomePageState extends State<HomePage> {
                   return ListTile(
                     leading: Icon(Icons.inventory, color: Colors.blue.shade300),
                     title: Text(
-                      product.name,
+                      product.nombre, // Usa nombre
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(
-                      'Stock: ${product.quantity}',
-                      style: TextStyle(color: Colors.grey.shade600),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Stock: ${product.cantidad}', // Usa cantidad
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
+                        if (product.tipo?.isNotEmpty ?? false)
+                          Text(
+                            'Tipo: ${product.tipo}', // Usa tipo
+                            style: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontSize: 12,
+                            ),
+                          ),
+                        if (product.descripcion?.isNotEmpty ?? false)
+                          Text(
+                            product.descripcion!, // Usa descripcion
+                            style: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontSize: 12,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        if (product.proveedorId != null)
+                          Text(
+                            'Proveedor ID: ${product.proveedorId}', // Usa proveedorId
+                            style: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
                     ),
                     trailing: Text(
-                      '\$${product.price.toStringAsFixed(2)}',
+                      '\$${product.precio.toStringAsFixed(2)}', // Usa precio
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.green,
@@ -211,6 +320,107 @@ class _HomePageState extends State<HomePage> {
                     // You can add more product details or actions here
                   );
                 },
+              ),
+          const SizedBox(height: 24.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              "Suppliers",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade800,
+              ),
+            ),
+          ),
+          _suppliers.isEmpty
+              ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "No supplier data available.",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+              )
+              : SizedBox(
+                height: 180,
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _suppliers.length,
+                  separatorBuilder:
+                      (context, index) => const SizedBox(width: 16.0),
+                  itemBuilder: (context, index) {
+                    final supplier = _suppliers[index];
+                    return Container(
+                      width: 160,
+                      decoration: BoxDecoration(
+                        color:
+                            Colors
+                                .orange
+                                .shade50, // Different color for suppliers
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            supplier.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4.0),
+                          if (supplier.taxId?.isNotEmpty ?? false)
+                            Text(
+                              'Tax ID: ${supplier.taxId!}',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          if (supplier.contactPerson?.isNotEmpty ?? false)
+                            Text(
+                              'Contact: ${supplier.contactPerson!}',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          if (supplier.phone?.isNotEmpty ?? false)
+                            Text(
+                              supplier.phone!,
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          if (supplier.email?.isNotEmpty ?? false)
+                            Text(
+                              supplier.email!,
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
           const SizedBox(height: 16.0),
         ],

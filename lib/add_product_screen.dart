@@ -9,31 +9,36 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _priceController = TextEditingController();
-  final _descriptionController = TextEditingController(); // Added description controller
-  final _stockController = TextEditingController(); // Added stock controller
+  final _nombreController = TextEditingController(); // Cambiado a nombre
+  final _precioController = TextEditingController();
+  final _descripcionController = TextEditingController(); // Controlador para descripción
+  final _stockController = TextEditingController(); // Controlador para cantidad
+  final _tipoController = TextEditingController(); // Nuevo controlador para tipo
+  final _proveedorIdController = TextEditingController(); // Nuevo controlador para proveedorId
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _priceController.dispose();
-    _descriptionController.dispose();
+    _nombreController.dispose();
+    _precioController.dispose();
+    _descripcionController.dispose();
     _stockController.dispose();
+    _tipoController.dispose();
+    _proveedorIdController.dispose();
     super.dispose();
   }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final newProduct = Product(
-        id: DateTime.now().toString(), // Generate a temporary ID
-        name: _nameController.text,
-        price: double.tryParse(_priceController.text) ?? 0.0,
-        description: _descriptionController.text,
-        quantity: int.tryParse(_stockController.text) ?? 0,
+        nombre: _nombreController.text, 
+        precio: double.tryParse(_precioController.text) ?? 0.0,
+        cantidad: int.tryParse(_stockController.text) ?? 0, 
+        descripcion: _descripcionController.text.isNotEmpty ? _descripcionController.text : null, 
+        tipo: _tipoController.text.isNotEmpty ? _tipoController.text : null, 
+        proveedorId: _proveedorIdController.text.isNotEmpty ? int.tryParse(_proveedorIdController.text) : null, 
+        id: null, 
       );
-      // Aquí podrías llamar al servicio para guardar el producto en la base de datos
-      // _inventoryService.addProduct(newProduct);
+      
 
       Navigator.pop(context, newProduct); // Devuelve el nuevo producto
     }
@@ -54,7 +59,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
-                controller: _nameController,
+                controller: _nombreController, // Usa _nombreController
                 decoration: const InputDecoration(
                   labelText: 'Product Name',
                   border: OutlineInputBorder(),
@@ -68,7 +73,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                controller: _priceController,
+                controller: _tipoController, // Usa _tipoController
+                decoration: const InputDecoration(
+                  labelText: 'Type (Optional)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _precioController,
                 decoration: const InputDecoration(
                   labelText: 'Price',
                   border: OutlineInputBorder(),
@@ -87,7 +100,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                controller: _stockController,
+                controller: _stockController, // Usa _stockController
                 decoration: const InputDecoration(
                   labelText: 'Stock Level',
                   border: OutlineInputBorder(),
@@ -106,7 +119,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                controller: _descriptionController,
+                controller: _descripcionController, // Usa _descripcionController
                 decoration: const InputDecoration(
                   labelText: 'Description (Optional)',
                   border: OutlineInputBorder(),
@@ -114,6 +127,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ),
                 maxLines: 3, // Allow multiple lines for description
                 keyboardType: TextInputType.multiline,
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _proveedorIdController, // Usa _proveedorIdController
+                decoration: const InputDecoration(
+                  labelText: 'Proveedor ID (Optional)',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.local_shipping), // Added supplier icon
+                ),
+                keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 30),
               ElevatedButton(

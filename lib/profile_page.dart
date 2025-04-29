@@ -10,7 +10,7 @@ class UserData {
     this.name = 'User Name',
     this.email = 'user@email.com',
     this.description = 'User description goes here.',
-    this.image = 'assets/assets/default_profile.png',
+    this.image = 's',
   });
 }
 
@@ -22,7 +22,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: Colors.blue.shade700, // Consistent app bar color
+        backgroundColor: const Color.fromRGBO(255, 255, 255, 0.004) , // Consistent app bar color
       ),
       body: SingleChildScrollView(
         // Added SingleChildScrollView for content that might overflow

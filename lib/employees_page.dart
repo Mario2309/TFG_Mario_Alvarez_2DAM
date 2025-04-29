@@ -23,34 +23,44 @@ class _EmployeesPageState extends State<EmployeesPage> {
     setState(() {
       _employees = [
         Employee(
-          id: 'e1',
-          name: 'Sophia Rodriguez',
-          position: 'Team Lead',
-          email: 'sophia.r@example.com',
+          id: 1, // Ahora el ID es int?
+          nombreCompleto: 'Sophia Rodriguez',
+          nacimiento: DateTime(1990, 5, 15), // Ejemplo de fecha
+          correoElectronico: 'sophia.r@example.com',
+          numeroTelefono: '123-456-7890',
+          dni: 'A1234567Z',
         ),
         Employee(
-          id: 'e2',
-          name: 'Ethan Williams',
-          position: 'Senior Developer',
-          email: 'ethan.w@example.com',
+          id: 2,
+          nombreCompleto: 'Ethan Williams',
+          nacimiento: DateTime(1985, 10, 20),
+          correoElectronico: 'ethan.w@example.com',
+          numeroTelefono: '987-654-3210',
+          dni: 'B9876543Y',
         ),
         Employee(
-          id: 'e3',
-          name: 'Olivia Davis',
-          position: 'UX Designer',
-          email: 'olivia.d@example.com',
+          id: 3,
+          nombreCompleto: 'Olivia Davis',
+          nacimiento: DateTime(1993, 3, 10),
+          correoElectronico: 'olivia.d@example.com',
+          numeroTelefono: '555-123-4567',
+          dni: 'C5554443X',
         ),
         Employee(
-          id: 'e4',
-          name: 'Liam Martinez',
-          position: 'Project Manager',
-          email: 'liam.m@example.com',
+          id: 4,
+          nombreCompleto: 'Liam Martinez',
+          nacimiento: DateTime(1988, 7, 25),
+          correoElectronico: 'liam.m@example.com',
+          numeroTelefono: '111-222-3333',
+          dni: 'D1112224W',
         ),
         Employee(
-          id: 'e5',
-          name: 'Ava Garcia',
-          position: 'Marketing Analyst',
-          email: 'ava.g@example.com',
+          id: 5,
+          nombreCompleto: 'Ava Garcia',
+          nacimiento: DateTime(1995, 12, 5),
+          correoElectronico: 'ava.g@example.com',
+          numeroTelefono: '444-555-6666',
+          dni: 'E4445552V',
         ),
       ];
     });
@@ -66,7 +76,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
         setState(() {
           _employees.add(newEmployee);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${newEmployee.name} added successfully!')),
+            SnackBar(content: Text('${newEmployee.nombreCompleto} added successfully!')),
           );
         });
         // Aquí deberías llamar al servicio para guardar el nuevo empleado
@@ -80,80 +90,99 @@ class _EmployeesPageState extends State<EmployeesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Employees'),
-        backgroundColor: Colors.blue.shade700, // Consistent app bar color
+        backgroundColor: const Color.fromARGB(255, 25, 210, 96), // Consistent app bar color
       ),
-      body:
-          _employees.isEmpty
-              ? const Center(
-                child: Text(
-                  'No employees registered.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              )
-              : ListView.builder(
-                itemCount: _employees.length,
-                padding: const EdgeInsets.all(8.0), // Add padding to the list
-                itemBuilder: (context, index) {
-                  final employee = _employees[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    elevation: 2, // Add a subtle shadow to the cards
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ), // Rounded corners
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.person_outline,
-                            size: 32,
-                            color: Colors.blue,
-                          ), // Leading icon
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  employee.name,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  employee.position ?? 'N/A',
-                                  style: TextStyle(color: Colors.grey.shade600),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                if (employee.email != null &&
-                                    employee.email!.isNotEmpty)
-                                  Text(
-                                    employee.email!,
-                                    style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 12,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+      body: _employees.isEmpty
+          ? const Center(
+              child: Text(
+                'No employees registered.',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
+            )
+          : ListView.builder(
+              itemCount: _employees.length,
+              padding: const EdgeInsets.all(8.0), // Add padding to the list
+              itemBuilder: (context, index) {
+                final employee = _employees[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  elevation: 2, // Add a subtle shadow to the cards
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ), // Rounded corners
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.person_outline,
+                          size: 32,
+                          color: Colors.blue,
+                        ), // Leading icon
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                employee.nombreCompleto,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                employee.correoElectronico ?? 'N/A',
+                                style: TextStyle(color: Colors.grey.shade600),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (employee.numeroTelefono != null &&
+                                  employee.numeroTelefono!.isNotEmpty)
+                                Text(
+                                  employee.numeroTelefono!,
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 12,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              if (employee.dni != null && employee.dni!.isNotEmpty)
+                                Text(
+                                  'DNI: ${employee.dni!}',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 12,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              if (employee.nacimiento != null)
+                                Text(
+                                  'Nacimiento: ${employee.nacimiento!.day}/${employee.nacimiento!.month}/${employee.nacimiento!.year}',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 12,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddEmployeeScreen,
         backgroundColor: Colors.green.shade400, // Distinct add button color
