@@ -1,7 +1,7 @@
 // lib/login_screen.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/register_screen.dart'; // Asegúrate de que este archivo exista
-import 'package:myapp/main_page.dart'; // Importa la página principal con la bottom navigation
+import 'package:myapp/presentation/pages/register_screen.dart'; // Asegúrate de que este archivo exista
+import 'package:myapp/presentation/pages/main_page.dart'; // Importa la página principal con la bottom navigation
 
 class LoginScreen extends StatefulWidget {
   @override

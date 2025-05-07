@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/services/employee_service.dart';
-import '../models/employee.dart';
+import 'package:myapp/features/employee/data/datasources/employee_service.dart';
+import '../../domain/entities/employee.dart';
 
 class AddEmployeeScreen extends StatefulWidget {
   @override

@@ -1,5 +1,5 @@
 // lib/services/supplier_service.dart
-import 'package:myapp/models/supplier.dart';
+import 'package:myapp/features/supliers/domain/entities/supplier.dart';
 
 class SupplierService {
   // In-memory data simulation (replace with your database logic)

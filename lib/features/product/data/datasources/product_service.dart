@@ -1,4 +1,4 @@
-import 'package:myapp/models/product.dart';
+import 'package:myapp/features/product/domain/entities/product.dart';
 
 class ProductService {
   final List<Product> _products = [];

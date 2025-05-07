@@ -1,7 +1,7 @@
 // lib/inventory_details_page.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/models/inventory.dart';
-import 'package:myapp/services/inventory_item_service.dart';
+import 'package:myapp/features/inventory/domain/entities/inventory.dart';
+import 'package:myapp/features/inventory/data/datasources/inventory_item_service.dart';
 
 class InventoryDetailsPage extends StatefulWidget {
   @override

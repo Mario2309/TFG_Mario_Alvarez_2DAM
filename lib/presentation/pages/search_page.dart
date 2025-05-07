@@ -1,9 +1,9 @@
 // lib/search_page.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/employees_page.dart';
-import 'package:myapp/products_page.dart';
-import 'package:myapp/supplier_page.dart';
-import 'package:myapp/inventory_details_page.dart'; // Import the InventoryDetailsPage
+import 'package:myapp/features/employee/presentation/pages/employees_page.dart';
+import 'package:myapp/features/product/presentation/pages/products_page.dart';
+import 'package:myapp/features/supliers/presentation/pages/supplier_page.dart';
+import 'package:myapp/features/inventory/presentation/pages/inventory_details_page.dart'; // Import the InventoryDetailsPage
 
 class SearchPage extends StatelessWidget {
   @override

@@ -1,4 +1,4 @@
-import 'package:myapp/models/employee.dart';
+import 'package:myapp/features/employee/domain/entities/employee.dart';
 
 class EmployeeService {
   final List<Employee> _employees = [];

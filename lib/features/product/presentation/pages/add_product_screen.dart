@@ -1,6 +1,6 @@
 // lib/add_product_screen.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/models/product.dart';
+import 'package:myapp/features/product/domain/entities/product.dart';
 
 class AddProductScreen extends StatefulWidget {
   @override

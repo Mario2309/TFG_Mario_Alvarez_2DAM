@@ -1,8 +1,8 @@
 // lib/suppliers_page.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/add_supplier_screen_page.dart';
-import 'package:myapp/models/supplier.dart';
-import 'package:myapp/services/suppliers_service.dart'; // Make sure to create this service
+import 'package:myapp/features/supliers/presentation/pages/add_supplier_screen_page.dart';
+import 'package:myapp/features/supliers/domain/entities/supplier.dart';
+import 'package:myapp/features/supliers/data/datasources/suppliers_service.dart'; // Make sure to create this service
 
 class SuppliersPage extends StatefulWidget {
   @override
