@@ -1,61 +1,59 @@
 import 'package:flutter/material.dart';
-
-class UserData {
-  final String name;
-  final String email;
-  final String description;
-  final String image;
-
-  UserData({
-    this.name = 'User Name',
-    this.email = 'user@email.com',
-    this.description = 'User description goes here.',
-    this.image = 's',
-  });
-}
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfilePage extends StatelessWidget {
-  final UserData userData = UserData();
+  final supabase = Supabase.instance.client;
 
   @override
   Widget build(BuildContext context) {
+    final user = supabase.auth.currentUser;
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: Text('No user logged in.')),
+      );
+    }
+
+    final email = user.email ?? 'No email';
+    final name = user.userMetadata?['full_name'] ?? 'No name';
+    final description = user.userMetadata?['description'] ?? 'No description';
+    final imageUrl = user.userMetadata?['avatar_url'] ??
+        'https://via.placeholder.com/150'; // Imagen por defecto
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: const Color.fromRGBO(255, 255, 255, 0.004) , // Consistent app bar color
+        backgroundColor: const Color.fromRGBO(255, 255, 255, 0.004),
       ),
       body: SingleChildScrollView(
-        // Added SingleChildScrollView for content that might overflow
-        padding: const EdgeInsets.all(
-          24.0,
-        ), // Increased padding for better spacing
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
-              radius: 70, // Slightly larger avatar
-              backgroundImage: AssetImage(userData.image),
-              backgroundColor: Colors.grey[300], // Slightly darker background
+              radius: 70,
+              backgroundImage: NetworkImage(imageUrl),
+              backgroundColor: Colors.grey[300],
             ),
-            const SizedBox(height: 24), // Increased spacing
+            const SizedBox(height: 24),
             Text(
-              userData.name,
+              name,
               style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 21, 101, 191),
-              ), // More prominent name
+              ),
             ),
-            const SizedBox(height: 12), // Adjusted spacing
+            const SizedBox(height: 12),
             Text(
-              userData.email,
+              email,
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey.shade600,
-              ), // Improved email styling
+              ),
             ),
-            const SizedBox(height: 32), // Increased spacing
-            const Divider(), // Added a divider for visual separation
+            const SizedBox(height: 32),
+            const Divider(),
             const SizedBox(height: 16),
             Text(
               'About Me',
@@ -63,16 +61,13 @@ class ProfilePage extends StatelessWidget {
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey.shade700,
-              ), // Section title
+              ),
             ),
             const SizedBox(height: 12),
             Text(
-              userData.description,
+              description,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                height: 1.4,
-              ), // Added line height for better readability
+              style: const TextStyle(fontSize: 16, height: 1.4),
             ),
           ],
         ),

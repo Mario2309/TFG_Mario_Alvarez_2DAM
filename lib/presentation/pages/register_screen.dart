@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/presentation/pages/login.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -13,6 +14,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  bool _isLoading = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -24,20 +29,78 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      // Process registration here
-      print('Name: ${_nameController.text}');
-      print('Phone: ${_phoneController.text}');
-      print('Email: ${_emailController.text}');
-      print('Password: ${_passwordController.text}');
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final response = await supabase.auth.signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        data: {
+          'name': _nameController.text.trim(),
+          'phone': _phoneController.text.trim(),
+        },
+      );
+
+      if (response.user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration successful! Please check your email.')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      } else {
+        setState(() {
+          _error = "Registration failed. Please try again.";
+        });
+      }
+    } on AuthException catch (e) {
+      setState(() {
+        _error = e.message;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Unexpected error occurred. Try again.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      await supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'io.supabase.flutter://login-callback',
+      );
+    } catch (e) {
+      setState(() {
+        _error = 'Google sign-in failed. Try again.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Match Login Screen Background
+      backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(32.0),
@@ -46,7 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Text(
-                'NexusERP', // Replace with your logo widget
+                'NexusERP',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28.0,
@@ -72,7 +135,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   color: Colors.grey.shade500,
                 ),
               ),
-              SizedBox(height: 32.0),
+              SizedBox(height: 24.0),
+              if (_error != null) ...[
+                Text(_error!, style: TextStyle(color: Colors.red)),
+                SizedBox(height: 16.0),
+              ],
               Form(
                 key: _formKey,
                 child: Column(
@@ -81,69 +148,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.blue.shade700),
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                         contentPadding: EdgeInsets.all(16.0),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
-                        }
-                        return null;
-                      },
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter your name' : null,
                     ),
                     SizedBox(height: 16.0),
                     TextFormField(
                       controller: _phoneController,
                       decoration: InputDecoration(
                         labelText: 'Phone Number',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.blue.shade700),
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                         contentPadding: EdgeInsets.all(16.0),
                       ),
                       keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number';
-                        }
-                        return null;
-                      },
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter your phone number' : null,
                     ),
                     SizedBox(height: 16.0),
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.blue.shade700),
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                         contentPadding: EdgeInsets.all(16.0),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        if (!value.contains('@')) {
-                          return 'Please enter a valid email';
-                        }
+                        if (value == null || value.isEmpty) return 'Please enter your email';
+                        if (!value.contains('@')) return 'Please enter a valid email';
                         return null;
                       },
                     ),
@@ -152,30 +184,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.blue.shade700),
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                         contentPadding: EdgeInsets.all(16.0),
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.visibility_off), // Toggle password visibility
-                          onPressed: () {
-                            // Implement password visibility toggle
-                          },
-                        ),
                       ),
                       obscureText: true,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
-                        }
+                        if (value == null || value.isEmpty) return 'Please enter your password';
+                        if (value.length < 6) return 'Password must be at least 6 characters';
                         return null;
                       },
                     ),
@@ -184,36 +199,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _confirmPasswordController,
                       decoration: InputDecoration(
                         labelText: 'Confirm Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(color: Colors.blue.shade700),
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
                         contentPadding: EdgeInsets.all(16.0),
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.visibility_off), // Toggle password visibility
-                          onPressed: () {
-                            // Implement password visibility toggle
-                          },
-                        ),
                       ),
                       obscureText: true,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
-                        }
-                        if (value != _passwordController.text) {
-                          return 'Passwords do not match';
-                        }
+                        if (value == null || value.isEmpty) return 'Please confirm your password';
+                        if (value != _passwordController.text) return 'Passwords do not match';
                         return null;
                       },
                     ),
                     SizedBox(height: 24.0),
                     ElevatedButton(
-                      onPressed: _submit,
+                      onPressed: _isLoading ? null : _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade700,
                         padding: EdgeInsets.symmetric(vertical: 16.0),
@@ -221,11 +219,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
-                      child: Text(
-                        'Register',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
+                      child: _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text('Register', style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                    ),
+                    SizedBox(height: 16.0),
+                    ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _signInWithGoogle,
+                      icon: Icon(Icons.login),
+                      label: Text('Register with Google'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade600,
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
                     ),
@@ -239,12 +246,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Text("Already have an account?", style: TextStyle(color: Colors.grey.shade600)),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );                    },
-                    child: Text(
-                      'Login',
-                      style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold),
-                    ),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    },
+                    child: Text('Login', style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
