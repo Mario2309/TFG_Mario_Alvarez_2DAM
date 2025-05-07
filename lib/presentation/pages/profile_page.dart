@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:myapp/presentation/pages/login.dart'; // Ajusta la ruta según tu estructura
 
 class ProfilePage extends StatelessWidget {
   final supabase = Supabase.instance.client;
@@ -15,7 +16,7 @@ class ProfilePage extends StatelessWidget {
     }
 
     final email = user.email ?? 'No email';
-    final name = user.userMetadata?['full_name'] ?? 'No name';
+    final name = user.userMetadata?['name'] ?? 'No name';
     final description = user.userMetadata?['description'] ?? 'No description';
     final imageUrl = user.userMetadata?['avatar_url'] ??
         'https://via.placeholder.com/150'; // Imagen por defecto
@@ -24,6 +25,20 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Profile'),
         backgroundColor: const Color.fromRGBO(255, 255, 255, 0.004),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar sesión',
+            onPressed: () async {
+              await supabase.auth.signOut();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+                (route) => false,
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
