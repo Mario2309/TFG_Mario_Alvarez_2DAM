@@ -48,12 +48,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (response.user != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration successful! Please check your email.')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
+        await showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: Text('Registration Successful'),
+                content: Text(
+                  'Your account has been created. Please check your email to verify your account.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              ),
         );
       } else {
         setState(() {
@@ -121,19 +136,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Text(
                 'Create Account',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 20.0, color: Colors.grey.shade600),
               ),
               SizedBox(height: 8.0),
               Text(
                 'Fill your information below to register.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.grey.shade500,
-                ),
+                style: TextStyle(fontSize: 14.0, color: Colors.grey.shade500),
               ),
               SizedBox(height: 24.0),
               if (_error != null) ...[
@@ -148,34 +157,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Name',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                         contentPadding: EdgeInsets.all(16.0),
                       ),
-                      validator: (value) => value == null || value.isEmpty ? 'Please enter your name' : null,
+                      validator:
+                          (value) =>
+                              value == null || value.isEmpty
+                                  ? 'Please enter your name'
+                                  : null,
                     ),
                     SizedBox(height: 16.0),
                     TextFormField(
                       controller: _phoneController,
                       decoration: InputDecoration(
                         labelText: 'Phone Number',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                         contentPadding: EdgeInsets.all(16.0),
                       ),
                       keyboardType: TextInputType.phone,
-                      validator: (value) => value == null || value.isEmpty ? 'Please enter your phone number' : null,
+                      validator:
+                          (value) =>
+                              value == null || value.isEmpty
+                                  ? 'Please enter your phone number'
+                                  : null,
                     ),
                     SizedBox(height: 16.0),
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                         contentPadding: EdgeInsets.all(16.0),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter your email';
-                        if (!value.contains('@')) return 'Please enter a valid email';
+                        if (value == null || value.isEmpty)
+                          return 'Please enter your email';
+                        if (!value.contains('@'))
+                          return 'Please enter a valid email';
                         return null;
                       },
                     ),
@@ -184,13 +209,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                         contentPadding: EdgeInsets.all(16.0),
                       ),
                       obscureText: true,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter your password';
-                        if (value.length < 6) return 'Password must be at least 6 characters';
+                        if (value == null || value.isEmpty)
+                          return 'Please enter your password';
+                        if (value.length < 6)
+                          return 'Password must be at least 6 characters';
                         return null;
                       },
                     ),
@@ -199,13 +228,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _confirmPasswordController,
                       decoration: InputDecoration(
                         labelText: 'Confirm Password',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                         contentPadding: EdgeInsets.all(16.0),
                       ),
                       obscureText: true,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please confirm your password';
-                        if (value != _passwordController.text) return 'Passwords do not match';
+                        if (value == null || value.isEmpty)
+                          return 'Please confirm your password';
+                        if (value != _passwordController.text)
+                          return 'Passwords do not match';
                         return null;
                       },
                     ),
@@ -219,9 +252,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
-                      child: _isLoading
-                          ? CircularProgressIndicator(color: Colors.white)
-                          : Text('Register', style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                      child:
+                          _isLoading
+                              ? CircularProgressIndicator(color: Colors.white)
+                              : Text(
+                                'Register',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18.0,
+                                ),
+                              ),
                     ),
                     SizedBox(height: 16.0),
                     ElevatedButton.icon(
@@ -243,7 +283,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Already have an account?", style: TextStyle(color: Colors.grey.shade600)),
+                  Text(
+                    "Already have an account?",
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.pushReplacement(
@@ -251,7 +294,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         MaterialPageRoute(builder: (context) => LoginScreen()),
                       );
                     },
-                    child: Text('Login', style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        color: Colors.blue.shade700,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
