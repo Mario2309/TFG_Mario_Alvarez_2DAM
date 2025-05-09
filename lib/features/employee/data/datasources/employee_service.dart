@@ -1,4 +1,4 @@
-import 'package:myapp/features/employee/domain/entities/employee.dart';
+import 'package:NexusERP/features/employee/domain/entities/employee.dart';
 
 class EmployeeService {
   final List<Employee> _employees = [];

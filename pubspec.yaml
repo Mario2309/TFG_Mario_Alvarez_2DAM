@@ -1,5 +1,5 @@
-name: myapp
-description: "A new Flutter project."
+name: NexusERP
+description: "This is a custom ERP for companies."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -30,10 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_launcher_icons: ^0.13.1
   flutter_form_builder: 10.0.1
   supabase_flutter: ^2.6.0
-
 
 flutter_icons:
   android: true
@@ -44,7 +42,13 @@ flutter_icons:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  flutter_launcher_icons:
+    android: true
+    ios: true
+    image_path: "assets/images/NexusERP.png" # Reemplaza con la ruta a tu imagen
+
 dev_dependencies:
+  flutter_launcher_icons: 0.14.3
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter

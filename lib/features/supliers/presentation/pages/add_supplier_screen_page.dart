@@ -1,6 +1,6 @@
 // lib/add_supplier_screen.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/features/supliers/domain/entities/supplier.dart';
+import 'package:NexusERP/features/supliers/domain/entities/supplier.dart';
 
 class AddSupplierScreen extends StatefulWidget {
   @override

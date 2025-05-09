@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/presentation/pages/register_screen.dart';
-import 'package:myapp/presentation/pages/main_page.dart';
+import 'package:NexusERP/presentation/pages/register_screen.dart';
+import 'package:NexusERP/presentation/pages/main_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginScreen extends StatefulWidget {

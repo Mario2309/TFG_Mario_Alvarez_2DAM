@@ -1,4 +1,4 @@
-import 'package:myapp/features/product/domain/entities/product.dart';
+import 'package:NexusERP/features/product/domain/entities/product.dart';
 
 class ProductService {
   final List<Product> _products = [];

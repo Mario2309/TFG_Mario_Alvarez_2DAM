@@ -1,8 +1,8 @@
 // lib/home_page.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/features/employee/domain/entities/employee.dart';
-import 'package:myapp/features/product/domain/entities/product.dart';
-import 'package:myapp/features/supliers/domain/entities/supplier.dart'; // Import the Supplier model
+import 'package:NexusERP/features/employee/domain/entities/employee.dart';
+import 'package:NexusERP/features/product/domain/entities/product.dart';
+import 'package:NexusERP/features/supliers/domain/entities/supplier.dart'; // Import the Supplier model
 
 class HomePage extends StatefulWidget {
   @override

@@ -1,5 +1,5 @@
 // lib/services/inventory_item_service.dart
-import 'package:myapp/features/inventory/domain/entities/inventory.dart';
+import 'package:NexusERP/features/inventory/domain/entities/inventory.dart';
 
 class InventoryItemService {
   // In-memory data simulation (replace with your actual database logic)

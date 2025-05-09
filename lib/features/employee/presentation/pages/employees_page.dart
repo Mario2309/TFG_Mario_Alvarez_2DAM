@@ -1,7 +1,7 @@
 // lib/employees_page.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/features/employee/presentation/pages/add_employee_screen.dart'; // Importa la AddEmployeeScreen
-import 'package:myapp/features/employee/domain/entities/employee.dart';
+import 'package:NexusERP/features/employee/presentation/pages/add_employee_screen.dart'; // Importa la AddEmployeeScreen
+import 'package:NexusERP/features/employee/domain/entities/employee.dart';
 
 class EmployeesPage extends StatefulWidget {
   @override
