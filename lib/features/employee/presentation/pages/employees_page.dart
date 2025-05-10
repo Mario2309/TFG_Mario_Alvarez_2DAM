@@ -1,7 +1,9 @@
 // lib/employees_page.dart
 import 'package:flutter/material.dart';
-import 'package:NexusERP/features/employee/presentation/pages/add_employee_screen.dart'; // Importa la AddEmployeeScreen
+import 'package:NexusERP/features/employee/presentation/pages/add_employee_screen.dart';
 import 'package:NexusERP/features/employee/domain/entities/employee.dart';
+import 'package:NexusERP/features/employee/data/repositories/employee_repository_impl.dart';
+import 'package:NexusERP/features/employee/data/datasources/employee_service.dart';
 
 class EmployeesPage extends StatefulWidget {
   @override
@@ -10,59 +12,19 @@ class EmployeesPage extends StatefulWidget {
 
 class _EmployeesPageState extends State<EmployeesPage> {
   List<Employee> _employees = [];
+  late final EmployeeRepositoryImpl _repository;
 
   @override
   void initState() {
     super.initState();
+    _repository = EmployeeRepositoryImpl(EmployeeService());
     _loadEmployees();
   }
 
   Future<void> _loadEmployees() async {
-    // Simulación de carga de empleados con algunos datos de ejemplo
-    await Future.delayed(const Duration(milliseconds: 300));
+    final employees = await _repository.getEmployees();
     setState(() {
-      _employees = [
-        Employee(
-          id: 1, // Ahora el ID es int?
-          nombreCompleto: 'Sophia Rodriguez',
-          nacimiento: DateTime(1990, 5, 15), // Ejemplo de fecha
-          correoElectronico: 'sophia.r@example.com',
-          numeroTelefono: '123-456-7890',
-          dni: 'A1234567Z',
-        ),
-        Employee(
-          id: 2,
-          nombreCompleto: 'Ethan Williams',
-          nacimiento: DateTime(1985, 10, 20),
-          correoElectronico: 'ethan.w@example.com',
-          numeroTelefono: '987-654-3210',
-          dni: 'B9876543Y',
-        ),
-        Employee(
-          id: 3,
-          nombreCompleto: 'Olivia Davis',
-          nacimiento: DateTime(1993, 3, 10),
-          correoElectronico: 'olivia.d@example.com',
-          numeroTelefono: '555-123-4567',
-          dni: 'C5554443X',
-        ),
-        Employee(
-          id: 4,
-          nombreCompleto: 'Liam Martinez',
-          nacimiento: DateTime(1988, 7, 25),
-          correoElectronico: 'liam.m@example.com',
-          numeroTelefono: '111-222-3333',
-          dni: 'D1112224W',
-        ),
-        Employee(
-          id: 5,
-          nombreCompleto: 'Ava Garcia',
-          nacimiento: DateTime(1995, 12, 5),
-          correoElectronico: 'ava.g@example.com',
-          numeroTelefono: '444-555-6666',
-          dni: 'E4445552V',
-        ),
-      ];
+      _employees = employees;
     });
   }
 
@@ -71,16 +33,11 @@ class _EmployeesPageState extends State<EmployeesPage> {
       context,
       MaterialPageRoute(builder: (context) => AddEmployeeScreen()),
     ).then((newEmployee) {
-      // Este .then se ejecuta cuando volvemos de AddEmployeeScreen
       if (newEmployee is Employee) {
-        setState(() {
-          _employees.add(newEmployee);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${newEmployee.nombreCompleto} added successfully!')),
-          );
-        });
-        // Aquí deberías llamar al servicio para guardar el nuevo empleado
-        // _employeeService.addEmployee(newEmployee);
+        _loadEmployees(); // Recargar lista completa desde DB
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${newEmployee.nombreCompleto} agregado con éxito')),
+        );
       }
     });
   }
@@ -89,39 +46,32 @@ class _EmployeesPageState extends State<EmployeesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Employees'),
-        backgroundColor: const Color.fromARGB(255, 25, 210, 96), // Consistent app bar color
+        title: const Text('Empleados'),
+        backgroundColor: Colors.blue.shade700,
       ),
       body: _employees.isEmpty
           ? const Center(
               child: Text(
-                'No employees registered.',
+                'No hay empleados registrados.',
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             )
           : ListView.builder(
               itemCount: _employees.length,
-              padding: const EdgeInsets.all(8.0), // Add padding to the list
+              padding: const EdgeInsets.all(8.0),
               itemBuilder: (context, index) {
                 final employee = _employees[index];
                 return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  elevation: 2, // Add a subtle shadow to the cards
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  elevation: 2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                  ), // Rounded corners
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.person_outline,
-                          size: 32,
-                          color: Colors.blue,
-                        ), // Leading icon
+                        const Icon(Icons.person_outline, size: 32, color: Colors.blue),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -185,7 +135,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddEmployeeScreen,
-        backgroundColor: Colors.green.shade400, // Distinct add button color
+        backgroundColor: Colors.green.shade400,
         child: const Icon(Icons.add, color: Colors.white),
         elevation: 4,
       ),

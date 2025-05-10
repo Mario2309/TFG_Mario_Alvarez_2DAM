@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:NexusERP/features/employee/domain/entities/employee.dart';
 import 'package:NexusERP/features/employee/data/datasources/employee_service.dart';
-import '../../domain/entities/employee.dart';
+import 'package:NexusERP/features/employee/data/repositories/employee_repository_impl.dart';
 
 class AddEmployeeScreen extends StatefulWidget {
   @override
@@ -14,7 +15,8 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   final _correoElectronicoController = TextEditingController();
   final _numeroTelefonoController = TextEditingController();
   final _dniController = TextEditingController();
-  final EmployeeService _employeeService = EmployeeService();
+
+  final _repository = EmployeeRepositoryImpl(EmployeeService());
 
   DateTime? _selectedDate;
 
@@ -35,29 +37,26 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _nacimientoController.text = "${picked.day}/${picked.month}/${picked.year}"; // Formato de fecha para mostrar
+        _nacimientoController.text = "${picked.day}/${picked.month}/${picked.year}";
       });
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      final String? formattedDate = _selectedDate != null
-          ? "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}"
-          : null;
-
       final employee = Employee(
+        id: 0,
         nombreCompleto: _nombreCompletoController.text,
-        nacimiento: _selectedDate, // Envía la fecha como String
+        nacimiento: _selectedDate!,
         correoElectronico: _correoElectronicoController.text,
         numeroTelefono: _numeroTelefonoController.text,
         dni: _dniController.text,
-        id: null,
       );
-      _employeeService.addEmployee(employee);
+
+      await _repository.addEmployee(employee);
       Navigator.pop(context);
     }
   }
@@ -66,7 +65,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Employee'),
+        title: const Text('Agregar Empleado'),
         backgroundColor: Colors.blue.shade700,
       ),
       body: SingleChildScrollView(
@@ -83,12 +82,8 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person_outline),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce el nombre completo';
-                  }
-                  return null;
-                },
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Por favor, introduce el nombre completo' : null,
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -102,13 +97,9 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                     onPressed: () => _selectDate(context),
                   ),
                 ),
-                readOnly: true, // Para que no se pueda editar directamente
-                validator: (value) {
-                  if (_selectedDate == null) {
-                    return 'Por favor, selecciona la fecha de nacimiento';
-                  }
-                  return null;
-                },
+                readOnly: true,
+                validator: (_) =>
+                    _selectedDate == null ? 'Por favor, selecciona la fecha de nacimiento' : null,
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -124,7 +115,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                     return 'Por favor, introduce el correo electrónico';
                   }
                   if (!value.contains('@')) {
-                    return 'Por favor, introduce un correo electrónico válido';
+                    return 'Correo electrónico inválido';
                   }
                   return null;
                 },
@@ -138,12 +129,8 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                   prefixIcon: Icon(Icons.phone_outlined),
                 ),
                 keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce el número de teléfono';
-                  }
-                  return null;
-                },
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Por favor, introduce el número de teléfono' : null,
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -153,13 +140,8 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.badge_outlined),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce el DNI';
-                  }
-                  // Puedes añadir aquí una validación más específica para el formato del DNI si lo deseas
-                  return null;
-                },
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Por favor, introduce el DNI' : null,
               ),
               const SizedBox(height: 30),
               ElevatedButton(

@@ -1,15 +1,15 @@
 class Employee {
-  int? id;
-  String nombreCompleto;
-  DateTime? nacimiento;
-  String correoElectronico;
-  String numeroTelefono;
-  String dni;
+  final int id;
+  final String nombreCompleto;
+  final DateTime nacimiento;
+  final String correoElectronico;
+  final String numeroTelefono;
+  final String dni;
 
   Employee({
-    this.id,
+    required this.id,
     required this.nombreCompleto,
-    this.nacimiento,
+    required this.nacimiento,
     required this.correoElectronico,
     required this.numeroTelefono,
     required this.dni,
