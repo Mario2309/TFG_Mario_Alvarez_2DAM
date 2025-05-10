@@ -1,5 +1,5 @@
 class EmployeeModel {
-  final int id;
+  final int?id;
   final String nombreCompleto;
   final DateTime nacimiento;
   final String correoElectronico;
@@ -7,7 +7,7 @@ class EmployeeModel {
   final String dni;
 
   EmployeeModel({
-    required this.id,
+    this.id,
     required this.nombreCompleto,
     required this.nacimiento,
     required this.correoElectronico,

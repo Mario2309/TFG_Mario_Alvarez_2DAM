@@ -51,4 +51,29 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       dni: m.dni,
     )).toList();
   }
+
+  // Método corregido para agregar un empleado sin el campo `id`
+  Future<bool> addEmployeeWithoutId(Employee employee) async {
+    try {
+      // Crear el modelo de empleado, pero sin incluir el id
+      final model = EmployeeModel(
+        id: 0, // Se establece un ID inicial de 0 para indicar que es nuevo
+        nombreCompleto: employee.nombreCompleto,
+        nacimiento: employee.nacimiento,
+        correoElectronico: employee.correoElectronico,
+        numeroTelefono: employee.numeroTelefono,
+        dni: employee.dni,
+      );
+
+      // Llamada al servicio para agregar el empleado
+      final response = await service.addEmployee(model);
+
+      // Si la respuesta es exitosa (por ejemplo, código 200), retornamos true
+      return response.hashCode == 200;
+    } catch (e) {
+      // En caso de error, devolvemos false
+      return false;
+    }
+  }
+
 }

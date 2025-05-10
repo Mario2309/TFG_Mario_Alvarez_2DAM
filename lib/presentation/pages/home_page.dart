@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nexuserp/features/employee/data/models/employee_model.dart';
 import 'package:nexuserp/features/employee/domain/entities/employee.dart';
+import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart';
 import 'package:nexuserp/features/product/domain/entities/product.dart';
 import 'package:nexuserp/features/supliers/domain/entities/supplier.dart';
 import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
@@ -147,7 +149,11 @@ class _HomePageState extends State<HomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditEmployeePage(employee: employee),
+              builder:
+                  (context) => EditEmployeePage(
+                    employee: EmployeeModel(id: employee.id, nombreCompleto: employee.nombreCompleto, nacimiento: employee.nacimiento, correoElectronico: employee.correoElectronico, numeroTelefono: employee.numeroTelefono, dni: employee.dni),
+                    employeeService: EmployeeService(),
+                  ),
             ),
           );
         },
@@ -201,30 +207,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class EditEmployeePage extends StatelessWidget {
-  final Employee employee;
-
-  EditEmployeePage({required this.employee});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Edit Employee')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Edit details for ${employee.nombreCompleto}'),
-            // Aquí agregarías los campos para editar la información del empleado
-            // Ejemplo: TextFormField para nombre, correo, etc.
-          ],
-        ),
       ),
     );
   }

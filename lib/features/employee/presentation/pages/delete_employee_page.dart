@@ -28,7 +28,7 @@ class _DeleteEmployeeScreenState extends State<DeleteEmployeeScreen> {
   }
 
   Future<void> _deleteEmployee(Employee employee) async {
-    await _repository.deleteEmployee(employee.id);
+    //await _repository.deleteEmployee(employee.id);
     if (mounted) {
       setState(() {
         _employees.remove(employee); // Eliminar el empleado de la lista localmente

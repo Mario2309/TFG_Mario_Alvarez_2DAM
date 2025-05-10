@@ -9,8 +9,9 @@ class EmployeeService {
     return (response as List).map((e) => EmployeeModel.fromJson(e)).toList();
   }
 
-  Future<void> addEmployee(EmployeeModel emp) async {
+  Future<bool> addEmployee(EmployeeModel emp) async {
     await supabase.from('empleado').insert(emp.toJson());
+    return false;
   }
 
   Future<void> deleteEmployee(int id) async {
@@ -21,20 +22,26 @@ class EmployeeService {
   }
 
   Future<bool> updateEmployee(EmployeeModel employee) async {
-    try {
-      final response = await supabase
-          .from('empleado')
-          .update(employee.toJson())
-          .eq('id', employee.id);
+  if (employee.id == null) {
+    print('Error: El ID del empleado no puede ser nulo.');
+    return false;
+  }
 
-      if (response.error != null) {
-        print('Error al actualizar empleado: ${response.error?.message}');
-        return false;
-      }
-      return true;
-    } catch (e) {
-      print('Error al actualizar empleado: $e');
+  try {
+    final response = await supabase
+        .from('empleado')
+        .update(employee.toJson())
+        .eq('id', employee.id as Object);
+
+    if (response.error != null) {
+      print('Error al actualizar empleado: ${response.error?.message}');
       return false;
     }
+    return true;
+  } catch (e) {
+    print('Error al actualizar empleado: $e');
+    return false;
   }
+}
+
 }

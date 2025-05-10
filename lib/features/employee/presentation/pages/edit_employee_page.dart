@@ -29,9 +29,15 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   @override
   void initState() {
     super.initState();
-    _nombreController = TextEditingController(text: widget.employee.nombreCompleto);
-    _emailController = TextEditingController(text: widget.employee.correoElectronico);
-    _telefonoController = TextEditingController(text: widget.employee.numeroTelefono);
+    _nombreController = TextEditingController(
+      text: widget.employee.nombreCompleto,
+    );
+    _emailController = TextEditingController(
+      text: widget.employee.correoElectronico,
+    );
+    _telefonoController = TextEditingController(
+      text: widget.employee.numeroTelefono,
+    );
     _dniController = TextEditingController(text: widget.employee.dni);
     _selectedDate = widget.employee.nacimiento;
   }
@@ -71,7 +77,9 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       );
 
       // Llamada al servicio para actualizar el empleado en la base de datos
-      final success = await widget.employeeService.updateEmployee(updatedEmployee);
+      final success = await widget.employeeService.updateEmployee(
+        updatedEmployee,
+      );
 
       if (success) {
         // Si la actualización es exitosa, regresa a la página anterior
@@ -89,7 +97,9 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Error'),
-          content: const Text('No se pudo actualizar al empleado. Inténtalo nuevamente.'),
+          content: const Text(
+            'No se pudo actualizar al empleado. Inténtalo nuevamente.',
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text('Aceptar'),
@@ -174,7 +184,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
                     child: const Text('Guardar'),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -192,7 +202,8 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
         controller: controller,
-        validator: validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
+        validator:
+            validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.blue.shade700),
           labelText: label,
