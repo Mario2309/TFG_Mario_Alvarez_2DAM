@@ -69,129 +69,139 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Employees",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade800,
-              ),
-            ),
-          ),
+          // Employees Section
+          _buildSectionTitle('Employees'),
           _employees.isEmpty
-              ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      "No employees data available.",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                )
-              : SizedBox(
-                  height: 180,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _employees.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(width: 16.0),
-                    itemBuilder: (context, index) {
-                      final employee = _employees[index];
-                      return Container(
-                        width: 160,
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              employee.nombreCompleto,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              employee.correoElectronico ?? 'N/A',
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 14,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            if (employee.numeroTelefono?.isNotEmpty ?? false)
-                              Text(
-                                employee.numeroTelefono!,
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            if (employee.dni?.isNotEmpty ?? false)
-                              Text(
-                                'DNI: ${employee.dni!}',
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            if (employee.nacimiento != null)
-                              Text(
-                                'Nacimiento: ${employee.nacimiento!.day}/${employee.nacimiento!.month}/${employee.nacimiento!.year}',
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
+              ? _buildEmptyState('No employees data available.')
+              : _buildEmployeeList(),
+
           const SizedBox(height: 24.0),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Products",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade800,
-              ),
-            ),
-          ),
-          // Display products data here...
+
+          // Products Section
+          _buildSectionTitle('Products'),
+          // Add product display here
+
           const SizedBox(height: 24.0),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Suppliers",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade800,
-              ),
-            ),
-          ),
-          // Display suppliers data here...
+
+          // Suppliers Section
+          _buildSectionTitle('Suppliers'),
+          // Add supplier display here
+
           const SizedBox(height: 16.0),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey.shade800,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(
+          message,
+          style: TextStyle(color: Colors.grey),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmployeeList() {
+    return SizedBox(
+      height: 180,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        scrollDirection: Axis.horizontal,
+        itemCount: _employees.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 16.0),
+        itemBuilder: (context, index) {
+          final employee = _employees[index];
+          return _buildEmployeeCard(employee);
+        },
+      ),
+    );
+  }
+
+  Widget _buildEmployeeCard(Employee employee) {
+    return Container(
+      width: 160,
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4.0,
+            offset: Offset(2, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            employee.nombreCompleto,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4.0),
+          Text(
+            employee.correoElectronico ?? 'N/A',
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 14,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (employee.numeroTelefono?.isNotEmpty ?? false)
+            Text(
+              employee.numeroTelefono!,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 12,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          if (employee.dni?.isNotEmpty ?? false)
+            Text(
+              'DNI: ${employee.dni!}',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 12,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          if (employee.nacimiento != null)
+            Text(
+              'Nacimiento: ${employee.nacimiento!.day}/${employee.nacimiento!.month}/${employee.nacimiento!.year}',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 12,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
         ],
       ),
     );

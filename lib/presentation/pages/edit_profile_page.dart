@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'dart:html' as html;
 
 class EditProfilePage extends StatefulWidget {
@@ -151,7 +150,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 : const Icon(Icons.person, size: 100)));
 
     return Scaffold(
-      appBar: AppBar(title: Text('Editar Perfil')),
+      appBar: AppBar(
+        title: const Text('Editar Perfil'),
+        backgroundColor: Colors.blue.shade700,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -161,7 +163,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               GestureDetector(
                 onTap: _pickImage,
                 child: CircleAvatar(
-                  radius: 50,
+                  radius: 60,
                   backgroundColor: Colors.grey.shade300,
                   backgroundImage: _webImageBytes != null
                       ? MemoryImage(_webImageBytes!)
@@ -180,31 +182,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Nombre'),
+                decoration: const InputDecoration(labelText: 'Nombre'),
                 validator: (value) => value == null || value.isEmpty ? 'Introduce tu nombre' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Descripción'),
+                decoration: const InputDecoration(labelText: 'Descripción'),
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _phoneController,
-                decoration: InputDecoration(labelText: 'Teléfono'),
+                decoration: const InputDecoration(labelText: 'Teléfono'),
                 validator: (value) => value == null || value.isEmpty ? 'Introduce tu teléfono' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _avatarUrlController,
-                decoration: InputDecoration(labelText: 'Avatar URL (opcional)'),
+                decoration: const InputDecoration(labelText: 'Avatar URL (opcional)'),
               ),
               const SizedBox(height: 32),
               ElevatedButton.icon(
-                icon: Icon(Icons.save),
-                label: Text('Guardar Cambios'),
+                icon: const Icon(Icons.save),
+                label: const Text('Guardar Cambios'),
                 onPressed: _isLoading ? null : _updateProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade700,
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
               ),
               if (_isLoading)
                 const Padding(

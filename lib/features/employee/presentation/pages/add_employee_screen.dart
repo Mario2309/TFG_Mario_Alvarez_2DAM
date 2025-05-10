@@ -17,7 +17,6 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   final _dniController = TextEditingController();
 
   final _repository = EmployeeRepositoryImpl(EmployeeService());
-
   DateTime? _selectedDate;
 
   @override
@@ -40,7 +39,8 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _nacimientoController.text = "${picked.day}/${picked.month}/${picked.year}";
+        _nacimientoController.text =
+            "${picked.day}/${picked.month}/${picked.year}";
       });
     }
   }
@@ -63,100 +63,140 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Agregar Empleado'),
-        backgroundColor: Colors.blue.shade700,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              TextFormField(
-                controller: _nombreCompletoController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre Completo',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person_outline),
-                ),
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? 'Por favor, introduce el nombre completo' : null,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _nacimientoController,
-                decoration: InputDecoration(
-                  labelText: 'Fecha de Nacimiento',
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.calendar_today_outlined),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context),
-                  ),
-                ),
-                readOnly: true,
-                validator: (_) =>
-                    _selectedDate == null ? 'Por favor, selecciona la fecha de nacimiento' : null,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _correoElectronicoController,
-                decoration: const InputDecoration(
-                  labelText: 'Correo Electrónico',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email_outlined),
-                ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce el correo electrónico';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Correo electrónico inválido';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _numeroTelefonoController,
-                decoration: const InputDecoration(
-                  labelText: 'Número de Teléfono',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.phone_outlined),
-                ),
-                keyboardType: TextInputType.phone,
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? 'Por favor, introduce el número de teléfono' : null,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _dniController,
-                decoration: const InputDecoration(
-                  labelText: 'DNI',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.badge_outlined),
-                ),
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? 'Por favor, introduce el DNI' : null,
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade400,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                  textStyle: const TextStyle(fontSize: 18),
-                ),
-                child: const Text('Guardar Empleado', style: TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
+    return Scaffold(appBar: _buildAppBar(), body: _buildForm(context));
+  }
+
+  // AppBar widget
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: const Text('Agregar Empleado'),
+      backgroundColor: Colors.blue.shade700,
+    );
+  }
+
+  // Form widget
+  Widget _buildForm(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            _buildTextField(
+              controller: _nombreCompletoController,
+              label: 'Nombre Completo',
+              icon: Icons.person_outline,
+              validator:
+                  (value) =>
+                      (value == null || value.isEmpty)
+                          ? 'Por favor, introduce el nombre completo'
+                          : null,
+            ),
+            const SizedBox(height: 20),
+            _buildDatePickerField(context),
+            const SizedBox(height: 20),
+            _buildTextField(
+              controller: _correoElectronicoController,
+              label: 'Correo Electrónico',
+              icon: Icons.email_outlined,
+              keyboardType: TextInputType.emailAddress,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, introduce el correo electrónico';
+                }
+                if (!value.contains('@')) {
+                  return 'Correo electrónico inválido';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 20),
+            _buildTextField(
+              controller: _numeroTelefonoController,
+              label: 'Número de Teléfono',
+              icon: Icons.phone_outlined,
+              keyboardType: TextInputType.phone,
+              validator:
+                  (value) =>
+                      (value == null || value.isEmpty)
+                          ? 'Por favor, introduce el número de teléfono'
+                          : null,
+            ),
+            const SizedBox(height: 20),
+            _buildTextField(
+              controller: _dniController,
+              label: 'DNI',
+              icon: Icons.badge_outlined,
+              validator:
+                  (value) =>
+                      (value == null || value.isEmpty)
+                          ? 'Por favor, introduce el DNI'
+                          : null,
+            ),
+            const SizedBox(height: 30),
+            _buildSaveButton(),
+          ],
         ),
+      ),
+    );
+  }
+
+  // Common text field widget
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        prefixIcon: Icon(icon),
+      ),
+      keyboardType: keyboardType,
+      validator: validator,
+    );
+  }
+
+  // Date picker field widget
+  Widget _buildDatePickerField(BuildContext context) {
+    return TextFormField(
+      controller: _nacimientoController,
+      decoration: InputDecoration(
+        labelText: 'Fecha de Nacimiento',
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.calendar_today_outlined),
+        suffixIcon: IconButton(
+          icon: const Icon(Icons.calendar_today),
+          onPressed: () => _selectDate(context),
+        ),
+      ),
+      readOnly: true,
+      validator:
+          (_) =>
+              _selectedDate == null
+                  ? 'Por favor, selecciona la fecha de nacimiento'
+                  : null,
+    );
+  }
+
+  // Save button widget
+  Widget _buildSaveButton() {
+    return ElevatedButton(
+      onPressed: _submit,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.green.shade400,
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        textStyle: const TextStyle(fontSize: 18),
+      ),
+      child: const Text(
+        'Guardar Empleado',
+        style: TextStyle(color: Colors.white),
       ),
     );
   }
