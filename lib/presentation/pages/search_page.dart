@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:NexusERP/features/employee/presentation/pages/employees_page.dart';
-import 'package:NexusERP/features/product/presentation/pages/products_page.dart';
-import 'package:NexusERP/features/supliers/presentation/pages/supplier_page.dart';
-import 'package:NexusERP/features/inventory/presentation/pages/inventory_details_page.dart'; // Import the InventoryDetailsPage
+import 'package:nexuserp/features/employee/presentation/pages/employees_page.dart';
+import 'package:nexuserp/features/product/presentation/pages/products_page.dart';
+import 'package:nexuserp/features/supliers/presentation/pages/supplier_page.dart';
+import 'package:nexuserp/features/inventory/presentation/pages/inventory_details_page.dart'; // Import the InventoryDetailsPage
 
 class SearchPage extends StatelessWidget {
   @override

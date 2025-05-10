@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:html' as html;
 
 class EditProfilePage extends StatefulWidget {
   @override

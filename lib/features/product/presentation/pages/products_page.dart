@@ -1,8 +1,8 @@
 // lib/products_page.dart
 import 'package:flutter/material.dart';
-import 'package:NexusERP/features/product/presentation/pages/add_product_screen.dart'; // Importa la AddProductScreen
-import 'package:NexusERP/features/product/domain/entities/product.dart';
-import 'package:NexusERP/features/product/data/datasources/product_service.dart'; // Asegúrate de tener este servicio adaptado
+import 'package:nexuserp/features/product/presentation/pages/add_product_screen.dart'; // Importa la AddProductScreen
+import 'package:nexuserp/features/product/domain/entities/product.dart';
+import 'package:nexuserp/features/product/data/datasources/product_service.dart'; // Asegúrate de tener este servicio adaptado
 
 class ProductsPage extends StatefulWidget {
   @override

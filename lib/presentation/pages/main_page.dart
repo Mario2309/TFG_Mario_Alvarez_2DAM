@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:NexusERP/presentation/pages/home_page.dart';
-import 'package:NexusERP/presentation/pages/search_page.dart';
-import 'package:NexusERP/presentation/pages/profile_page.dart';
+import 'package:nexuserp/presentation/pages/home_page.dart';
+import 'package:nexuserp/presentation/pages/search_page.dart';
+import 'package:nexuserp/presentation/pages/profile_page.dart';
 
 class MainPage extends StatefulWidget {
   @override

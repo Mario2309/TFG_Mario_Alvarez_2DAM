@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:NexusERP/presentation/pages/register_screen.dart';
-import 'package:NexusERP/presentation/pages/main_page.dart';
+import 'package:nexuserp/presentation/pages/register_screen.dart';
+import 'package:nexuserp/presentation/pages/main_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:NexusERP/core/utils/password_visibility_controller.dart';
+import 'package:nexuserp/core/utils/password_visibility_controller.dart';
 
 class LoginScreen extends StatelessWidget {
   @override

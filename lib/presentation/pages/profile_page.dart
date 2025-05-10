@@ -1,7 +1,7 @@
-import 'package:NexusERP/presentation/pages/changePasswordPage.dart';
+import 'package:nexuserp/presentation/pages/changePasswordPage.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:NexusERP/presentation/pages/login.dart';
+import 'package:nexuserp/presentation/pages/login.dart';
 import 'edit_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {

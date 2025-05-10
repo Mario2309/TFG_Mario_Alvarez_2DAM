@@ -1,4 +1,4 @@
-import 'package:NexusERP/features/employee/domain/entities/employee.dart';
+import 'package:nexuserp/features/employee/domain/entities/employee.dart';
 
 abstract class EmployeeRepository {
   Future<void> addEmployee(Employee employee);

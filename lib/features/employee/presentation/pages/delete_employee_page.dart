@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:NexusERP/features/employee/domain/entities/employee.dart';
-import 'package:NexusERP/features/employee/data/repositories/employee_repository_impl.dart';
-import 'package:NexusERP/features/employee/data/datasources/employee_service.dart';
+import 'package:nexuserp/features/employee/domain/entities/employee.dart';
+import 'package:nexuserp/features/employee/data/repositories/employee_repository_impl.dart';
+import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
 
 class DeleteEmployeeScreen extends StatefulWidget {
   @override

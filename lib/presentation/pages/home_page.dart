@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:NexusERP/features/employee/domain/entities/employee.dart';
-import 'package:NexusERP/features/product/domain/entities/product.dart';
-import 'package:NexusERP/features/supliers/domain/entities/supplier.dart'; // Import the Supplier model
-import 'package:NexusERP/features/employee/data/datasources/employee_service.dart'; // Import the service to fetch employees
+import 'package:nexuserp/features/employee/domain/entities/employee.dart';
+import 'package:nexuserp/features/product/domain/entities/product.dart';
+import 'package:nexuserp/features/supliers/domain/entities/supplier.dart'; // Import the Supplier model
+import 'package:nexuserp/features/employee/data/datasources/employee_service.dart'; // Import the service to fetch employees
 
 class HomePage extends StatefulWidget {
   @override

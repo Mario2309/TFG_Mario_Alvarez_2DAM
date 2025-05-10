@@ -1,8 +1,8 @@
 // lib/suppliers_page.dart
 import 'package:flutter/material.dart';
-import 'package:NexusERP/features/supliers/presentation/pages/add_supplier_screen_page.dart';
-import 'package:NexusERP/features/supliers/domain/entities/supplier.dart';
-import 'package:NexusERP/features/supliers/data/datasources/suppliers_service.dart'; // Make sure to create this service
+import 'package:nexuserp/features/supliers/presentation/pages/add_supplier_screen_page.dart';
+import 'package:nexuserp/features/supliers/domain/entities/supplier.dart';
+import 'package:nexuserp/features/supliers/data/datasources/suppliers_service.dart'; // Make sure to create this service
 
 class SuppliersPage extends StatefulWidget {
   @override
