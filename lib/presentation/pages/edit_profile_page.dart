@@ -1,9 +1,14 @@
 import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'dart:html' as html;
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -18,11 +23,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _descriptionController;
   late TextEditingController _avatarUrlController;
   late TextEditingController _phoneController;
-  late TextEditingController _companyController;
-  late TextEditingController _addressController;
 
   bool _isLoading = false;
   File? _selectedImage;
+  Uint8List? _webImageBytes;
+  String? _avatarUrl;
 
   @override
   void initState() {
@@ -34,8 +39,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _descriptionController = TextEditingController(text: metadata['description'] ?? '');
     _avatarUrlController = TextEditingController(text: metadata['avatar_url'] ?? '');
     _phoneController = TextEditingController(text: metadata['phone'] ?? '');
-    _companyController = TextEditingController(text: metadata['company'] ?? '');
-    _addressController = TextEditingController(text: metadata['address'] ?? '');
+    _avatarUrl = metadata['avatar_url'];
   }
 
   @override
@@ -44,30 +48,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _descriptionController.dispose();
     _avatarUrlController.dispose();
     _phoneController.dispose();
-    _companyController.dispose();
-    _addressController.dispose();
     super.dispose();
   }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+
     if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
+      if (kIsWeb) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _webImageBytes = bytes;
+          _selectedImage = File(pickedFile.name); // solo por nombre
+        });
+      } else {
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
     }
   }
 
-  Future<String?> _uploadImage(File imageFile) async {
+  Future<String?> _uploadImage() async {
     final userId = supabase.auth.currentUser!.id;
-    final fileExt = path.extension(imageFile.path);
+    final fileExt = kIsWeb
+        ? path.extension(_selectedImage!.path)
+        : path.extension(_selectedImage!.path);
     final fileName = 'avatar_$userId$fileExt';
     final filePath = 'avatars/$fileName';
 
-    final mimeType = lookupMimeType(imageFile.path);
-
-    final bytes = await imageFile.readAsBytes();
+    final mimeType = lookupMimeType(_selectedImage!.path);
+    final bytes = kIsWeb
+        ? _webImageBytes!
+        : await _selectedImage!.readAsBytes();
 
     final response = await supabase.storage.from('avatars').uploadBinary(
       filePath,
@@ -94,7 +108,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       String avatarUrl = _avatarUrlController.text.trim();
 
       if (_selectedImage != null) {
-        final uploadedUrl = await _uploadImage(_selectedImage!);
+        final uploadedUrl = await _uploadImage();
         if (uploadedUrl != null) {
           avatarUrl = uploadedUrl;
         }
@@ -128,11 +142,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final avatarPreview = _selectedImage != null
-        ? Image.file(_selectedImage!, height: 100, width: 100, fit: BoxFit.cover)
-        : (_avatarUrlController.text.isNotEmpty
-            ? Image.network(_avatarUrlController.text, height: 100, width: 100)
-            : const Icon(Icons.person, size: 100));
+    final avatarPreview = _webImageBytes != null
+        ? Image.memory(_webImageBytes!, height: 100, width: 100, fit: BoxFit.cover)
+        : (_selectedImage != null && !kIsWeb
+            ? Image.file(_selectedImage!, height: 100, width: 100, fit: BoxFit.cover)
+            : (_avatarUrl != null && _avatarUrl!.isNotEmpty
+                ? Image.network(_avatarUrl!, height: 100, width: 100)
+                : const Icon(Icons.person, size: 100)));
 
     return Scaffold(
       appBar: AppBar(title: Text('Editar Perfil')),
@@ -147,12 +163,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.grey.shade300,
-                  backgroundImage: _selectedImage != null
-                      ? FileImage(_selectedImage!)
-                      : (_avatarUrlController.text.isNotEmpty
-                          ? NetworkImage(_avatarUrlController.text) as ImageProvider
-                          : null),
-                  child: _selectedImage == null && _avatarUrlController.text.isEmpty
+                  backgroundImage: _webImageBytes != null
+                      ? MemoryImage(_webImageBytes!)
+                      : (_selectedImage != null && !kIsWeb
+                          ? FileImage(_selectedImage!)
+                          : (_avatarUrl != null && _avatarUrl!.isNotEmpty
+                              ? NetworkImage(_avatarUrl!) as ImageProvider
+                              : null)),
+                  child: _webImageBytes == null &&
+                          (_selectedImage == null || (kIsWeb && _selectedImage != null)) &&
+                          (_avatarUrl == null || _avatarUrl!.isEmpty)
                       ? Icon(Icons.add_a_photo, size: 40, color: Colors.grey.shade700)
                       : null,
                 ),
