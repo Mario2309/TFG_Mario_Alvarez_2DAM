@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nexuserp/features/employee/domain/entities/employee.dart';
 import 'package:nexuserp/features/product/domain/entities/product.dart';
-import 'package:nexuserp/features/supliers/domain/entities/supplier.dart'; // Import the Supplier model
-import 'package:nexuserp/features/employee/data/datasources/employee_service.dart'; // Import the service to fetch employees
+import 'package:nexuserp/features/supliers/domain/entities/supplier.dart';
+import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,8 +12,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Employee> _employees = [];
   List<Product> _products = [];
-  List<Supplier> _suppliers = []; // List to hold supplier data
-  final EmployeeService _employeeService = EmployeeService(); // EmployeeService instance
+  List<Supplier> _suppliers = [];
+  final EmployeeService _employeeService = EmployeeService();
 
   @override
   void initState() {
@@ -22,19 +22,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadInitialData() async {
-    // Fetch employee data from Supabase
     final employeeModels = await _employeeService.fetchEmployees();
     setState(() {
-      _employees = employeeModels.map((model) => Employee(
-        id: model.id,
-        nombreCompleto: model.nombreCompleto,
-        nacimiento: model.nacimiento,
-        correoElectronico: model.correoElectronico,
-        numeroTelefono: model.numeroTelefono,
-        dni: model.dni,
-      )).toList();
+      _employees =
+          employeeModels
+              .map(
+                (model) => Employee(
+                  id: model.id,
+                  nombreCompleto: model.nombreCompleto,
+                  nacimiento: model.nacimiento,
+                  correoElectronico: model.correoElectronico,
+                  numeroTelefono: model.numeroTelefono,
+                  dni: model.dni,
+                ),
+              )
+              .toList();
 
-      // Simulating fetching products and suppliers (replace with actual logic later)
       _products = [
         Product(
           id: 101,
@@ -45,7 +48,6 @@ class _HomePageState extends State<HomePage> {
           descripcion: 'High-performance laptop for professionals.',
           proveedorId: 1,
         ),
-        // Add more products as needed
       ];
 
       _suppliers = [
@@ -58,50 +60,51 @@ class _HomePageState extends State<HomePage> {
           email: 'john.smith@techsolutions.com',
           address: '123 Main St',
         ),
-        // Add more suppliers as needed
       ];
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Employees Section
-          _buildSectionTitle('Employees'),
-          _employees.isEmpty
-              ? _buildEmptyState('No employees data available.')
-              : _buildEmployeeList(),
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle('Employees'),
+            _employees.isEmpty
+                ? _buildEmptyState('No employees data available.')
+                : _buildEmployeeList(),
 
-          const SizedBox(height: 24.0),
+            const SizedBox(height: 24.0),
 
-          // Products Section
-          _buildSectionTitle('Products'),
-          // Add product display here
+            _buildSectionTitle('Products'),
 
-          const SizedBox(height: 24.0),
+            // TODO: Add modern product cards here
+            const SizedBox(height: 24.0),
 
-          // Suppliers Section
-          _buildSectionTitle('Suppliers'),
-          // Add supplier display here
+            _buildSectionTitle('Suppliers'),
 
-          const SizedBox(height: 16.0),
-        ],
+            // TODO: Add modern supplier cards here
+            const SizedBox(height: 16.0),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          color: Colors.grey.shade800,
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+          color: Colors.blue.shade700,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -111,22 +114,19 @@ class _HomePageState extends State<HomePage> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Text(
-          message,
-          style: TextStyle(color: Colors.grey),
-        ),
+        child: Text(message, style: TextStyle(color: Colors.grey)),
       ),
     );
   }
 
   Widget _buildEmployeeList() {
     return SizedBox(
-      height: 180,
+      height: 190,
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
         itemCount: _employees.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 16.0),
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
           final employee = _employees[index];
           return _buildEmployeeCard(employee);
@@ -136,73 +136,95 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildEmployeeCard(Employee employee) {
-    return Container(
-      width: 160,
-      decoration: BoxDecoration(
-        color: Colors.blue.shade50,
-        borderRadius: BorderRadius.circular(12.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4.0,
-            offset: Offset(2, 2),
+    return Material(
+      borderRadius: BorderRadius.circular(16),
+      elevation: 3,
+      color: Colors.blue[50],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          // Navegar a la página de edición del empleado
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditEmployeePage(employee: employee),
+            ),
+          );
+        },
+        child: Container(
+          width: 180,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.person, color: Colors.blue.shade700, size: 32),
+              const SizedBox(height: 8),
+              Text(
+                employee.nombreCompleto,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(height: 4),
+              _buildInfoLine(Icons.email, employee.correoElectronico ?? 'N/A'),
+              if (employee.numeroTelefono?.isNotEmpty ?? false)
+                _buildInfoLine(Icons.phone, employee.numeroTelefono!),
+              if (employee.dni?.isNotEmpty ?? false)
+                _buildInfoLine(Icons.badge, 'DNI: ${employee.dni!}'),
+              if (employee.nacimiento != null)
+                _buildInfoLine(
+                  Icons.cake,
+                  'Nacimiento: ${employee.nacimiento!.day}/${employee.nacimiento!.month}/${employee.nacimiento!.year}',
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoLine(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: Colors.blue.shade700),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            employee.nombreCompleto,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4.0),
-          Text(
-            employee.correoElectronico ?? 'N/A',
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 14,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (employee.numeroTelefono?.isNotEmpty ?? false)
-            Text(
-              employee.numeroTelefono!,
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          if (employee.dni?.isNotEmpty ?? false)
-            Text(
-              'DNI: ${employee.dni!}',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          if (employee.nacimiento != null)
-            Text(
-              'Nacimiento: ${employee.nacimiento!.day}/${employee.nacimiento!.month}/${employee.nacimiento!.year}',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-        ],
+    );
+  }
+}
+
+class EditEmployeePage extends StatelessWidget {
+  final Employee employee;
+
+  EditEmployeePage({required this.employee});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Edit Employee')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Edit details for ${employee.nombreCompleto}'),
+            // Aquí agregarías los campos para editar la información del empleado
+            // Ejemplo: TextFormField para nombre, correo, etc.
+          ],
+        ),
       ),
     );
   }

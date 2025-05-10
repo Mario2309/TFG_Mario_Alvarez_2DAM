@@ -19,4 +19,22 @@ class EmployeeService {
       throw Exception('Failed to delete employee: ${response.error?.message}');
     }
   }
+
+  Future<bool> updateEmployee(EmployeeModel employee) async {
+    try {
+      final response = await supabase
+          .from('empleado')
+          .update(employee.toJson())
+          .eq('id', employee.id);
+
+      if (response.error != null) {
+        print('Error al actualizar empleado: ${response.error?.message}');
+        return false;
+      }
+      return true;
+    } catch (e) {
+      print('Error al actualizar empleado: $e');
+      return false;
+    }
+  }
 }
