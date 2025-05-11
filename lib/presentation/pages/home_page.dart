@@ -79,19 +79,24 @@ class _HomePageState extends State<HomePage> {
             _employees.isEmpty
                 ? _buildEmptyState('No employees data available.')
                 : _buildEmployeeList(),
-
             const SizedBox(height: 24.0),
-
             _buildSectionTitle('Products'),
-
-            // TODO: Add modern product cards here
             const SizedBox(height: 24.0),
-
             _buildSectionTitle('Suppliers'),
-
-            // TODO: Add modern supplier cards here
             const SizedBox(height: 16.0),
           ],
+        ),
+      ),
+      floatingActionButton: Align(
+        alignment: Alignment.bottomLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24.0, bottom: 16.0),
+          child: FloatingActionButton(
+            onPressed: _loadInitialData,
+            tooltip: 'Recargar página',
+            backgroundColor: Colors.blue.shade700,
+            child: const Icon(Icons.refresh),
+          ),
         ),
       ),
     );
@@ -144,18 +149,28 @@ class _HomePageState extends State<HomePage> {
       color: Colors.blue[50],
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          // Navegar a la página de edición del empleado
-          Navigator.push(
+        onTap: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder:
                   (context) => EditEmployeePage(
-                    employee: EmployeeModel(id: employee.id, nombreCompleto: employee.nombreCompleto, nacimiento: employee.nacimiento, correoElectronico: employee.correoElectronico, numeroTelefono: employee.numeroTelefono, dni: employee.dni),
-                    employeeService: EmployeeService(),
+                    employee: EmployeeModel(
+                      id: employee.id,
+                      nombreCompleto: employee.nombreCompleto,
+                      nacimiento: employee.nacimiento,
+                      correoElectronico: employee.correoElectronico,
+                      numeroTelefono: employee.numeroTelefono,
+                      dni: employee.dni,
+                    ),
+                    employeeService: _employeeService,
                   ),
             ),
           );
+
+          if (result == true) {
+            _loadInitialData();
+          }
         },
         child: Container(
           width: 180,

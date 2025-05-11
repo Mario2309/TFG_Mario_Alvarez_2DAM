@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexuserp/features/employee/data/repositories/employee_repository_impl.dart';
-import '../../data/models/employee_model.dart' show EmployeeModel;
 import '../../domain/entities/employee.dart';
 
 class AddEmployeePage extends StatefulWidget {
   final EmployeeRepositoryImpl employeeService;
 
-  const AddEmployeePage({
-    Key? key,
-    required this.employeeService,
-  }) : super(key: key);
+  const AddEmployeePage({Key? key, required this.employeeService})
+    : super(key: key);
 
   @override
   _AddEmployeePageState createState() => _AddEmployeePageState();
@@ -60,7 +57,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       );
 
       // Llamada al servicio para agregar el empleado en la base de datos
-      final success = await widget.employeeService.addEmployeeWithoutId(employee);
+      final success = await widget.employeeService.addEmployeeWithoutId(
+        employee,
+      );
 
       // Si la operación fue exitosa, navegar hacia atrás
       if (success) {
@@ -71,15 +70,15 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     }
   }
 
-
-
   void _showErrorDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Error'),
-          content: const Text('No se pudo agregar al empleado. Inténtalo nuevamente.'),
+          content: const Text(
+            'No se pudo agregar al empleado. Inténtalo nuevamente.',
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text('Aceptar'),
@@ -182,7 +181,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
         controller: controller,
-        validator: validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
+        validator:
+            validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.blue.shade700),
           labelText: label,

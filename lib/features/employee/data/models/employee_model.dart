@@ -27,7 +27,6 @@ class EmployeeModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
         'nombre_completo': nombreCompleto,
         'nacimiento': nacimiento.toIso8601String(),
         'correo_electronico': correoElectronico,

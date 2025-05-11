@@ -4,7 +4,15 @@ import 'package:nexuserp/features/product/presentation/pages/products_page.dart'
 import 'package:nexuserp/features/supliers/presentation/pages/supplier_page.dart';
 import 'package:nexuserp/features/inventory/presentation/pages/inventory_details_page.dart';
 
-class SearchPage extends StatelessWidget {
+class SearchPage extends StatefulWidget {
+  @override
+  _SearchPageState createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  // Variable para cambiar el modo de vista
+  bool isGridView = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,60 +25,133 @@ class SearchPage extends StatelessWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
+        actions: [
+          // Icono para cambiar entre vista en cuadrícula y lista
+          IconButton(
+            icon: Icon(
+              isGridView ? Icons.view_list : Icons.grid_view,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              setState(() {
+                isGridView = !isGridView;
+              });
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 20.0,
-          mainAxisSpacing: 20.0,
-          children: <Widget>[
-            _buildModernOption(
-              context,
-              'Products',
-              Icons.shopping_bag_outlined,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => ProductsPage()),
-                );
-              },
-            ),
-            _buildModernOption(
-              context,
-              'Employees',
-              Icons.people_alt_outlined,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => EmployeesPage()),
-                );
-              },
-            ),
-            _buildModernOption(
-              context,
-              'Suppliers',
-              Icons.local_shipping_outlined,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => SuppliersPage()),
-                );
-              },
-            ),
-            _buildModernOption(
-              context,
-              'Inventory',
-              Icons.inventory_2_outlined,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => InventoryDetailsPage()),
-                );
-              },
-            ),
-          ],
-        ),
+        child:
+            isGridView
+                // Vista en cuadrícula
+                ? GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 20.0,
+                  mainAxisSpacing: 20.0,
+                  children: <Widget>[
+                    _buildModernOption(
+                      context,
+                      'Products',
+                      Icons.shopping_bag_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => ProductsPage()),
+                        );
+                      },
+                    ),
+                    _buildModernOption(
+                      context,
+                      'Employees',
+                      Icons.people_alt_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => EmployeesPage()),
+                        );
+                      },
+                    ),
+                    _buildModernOption(
+                      context,
+                      'Suppliers',
+                      Icons.local_shipping_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => SuppliersPage()),
+                        );
+                      },
+                    ),
+                    _buildModernOption(
+                      context,
+                      'Inventory',
+                      Icons.inventory_2_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => InventoryDetailsPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                )
+                // Vista en lista
+                : ListView(
+                  children: <Widget>[
+                    _buildModernOption(
+                      context,
+                      'Products',
+                      Icons.shopping_bag_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => ProductsPage()),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8.0), // Margen entre elementos
+                    _buildModernOption(
+                      context,
+                      'Employees',
+                      Icons.people_alt_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => EmployeesPage()),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8.0), // Margen entre elementos
+                    _buildModernOption(
+                      context,
+                      'Suppliers',
+                      Icons.local_shipping_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => SuppliersPage()),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8.0), // Margen entre elementos
+                    _buildModernOption(
+                      context,
+                      'Inventory',
+                      Icons.inventory_2_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => InventoryDetailsPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
       ),
     );
   }

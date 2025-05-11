@@ -11,7 +11,6 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   @override
   Future<void> addEmployee(Employee e) async {
     final model = EmployeeModel(
-      id: e.id,
       nombreCompleto: e.nombreCompleto,
       nacimiento: e.nacimiento,
       correoElectronico: e.correoElectronico,
@@ -22,34 +21,42 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   }
 
   @override
-  Future<void> deleteEmployee(int id) async {
-    await service.deleteEmployee(id);
+  Future<void> deleteEmployee(String dni) async {
+    await service.deleteEmployee(dni);
   }
 
   @override
   Future<List<Employee>> getAllEmployees() async {
     final models = await service.fetchEmployees();
-    return models.map((m) => Employee(
-      id: m.id,
-      nombreCompleto: m.nombreCompleto,
-      nacimiento: m.nacimiento,
-      correoElectronico: m.correoElectronico,
-      numeroTelefono: m.numeroTelefono,
-      dni: m.dni,
-    )).toList();
+    return models
+        .map(
+          (m) => Employee(
+            id: m.id,
+            nombreCompleto: m.nombreCompleto,
+            nacimiento: m.nacimiento,
+            correoElectronico: m.correoElectronico,
+            numeroTelefono: m.numeroTelefono,
+            dni: m.dni,
+          ),
+        )
+        .toList();
   }
 
   @override
   Future<List<Employee>> getEmployees() async {
     final models = await service.fetchEmployees();
-    return models.map((m) => Employee(
-      id: m.id,
-      nombreCompleto: m.nombreCompleto,
-      nacimiento: m.nacimiento,
-      correoElectronico: m.correoElectronico,
-      numeroTelefono: m.numeroTelefono,
-      dni: m.dni,
-    )).toList();
+    return models
+        .map(
+          (m) => Employee(
+            id: m.id,
+            nombreCompleto: m.nombreCompleto,
+            nacimiento: m.nacimiento,
+            correoElectronico: m.correoElectronico,
+            numeroTelefono: m.numeroTelefono,
+            dni: m.dni,
+          ),
+        )
+        .toList();
   }
 
   // Método corregido para agregar un empleado sin el campo `id`
@@ -57,7 +64,6 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     try {
       // Crear el modelo de empleado, pero sin incluir el id
       final model = EmployeeModel(
-        id: 0, // Se establece un ID inicial de 0 para indicar que es nuevo
         nombreCompleto: employee.nombreCompleto,
         nacimiento: employee.nacimiento,
         correoElectronico: employee.correoElectronico,
@@ -69,11 +75,10 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       final response = await service.addEmployee(model);
 
       // Si la respuesta es exitosa (por ejemplo, código 200), retornamos true
-      return response.hashCode == 200;
+      return true;
     } catch (e) {
       // En caso de error, devolvemos false
       return false;
     }
   }
-
 }

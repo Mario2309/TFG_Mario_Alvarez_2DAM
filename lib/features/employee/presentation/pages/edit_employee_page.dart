@@ -68,7 +68,6 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final updatedEmployee = EmployeeModel(
-        id: widget.employee.id,
         nombreCompleto: _nombreController.text,
         nacimiento: _selectedDate,
         correoElectronico: _emailController.text,
@@ -151,6 +150,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
                 label: 'DNI',
                 controller: _dniController,
                 icon: Icons.badge,
+                isEnabled: false, // Aquí deshabilitamos el campo
               ),
               const SizedBox(height: 12),
               Row(
@@ -197,6 +197,8 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
     required TextEditingController controller,
     required IconData icon,
     String? Function(String?)? validator,
+    bool isEnabled =
+        true, // Añadimos un parámetro para habilitar/deshabilitar el campo
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -204,6 +206,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
         controller: controller,
         validator:
             validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
+        enabled: isEnabled, // Usamos el parámetro para habilitar/deshabilitar
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.blue.shade700),
           labelText: label,

@@ -14,34 +14,29 @@ class EmployeeService {
     return false;
   }
 
-  Future<void> deleteEmployee(int id) async {
-    final response = await supabase.from('empleado').delete().eq('id', id);
+  Future<void> deleteEmployee(String dni) async {
+    final response = await supabase.from('empleado').delete().eq('dni', dni);
     if (response.error != null) {
       throw Exception('Failed to delete employee: ${response.error?.message}');
     }
   }
 
   Future<bool> updateEmployee(EmployeeModel employee) async {
-  if (employee.id == null) {
-    print('Error: El ID del empleado no puede ser nulo.');
-    return false;
-  }
-
-  try {
-    final response = await supabase
-        .from('empleado')
-        .update(employee.toJson())
-        .eq('id', employee.id as Object);
-
-    if (response.error != null) {
-      print('Error al actualizar empleado: ${response.error?.message}');
+    if (employee.dni == null) {
+      print('Error: El DNI del empleado no puede ser nulo.');
       return false;
     }
-    return true;
-  } catch (e) {
-    print('Error al actualizar empleado: $e');
-    return false;
-  }
-}
 
+    try {
+      final response = await supabase
+          .from('empleado')
+          .update(employee.toJson())
+          .eq('dni', employee.dni);
+
+      return true;
+    } catch (e) {
+      print('Error al actualizar empleado: $e');
+      return false;
+    }
+  }
 }

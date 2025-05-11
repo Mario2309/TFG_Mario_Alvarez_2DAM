@@ -8,8 +8,6 @@ import 'package:nexuserp/features/employee/data/datasources/employee_service.dar
 import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart'
     show EditEmployeePage;
 
-import '../../../../presentation/pages/home_page.dart';
-
 class EmployeesPage extends StatefulWidget {
   @override
   _EmployeesPageState createState() => _EmployeesPageState();
@@ -37,7 +35,10 @@ class _EmployeesPageState extends State<EmployeesPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => AddEmployeePage(employeeService: EmployeeRepositoryImpl(EmployeeService())),
+        builder:
+            (_) => AddEmployeePage(
+              employeeService: EmployeeRepositoryImpl(EmployeeService()),
+            ),
       ),
     ).then((newEmployee) {
       if (newEmployee is Employee) {
@@ -56,8 +57,23 @@ class _EmployeesPageState extends State<EmployeesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: _employees.isEmpty ? _buildEmptyState() : _buildEmployeeList(),
-      floatingActionButton: _buildFloatingButtons(),
+      body: Stack(
+        children: [
+          _employees.isEmpty ? _buildEmptyState() : _buildEmployeeList(),
+          Positioned(bottom: 16, right: 16, child: _buildFloatingButtons()),
+          Positioned(
+            bottom: 16,
+            left: 24, // margen sobre la izquierda
+            child: FloatingActionButton(
+              heroTag: 'refreshBtn',
+              onPressed: _loadEmployees,
+              backgroundColor: Colors.blue.shade700,
+              tooltip: 'Recargar empleados',
+              child: const Icon(Icons.refresh),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

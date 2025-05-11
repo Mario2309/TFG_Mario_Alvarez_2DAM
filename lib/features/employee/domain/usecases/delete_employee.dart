@@ -5,7 +5,7 @@ class DeleteEmployee {
 
   DeleteEmployee(this.repository);
 
-  Future<void> call(int id) async {
-    await repository.deleteEmployee(id);
+  Future<void> call(String dni ) async {
+    await repository.deleteEmployee(dni);
   }
 }
