@@ -34,9 +34,10 @@ class ProductService {
     }
   }
 
-  Future<void> updateProduct(ProductModel product) async {
+  Future<bool> updateProduct(ProductModel product) async {
     if (product.id == null) {
       throw Exception('ID del producto requerido para actualizar');
+      return false;
     }
 
     try {
@@ -44,8 +45,10 @@ class ProductService {
           .from('productos')
           .update(product.toJson())
           .eq('id', product.id!);
+      return true;
     } catch (e) {
       throw Exception('Error al actualizar producto con ID ${product.id}: $e');
+      return false;
     }
   }
 
@@ -55,6 +58,11 @@ class ProductService {
     } catch (e) {
       throw Exception('Error al eliminar producto con ID $id: $e');
     }
+  }
+
+  Future<List<ProductModel>> fetchProducts() async {
+    final response = await supabase.from('productos').select();
+    return (response as List).map((e) => ProductModel.fromJson(e)).toList();
   }
 
 }

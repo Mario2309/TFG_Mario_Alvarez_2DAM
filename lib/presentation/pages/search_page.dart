@@ -10,41 +10,18 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  // Variable para cambiar el modo de vista
-  bool isGridView = true;
-
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final isSmartphone = screenWidth <= 600;
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('Explore Options'),
-        centerTitle: true,
-        backgroundColor: Colors.blue.shade700,
-        elevation: 4,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-        actions: [
-          // Icono para cambiar entre vista en cuadrícula y lista
-          IconButton(
-            icon: Icon(
-              isGridView ? Icons.view_list : Icons.grid_view,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              setState(() {
-                isGridView = !isGridView;
-              });
-            },
-          ),
-        ],
-      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child:
-            isGridView
-                // Vista en cuadrícula
+            isSmartphone
                 ? GridView.count(
                   crossAxisCount: 2,
                   crossAxisSpacing: 20.0,
@@ -98,7 +75,6 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ],
                 )
-                // Vista en lista
                 : ListView(
                   children: <Widget>[
                     _buildModernOption(
@@ -112,7 +88,7 @@ class _SearchPageState extends State<SearchPage> {
                         );
                       },
                     ),
-                    const SizedBox(height: 8.0), // Margen entre elementos
+                    const SizedBox(height: 8.0),
                     _buildModernOption(
                       context,
                       'Employees',
@@ -124,7 +100,7 @@ class _SearchPageState extends State<SearchPage> {
                         );
                       },
                     ),
-                    const SizedBox(height: 8.0), // Margen entre elementos
+                    const SizedBox(height: 8.0),
                     _buildModernOption(
                       context,
                       'Suppliers',
@@ -136,7 +112,7 @@ class _SearchPageState extends State<SearchPage> {
                         );
                       },
                     ),
-                    const SizedBox(height: 8.0), // Margen entre elementos
+                    const SizedBox(height: 8.0),
                     _buildModernOption(
                       context,
                       'Inventory',

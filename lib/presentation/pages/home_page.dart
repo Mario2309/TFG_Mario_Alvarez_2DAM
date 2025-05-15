@@ -3,8 +3,11 @@ import 'package:nexuserp/features/employee/data/models/employee_model.dart';
 import 'package:nexuserp/features/employee/domain/entities/employee.dart';
 import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart';
 import 'package:nexuserp/features/product/domain/entities/product.dart';
+import 'package:nexuserp/features/product/presentation/pages/edit_product.dart';
 import 'package:nexuserp/features/supliers/domain/entities/supplier.dart';
 import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
+import 'package:nexuserp/features/product/data/datasources/product_service.dart';
+import 'package:nexuserp/features/product/data/models/product_model.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -16,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   List<Product> _products = [];
   List<Supplier> _suppliers = [];
   final EmployeeService _employeeService = EmployeeService();
+  final ProductService _productService = ProductService();
 
   @override
   void initState() {
@@ -25,6 +29,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadInitialData() async {
     final employeeModels = await _employeeService.fetchEmployees();
+    final productModels = await _productService.fetchProducts();
+
     setState(() {
       _employees =
           employeeModels
@@ -40,17 +46,20 @@ class _HomePageState extends State<HomePage> {
               )
               .toList();
 
-      _products = [
-        Product(
-          id: 101,
-          nombre: 'Laptop',
-          tipo: 'Electrónico',
-          precio: 1200.00,
-          cantidad: 15,
-          descripcion: 'High-performance laptop for professionals.',
-          proveedorId: 1,
-        ),
-      ];
+      _products =
+          productModels
+              .map(
+                (model) => Product(
+                  id: model.id,
+                  nombre: model.nombre,
+                  tipo: model.tipo,
+                  precio: model.precio,
+                  cantidad: model.cantidad,
+                  descripcion: model.descripcion,
+                  proveedorId: model.proveedorId,
+                ),
+              )
+              .toList();
 
       _suppliers = [
         Supplier(
@@ -81,6 +90,9 @@ class _HomePageState extends State<HomePage> {
                 : _buildEmployeeList(),
             const SizedBox(height: 24.0),
             _buildSectionTitle('Products'),
+            _products.isEmpty
+                ? _buildEmptyState('No products data available.')
+                : _buildProductList(),
             const SizedBox(height: 24.0),
             _buildSectionTitle('Suppliers'),
             const SizedBox(height: 16.0),
@@ -167,7 +179,6 @@ class _HomePageState extends State<HomePage> {
                   ),
             ),
           );
-
           if (result == true) {
             _loadInitialData();
           }
@@ -199,6 +210,85 @@ class _HomePageState extends State<HomePage> {
                   Icons.cake,
                   'Nacimiento: ${employee.nacimiento!.day}/${employee.nacimiento!.month}/${employee.nacimiento!.year}',
                 ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductList() {
+    return SizedBox(
+      height: 190,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        scrollDirection: Axis.horizontal,
+        itemCount: _products.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        itemBuilder: (context, index) {
+          final product = _products[index];
+          return _buildProductCard(product);
+        },
+      ),
+    );
+  }
+
+  Widget _buildProductCard(Product product) {
+    return Material(
+      borderRadius: BorderRadius.circular(16),
+      elevation: 3,
+      color: Colors.green[50],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => EditProductPage(
+                    product: ProductModel(
+                      id: product.id,
+                      nombre: product.nombre,
+                      tipo: product.tipo,
+                      precio: product.precio,
+                      cantidad: product.cantidad,
+                      descripcion: product.descripcion,
+                      proveedorId: product.proveedorId,
+                    ),
+                    productService: _productService,
+                  ),
+            ),
+          );
+          if (result == true) {
+            _loadInitialData();
+          }
+        },
+        child: Container(
+          width: 180,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.shopping_bag, color: Colors.green.shade700, size: 32),
+              const SizedBox(height: 8),
+              Text(
+                product.nombre,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(height: 4),
+              _buildInfoLine(Icons.category, 'Tipo: ${product.tipo}'),
+              _buildInfoLine(
+                Icons.monetization_on,
+                'Precio: \$${product.precio.toStringAsFixed(2)}',
+              ),
+              _buildInfoLine(Icons.inventory, 'Stock: ${product.cantidad}'),
+              if (product.descripcion != null &&
+                  product.descripcion!.isNotEmpty)
+                _buildInfoLine(Icons.info, product.descripcion!),
             ],
           ),
         ),
