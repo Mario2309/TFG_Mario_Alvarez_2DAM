@@ -16,4 +16,25 @@ class ProductModel {
     this.descripcion,
     this.proveedorId,
   });
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      id: json['id'],
+      nombre: json['nombre'],
+      tipo: json['tipo'],
+      precio: json['precio'],
+      cantidad: json['cantidad'],
+      descripcion: json['descripcion'],
+      proveedorId: json['proveedor_id'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'nombre': nombre,
+    'tipo': tipo,
+    'precio': precio,
+    'cantidad': cantidad,
+    'descripcion': descripcion,
+    'proveedor_id': proveedorId,
+  };
 }

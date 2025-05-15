@@ -1,4 +1,3 @@
-// lib/add_product_screen.dart
 import 'package:flutter/material.dart';
 import 'package:nexuserp/features/product/domain/entities/product.dart';
 
@@ -9,12 +8,13 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nombreController = TextEditingController(); // Cambiado a nombre
-  final _precioController = TextEditingController();
-  final _descripcionController = TextEditingController(); // Controlador para descripción
-  final _stockController = TextEditingController(); // Controlador para cantidad
-  final _tipoController = TextEditingController(); // Nuevo controlador para tipo
-  final _proveedorIdController = TextEditingController(); // Nuevo controlador para proveedorId
+
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _precioController = TextEditingController();
+  final TextEditingController _descripcionController = TextEditingController();
+  final TextEditingController _stockController = TextEditingController();
+  final TextEditingController _tipoController = TextEditingController();
+  final TextEditingController _proveedorIdController = TextEditingController();
 
   @override
   void dispose() {
@@ -30,127 +30,148 @@ class _AddProductScreenState extends State<AddProductScreen> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final newProduct = Product(
-        nombre: _nombreController.text, 
+        nombre: _nombreController.text,
         precio: double.tryParse(_precioController.text) ?? 0.0,
-        cantidad: int.tryParse(_stockController.text) ?? 0, 
-        descripcion: _descripcionController.text.isNotEmpty ? _descripcionController.text : null, 
-        tipo: _tipoController.text.isNotEmpty ? _tipoController.text : null, 
-        proveedorId: _proveedorIdController.text.isNotEmpty ? int.tryParse(_proveedorIdController.text) : null, 
-        id: null, 
+        cantidad: int.tryParse(_stockController.text) ?? 0,
+        descripcion: _descripcionController.text.isNotEmpty ? _descripcionController.text : null,
+        tipo: _tipoController.text.isNotEmpty ? _tipoController.text : null,
+        proveedorId: _proveedorIdController.text.isNotEmpty ? int.tryParse(_proveedorIdController.text) : null,
+        id: null,
       );
-      
 
-      Navigator.pop(context, newProduct); // Devuelve el nuevo producto
+      Navigator.pop(context, newProduct);
     }
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: const Text('No se pudo agregar el producto. Inténtalo nuevamente.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    IconData? icon,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+    int? maxLines,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines ?? 1,
+        validator: validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
+        decoration: InputDecoration(
+          prefixIcon: icon != null ? Icon(icon, color: Colors.blue.shade700) : null,
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          filled: true,
+          fillColor: Colors.grey.shade100,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Product'),
-        backgroundColor: Colors.blue.shade700, // Consistent app bar color
+        title: const Text('Agregar Producto'),
+        backgroundColor: Colors.blue.shade700,
       ),
-      body: SingleChildScrollView( // Added SingleChildScrollView for better keyboard handling
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextFormField(
-                controller: _nombreController, // Usa _nombreController
-                decoration: const InputDecoration(
-                  labelText: 'Product Name',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the product name';
-                  }
-                  return null;
-                },
+            children: [
+              _buildTextField(
+                label: 'Nombre',
+                controller: _nombreController,
+                icon: Icons.shopping_bag_outlined,
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _tipoController, // Usa _tipoController
-                decoration: const InputDecoration(
-                  labelText: 'Type (Optional)',
-                  border: OutlineInputBorder(),
-                ),
+              _buildTextField(
+                label: 'Tipo (Opcional)',
+                controller: _tipoController,
+                icon: Icons.category,
+                validator: (value) => null,
               ),
-              const SizedBox(height: 20),
-              TextFormField(
+              _buildTextField(
+                label: 'Precio',
                 controller: _precioController,
-                decoration: const InputDecoration(
-                  labelText: 'Price',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.attach_money), // Added price icon
-                ),
+                icon: Icons.attach_money,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the price';
+                    return 'Campo requerido';
                   }
                   if (double.tryParse(value) == null) {
-                    return 'Please enter a valid price';
+                    return 'Precio inválido';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _stockController, // Usa _stockController
-                decoration: const InputDecoration(
-                  labelText: 'Stock Level',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.store), // Added stock icon
-                ),
+              _buildTextField(
+                label: 'Cantidad en stock',
+                controller: _stockController,
+                icon: Icons.store,
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the stock level';
+                    return 'Campo requerido';
                   }
                   if (int.tryParse(value) == null) {
-                    return 'Please enter a valid stock level';
+                    return 'Cantidad inválida';
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _descripcionController, // Usa _descripcionController
-                decoration: const InputDecoration(
-                  labelText: 'Description (Optional)',
-                  border: OutlineInputBorder(),
-                  alignLabelWithHint: true, // Align label to top for multiline
-                ),
-                maxLines: 3, // Allow multiple lines for description
-                keyboardType: TextInputType.multiline,
+              _buildTextField(
+                label: 'Descripción (Opcional)',
+                controller: _descripcionController,
+                maxLines: 3,
+                icon: Icons.description,
+                validator: (value) => null,
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _proveedorIdController, // Usa _proveedorIdController
-                decoration: const InputDecoration(
-                  labelText: 'Proveedor ID (Optional)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.local_shipping), // Added supplier icon
-                ),
+              _buildTextField(
+                label: 'Proveedor ID (Opcional)',
+                controller: _proveedorIdController,
+                icon: Icons.local_shipping,
                 keyboardType: TextInputType.number,
+                validator: (value) => null,
               ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _submitForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade400, // Distinct save button color
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                  textStyle: const TextStyle(fontSize: 18),
-                ),
-                child: const SizedBox(
-                  width: double.infinity, // Make button full width
-                  child: Center(child: Text('Save Product', style: TextStyle(color: Colors.white))),
-                ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancelar'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade700,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      textStyle: const TextStyle(fontSize: 18),
+                    ),
+                    child: const Text('Guardar', style: TextStyle(color: Colors.white)),
+                  ),
+                ],
               ),
             ],
           ),
