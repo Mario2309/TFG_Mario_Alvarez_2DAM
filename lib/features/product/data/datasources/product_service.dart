@@ -23,11 +23,8 @@ class ProductService {
 
   Future<ProductModel?> getProductById(int id) async {
     try {
-      final data = await supabase
-          .from('productos')
-          .select()
-          .eq('id', id)
-          .single(); 
+      final data =
+          await supabase.from('productos').select().eq('id', id).single();
       return ProductModel.fromJson(data);
     } catch (e) {
       throw Exception('Error al obtener producto con ID $id: $e');
@@ -64,6 +61,4 @@ class ProductService {
     final response = await supabase.from('productos').select();
     return (response as List).map((e) => ProductModel.fromJson(e)).toList();
   }
-
 }
-
