@@ -1,22 +1,64 @@
-// lib/services/supplier_service.dart
-import 'package:nexuserp/features/supliers/domain/entities/supplier.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../domain/entities/supplier.dart';
+import '../models/supplier_model.dart';
 
 class SupplierService {
-  // In-memory data simulation (replace with your database logic)
-  final List<Supplier> _suppliers = [
-    Supplier(id: 1, name: 'Supplier A', taxId: 'A1234567', contactPerson: 'John Doe', phone: '123456789', email: 'john@suppliera.com', address: 'Fake Street 123'),
-    Supplier(id: 2, name: 'Supplier B', taxId: 'B9876543', contactPerson: 'Jane Smith', phone: '987654321', email: 'jane@supplierb.com', address: 'Made Up Avenue 456'),
-  ];
+  final supabase = Supabase.instance.client;
 
-  List<Supplier> getAllSuppliers() {
-    return _suppliers;
+  Future<void> addSupplier(SupplierModel supplier) async {
+    try {
+      await supabase.from('proveedores').insert(supplier.toJson());
+    } catch (e) {
+      throw Exception('Error al agregar proveedor: $e');
+    }
   }
 
-  void addSupplier(Supplier supplier) {
-    supplier.id = _suppliers.length + 1; // Simulate ID
-    _suppliers.add(supplier);
-    print('Supplier added: ${supplier.name}');
+  Future<List<SupplierModel>> getAllSuppliers() async {
+    try {
+      final List<dynamic> data = await supabase.from('proveedores').select();
+      return data.map((json) => SupplierModel.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Error al obtener proveedores: $e');
+    }
   }
 
-  // You can add more methods like getSupplierById, updateSupplier, deleteSupplier, etc.
+  Future<SupplierModel?> getSupplierById(int id) async {
+    try {
+      final data =
+          await supabase.from('proveedores').select().eq('id', id).single();
+      return SupplierModel.fromJson(data);
+    } catch (e) {
+      throw Exception('Error al obtener proveedor con ID $id: $e');
+    }
+  }
+
+  Future<bool> updateSupplier(SupplierModel supplier) async {
+    if (supplier.id == null) {
+      throw Exception('ID del proveedor requerido para actualizar');
+    }
+
+    try {
+      await supabase
+          .from('proveedores')
+          .update(supplier.toJson())
+          .eq('id', supplier.id!);
+      return true;
+    } catch (e) {
+      throw Exception('Error al actualizar proveedor con ID ${supplier.id}: $e');
+    }
+  }
+
+  Future<void> deleteSupplier(String nifCif) async {
+    try {
+      await supabase.from('proveedores').delete().eq('nifCif', nifCif);
+    } catch (e) {
+      throw Exception('Error al eliminar proveedor con nif/Cif $nifCif: $e');
+    }
+  }
+
+  Future<List<SupplierModel>> fetchSuppliers() async {
+    final response = await supabase.from('proveedores').select();
+    return (response as List).map((e) => SupplierModel.fromJson(e)).toList();
+  }
 }

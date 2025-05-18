@@ -9,6 +9,8 @@ import 'package:nexuserp/features/employee/data/datasources/employee_service.dar
 import 'package:nexuserp/features/product/data/datasources/product_service.dart';
 import 'package:nexuserp/features/product/data/models/product_model.dart';
 
+import '../../features/supliers/data/datasources/suppliers_service.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -20,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   List<Supplier> _suppliers = [];
   final EmployeeService _employeeService = EmployeeService();
   final ProductService _productService = ProductService();
+  final SupplierService _supplierService = SupplierService();
 
   @override
   void initState() {
@@ -30,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadInitialData() async {
     final employeeModels = await _employeeService.fetchEmployees();
     final productModels = await _productService.fetchProducts();
+    final supplierModels = await _supplierService.fetchSuppliers();
 
     setState(() {
       _employees =
@@ -61,17 +65,20 @@ class _HomePageState extends State<HomePage> {
               )
               .toList();
 
-      _suppliers = [
-        Supplier(
-          id: 1,
-          name: 'Tech Solutions Inc.',
-          taxId: 'TS12345',
-          contactPerson: 'John Smith',
-          phone: '555-987-6543',
-          email: 'john.smith@techsolutions.com',
-          address: '123 Main St',
-        ),
-      ];
+      _suppliers =
+          supplierModels
+              .map(
+                (model) => Supplier(
+                  id: model.id,
+                  nombre: model.nombre,
+                  nifCif: model.nifCif,
+                  personaContacto: model.personaContacto,
+                  telefono: model.telefono,
+                  correoElectronico: model.correoElectronico,
+                  direccion: model.direccion,
+                ),
+              )
+              .toList();
     });
   }
 
@@ -95,7 +102,10 @@ class _HomePageState extends State<HomePage> {
                 : _buildProductList(),
             const SizedBox(height: 24.0),
             _buildSectionTitle('Suppliers'),
-            const SizedBox(height: 16.0),
+            _suppliers.isEmpty
+                ? _buildEmptyState('No suppliers data available.')
+                : _buildSupplierList(),
+            const SizedBox(height: 24.0),
           ],
         ),
       ),
@@ -290,6 +300,75 @@ class _HomePageState extends State<HomePage> {
                   product.descripcion!.isNotEmpty)
                 _buildInfoLine(Icons.info, product.descripcion!),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSupplierList() {
+    return SizedBox(
+      height: 190,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        scrollDirection: Axis.horizontal,
+        itemCount: _suppliers.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        itemBuilder: (context, index) {
+          final supplier = _suppliers[index];
+          return _buildSupplierCard(supplier);
+        },
+      ),
+    );
+  }
+
+  Widget _buildSupplierCard(Supplier supplier) {
+    return Material(
+      borderRadius: BorderRadius.circular(16),
+      elevation: 3,
+      color: Colors.orange[50],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          // Puedes agregar navegación para editar proveedor si quieres
+        },
+        child: Container(
+          width: 180,
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.local_shipping,
+                  color: Colors.orange.shade700,
+                  size: 32,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  supplier.nombre,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                if (supplier.nifCif != null && supplier.nifCif!.isNotEmpty)
+                  _buildInfoLine(Icons.badge, supplier.nifCif!),
+                if (supplier.personaContacto != null &&
+                    supplier.personaContacto!.isNotEmpty)
+                  _buildInfoLine(Icons.person, supplier.personaContacto!),
+                if (supplier.telefono != null && supplier.telefono!.isNotEmpty)
+                  _buildInfoLine(Icons.phone, supplier.telefono!),
+                if (supplier.correoElectronico != null &&
+                    supplier.correoElectronico!.isNotEmpty)
+                  _buildInfoLine(Icons.email, supplier.correoElectronico!),
+                if (supplier.direccion != null &&
+                    supplier.direccion!.isNotEmpty)
+                  _buildInfoLine(Icons.location_on, supplier.direccion!),
+              ],
+            ),
           ),
         ),
       ),
