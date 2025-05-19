@@ -6,29 +6,40 @@ class EmployeeService {
 
   Future<List<EmployeeModel>> fetchEmployees() async {
     final response = await supabase.from('empleado').select();
-    return (response as List).map((e) => EmployeeModel.fromJson(e)).toList();
+
+    return (response as List)
+        .map((e) => EmployeeModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<bool> addEmployee(EmployeeModel emp) async {
-    await supabase.from('empleado').insert(emp.toJson());
-    return false;
+    try {
+      await supabase.from('empleado').insert(emp.toJson());
+      return true;
+    } catch (e) {
+      print('Error al insertar empleado: $e');
+      return false;
+    }
   }
 
-  Future<void> deleteEmployee(String dni) async {
-    final response = await supabase.from('empleado').delete().eq('dni', dni);
-    if (response.error != null) {
-      throw Exception('Failed to delete employee: ${response.error?.message}');
+  Future<bool> deleteEmployee(String dni) async {
+    try {
+      await supabase.from('empleado').delete().eq('dni', dni);
+      return true;
+    } catch (e) {
+      print('Error al eliminar empleado: $e');
+      return false;
     }
   }
 
   Future<bool> updateEmployee(EmployeeModel employee) async {
-    if (employee.dni == null) {
-      print('Error: El DNI del empleado no puede ser nulo.');
+    if (employee.dni.isEmpty) {
+      print('Error: El DNI del empleado no puede estar vacío.');
       return false;
     }
 
     try {
-      final response = await supabase
+      await supabase
           .from('empleado')
           .update(employee.toJson())
           .eq('dni', employee.dni);

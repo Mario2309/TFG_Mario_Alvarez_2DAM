@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexuserp/features/employee/data/models/employee_model.dart';
+import 'package:nexuserp/features/employee/data/repositories/employee_repository_impl.dart';
 import 'package:nexuserp/features/employee/domain/entities/employee.dart';
 import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart';
 import 'package:nexuserp/features/product/domain/entities/product.dart';
@@ -8,7 +9,7 @@ import 'package:nexuserp/features/supliers/domain/entities/supplier.dart';
 import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
 import 'package:nexuserp/features/product/data/datasources/product_service.dart';
 import 'package:nexuserp/features/product/data/models/product_model.dart';
-
+import '../../features/employee/presentation/pages/employee_options_page.dart';
 import '../../features/supliers/data/datasources/suppliers_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   List<Employee> _employees = [];
   List<Product> _products = [];
   List<Supplier> _suppliers = [];
+
   final EmployeeService _employeeService = EmployeeService();
   final ProductService _productService = ProductService();
   final SupplierService _supplierService = SupplierService();
@@ -31,55 +33,66 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadInitialData() async {
-    final employeeModels = await _employeeService.fetchEmployees();
-    final productModels = await _productService.fetchProducts();
-    final supplierModels = await _supplierService.fetchSuppliers();
+    try {
+      final employeeModels = await _employeeService.fetchEmployees();
+      final productModels = await _productService.fetchProducts();
+      final supplierModels = await _supplierService.fetchSuppliers();
 
-    setState(() {
-      _employees =
-          employeeModels
-              .map(
-                (model) => Employee(
-                  id: model.id,
-                  nombreCompleto: model.nombreCompleto,
-                  nacimiento: model.nacimiento,
-                  correoElectronico: model.correoElectronico,
-                  numeroTelefono: model.numeroTelefono,
-                  dni: model.dni,
-                ),
-              )
-              .toList();
+      if (!mounted) return;
 
-      _products =
-          productModels
-              .map(
-                (model) => Product(
-                  id: model.id,
-                  nombre: model.nombre,
-                  tipo: model.tipo,
-                  precio: model.precio,
-                  cantidad: model.cantidad,
-                  descripcion: model.descripcion,
-                  proveedorId: model.proveedorId,
-                ),
-              )
-              .toList();
+      setState(() {
+        _employees =
+            employeeModels
+                .map(
+                  (model) => Employee(
+                    id: model.id,
+                    nombreCompleto: model.nombreCompleto,
+                    nacimiento: model.nacimiento,
+                    correoElectronico: model.correoElectronico,
+                    numeroTelefono: model.numeroTelefono,
+                    dni: model.dni,
+                    sueldo: model.sueldo,
+                    cargo: model.cargo,
+                    fechaContratacion: model.fechaContratacion,
+                    activo: model.activo,
+                  ),
+                )
+                .toList();
 
-      _suppliers =
-          supplierModels
-              .map(
-                (model) => Supplier(
-                  id: model.id,
-                  nombre: model.nombre,
-                  nifCif: model.nifCif,
-                  personaContacto: model.personaContacto,
-                  telefono: model.telefono,
-                  correoElectronico: model.correoElectronico,
-                  direccion: model.direccion,
-                ),
-              )
-              .toList();
-    });
+        _products =
+            productModels
+                .map(
+                  (model) => Product(
+                    id: model.id,
+                    nombre: model.nombre,
+                    tipo: model.tipo,
+                    precio: model.precio,
+                    cantidad: model.cantidad,
+                    descripcion: model.descripcion,
+                    proveedorId: model.proveedorId,
+                  ),
+                )
+                .toList();
+
+        _suppliers =
+            supplierModels
+                .map(
+                  (model) => Supplier(
+                    id: model.id,
+                    nombre: model.nombre,
+                    nifCif: model.nifCif,
+                    personaContacto: model.personaContacto,
+                    telefono: model.telefono,
+                    correoElectronico: model.correoElectronico,
+                    direccion: model.direccion,
+                  ),
+                )
+                .toList();
+      });
+    } catch (e) {
+      // Puedes manejar errores aquí (mostrar un mensaje, etc.)
+      debugPrint('Error cargando datos: $e');
+    }
   }
 
   @override
@@ -172,24 +185,17 @@ class _HomePageState extends State<HomePage> {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () async {
-          final result = await Navigator.push(
+          final result = await Navigator.push<bool>(
             context,
             MaterialPageRoute(
               builder:
-                  (context) => EditEmployeePage(
-                    employee: EmployeeModel(
-                      id: employee.id,
-                      nombreCompleto: employee.nombreCompleto,
-                      nacimiento: employee.nacimiento,
-                      correoElectronico: employee.correoElectronico,
-                      numeroTelefono: employee.numeroTelefono,
-                      dni: employee.dni,
-                    ),
-                    employeeService: _employeeService,
+                  (context) => EmployeeOptionsPage(
+                    employee: employee,
+                    employeeService: EmployeeRepositoryImpl(_employeeService),
                   ),
             ),
           );
-          if (result == true) {
+          if (result == true && mounted) {
             _loadInitialData();
           }
         },
@@ -251,7 +257,7 @@ class _HomePageState extends State<HomePage> {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () async {
-          final result = await Navigator.push(
+          final result = await Navigator.push<bool>(
             context,
             MaterialPageRoute(
               builder:
@@ -269,7 +275,7 @@ class _HomePageState extends State<HomePage> {
                   ),
             ),
           );
-          if (result == true) {
+          if (result == true && mounted) {
             _loadInitialData();
           }
         },
@@ -330,7 +336,7 @@ class _HomePageState extends State<HomePage> {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          // Puedes agregar navegación para editar proveedor si quieres
+          // Navegación para editar proveedor si lo deseas
         },
         child: Container(
           width: 180,

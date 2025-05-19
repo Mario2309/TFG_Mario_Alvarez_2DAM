@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexuserp/features/employee/data/datasources/employee_service.dart'; // Importa tu servicio de empleados
 import '../../data/models/employee_model.dart' show EmployeeModel;
+import '../../domain/entities/employee.dart';
 
 class EditEmployeePage extends StatefulWidget {
-  final EmployeeModel employee;
+  final Employee employee;
   final EmployeeService employeeService;
 
   const EditEmployeePage({
@@ -24,22 +25,26 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   late TextEditingController _emailController;
   late TextEditingController _telefonoController;
   late TextEditingController _dniController;
-  late DateTime _selectedDate;
+  late TextEditingController _sueldoController;
+  late TextEditingController _cargoController;
+
+  late DateTime _nacimiento;
+  late DateTime _fechaContratacion;
+  late bool _activo;
 
   @override
   void initState() {
     super.initState();
-    _nombreController = TextEditingController(
-      text: widget.employee.nombreCompleto,
-    );
-    _emailController = TextEditingController(
-      text: widget.employee.correoElectronico,
-    );
-    _telefonoController = TextEditingController(
-      text: widget.employee.numeroTelefono,
-    );
+    _nombreController = TextEditingController(text: widget.employee.nombreCompleto);
+    _emailController = TextEditingController(text: widget.employee.correoElectronico);
+    _telefonoController = TextEditingController(text: widget.employee.numeroTelefono);
     _dniController = TextEditingController(text: widget.employee.dni);
-    _selectedDate = widget.employee.nacimiento;
+    _sueldoController = TextEditingController(text: widget.employee.sueldo.toString());
+    _cargoController = TextEditingController(text: widget.employee.cargo);
+
+    _nacimiento = widget.employee.nacimiento;
+    _fechaContratacion = widget.employee.fechaContratacion;
+    _activo = widget.employee.activo;
   }
 
   @override
@@ -48,43 +53,67 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
     _emailController.dispose();
     _telefonoController.dispose();
     _dniController.dispose();
+    _sueldoController.dispose();
+    _cargoController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickDate() async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _pickNacimientoDate() async {
+    final picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
+      initialDate: _nacimiento,
       firstDate: DateTime(1950),
       lastDate: DateTime.now(),
     );
     if (picked != null) {
       setState(() {
-        _selectedDate = picked;
+        _nacimiento = picked;
       });
     }
   }
 
+  Future<void> _pickFechaContratacionDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _fechaContratacion,
+      firstDate: DateTime(1950),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _fechaContratacion = picked;
+      });
+    }
+  }
+
+  void _toggleActivo(bool? value) {
+    setState(() {
+      _activo = value ?? false;
+    });
+  }
+
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      final sueldoParsed = double.tryParse(_sueldoController.text) ?? 0.0;
+
       final updatedEmployee = EmployeeModel(
+        id: widget.employee.id, // Mantener el id original para la actualización
         nombreCompleto: _nombreController.text,
-        nacimiento: _selectedDate,
+        nacimiento: _nacimiento,
         correoElectronico: _emailController.text,
         numeroTelefono: _telefonoController.text,
         dni: _dniController.text,
+        sueldo: sueldoParsed,
+        cargo: _cargoController.text,
+        fechaContratacion: _fechaContratacion,
+        activo: _activo,
       );
 
-      // Llamada al servicio para actualizar el empleado en la base de datos
-      final success = await widget.employeeService.updateEmployee(
-        updatedEmployee,
-      );
+      final success = await widget.employeeService.updateEmployee(updatedEmployee);
 
       if (success) {
-        // Si la actualización es exitosa, regresa a la página anterior
         Navigator.pop(context);
       } else {
-        // Si ocurre un error en la actualización
         _showErrorDialog();
       }
     }
@@ -93,22 +122,15 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   void _showErrorDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Error'),
-          content: const Text(
-            'No se pudo actualizar al empleado. Inténtalo nuevamente.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Aceptar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+      builder: (ctx) => AlertDialog(
+        title: const Text('Error'),
+        content: const Text('No se pudo actualizar al empleado. Inténtalo nuevamente.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Aceptar')),
+        ],
+      ),
     );
   }
 
@@ -134,6 +156,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
                 label: 'Correo Electrónico',
                 controller: _emailController,
                 icon: Icons.email,
+                keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || !value.contains('@')) {
                     return 'Correo inválido';
@@ -145,46 +168,44 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
                 label: 'Número de Teléfono',
                 controller: _telefonoController,
                 icon: Icons.phone,
+                keyboardType: TextInputType.phone,
               ),
               _buildTextField(
                 label: 'DNI',
                 controller: _dniController,
                 icon: Icons.badge,
-                isEnabled: false, // Aquí deshabilitamos el campo
+                isEnabled: false, // no editable
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Icon(Icons.calendar_today, color: Colors.blue.shade700),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Nacimiento: ${DateFormat('dd/MM/yyyy').format(_selectedDate)}',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: _pickDate,
-                    child: const Text('Cambiar'),
-                  ),
-                ],
+              _buildTextField(
+                label: 'Sueldo',
+                controller: _sueldoController,
+                icon: Icons.attach_money,
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || double.tryParse(value) == null) {
+                    return 'Ingrese un sueldo válido';
+                  }
+                  return null;
+                },
               ),
+              _buildTextField(
+                label: 'Cargo',
+                controller: _cargoController,
+                icon: Icons.work,
+              ),
+              _buildDateField(
+                label: 'Fecha de Nacimiento',
+                date: _nacimiento,
+                onPressed: _pickNacimientoDate,
+              ),
+              _buildDateField(
+                label: 'Fecha de Contratación',
+                date: _fechaContratacion,
+                onPressed: _pickFechaContratacionDate,
+              ),
+              _buildActivoCheckbox(),
               const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                    ),
-                    child: const Text('Guardar'),
-                  ),
-                ],
-              ),
+              _buildButtons(),
             ],
           ),
         ),
@@ -197,16 +218,16 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
     required TextEditingController controller,
     required IconData icon,
     String? Function(String?)? validator,
-    bool isEnabled =
-        true, // Añadimos un parámetro para habilitar/deshabilitar el campo
+    bool isEnabled = true,
+    TextInputType? keyboardType,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
         controller: controller,
-        validator:
-            validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
-        enabled: isEnabled, // Usamos el parámetro para habilitar/deshabilitar
+        validator: validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
+        enabled: isEnabled,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.blue.shade700),
           labelText: label,
@@ -215,6 +236,59 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
           fillColor: Colors.grey.shade100,
         ),
       ),
+    );
+  }
+
+  Widget _buildDateField({
+    required String label,
+    required DateTime date,
+    required VoidCallback onPressed,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(Icons.calendar_today, color: Colors.blue.shade700),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              '$label: ${DateFormat('dd/MM/yyyy').format(date)}',
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+            ),
+          ),
+          TextButton(onPressed: onPressed, child: const Text('Cambiar')),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivoCheckbox() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: CheckboxListTile(
+        title: const Text('Empleado Activo'),
+        value: _activo,
+        onChanged: _toggleActivo,
+        activeColor: Colors.blue.shade700,
+        controlAffinity: ListTileControlAffinity.leading,
+      ),
+    );
+  }
+
+  Widget _buildButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        OutlinedButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: _submitForm,
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700),
+          child: const Text('Guardar'),
+        ),
+      ],
     );
   }
 }

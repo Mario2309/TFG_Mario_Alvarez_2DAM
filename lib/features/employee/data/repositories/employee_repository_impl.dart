@@ -16,6 +16,10 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       correoElectronico: e.correoElectronico,
       numeroTelefono: e.numeroTelefono,
       dni: e.dni,
+      sueldo: e.sueldo,
+      cargo: e.cargo,
+      fechaContratacion: e.fechaContratacion,
+      activo: e.activo,
     );
     await service.addEmployee(model);
   }
@@ -28,57 +32,64 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   @override
   Future<List<Employee>> getAllEmployees() async {
     final models = await service.fetchEmployees();
-    return models
-        .map(
-          (m) => Employee(
-            id: m.id,
-            nombreCompleto: m.nombreCompleto,
-            nacimiento: m.nacimiento,
-            correoElectronico: m.correoElectronico,
-            numeroTelefono: m.numeroTelefono,
-            dni: m.dni,
-          ),
-        )
-        .toList();
+    return models.map((m) => _mapModelToEntity(m)).toList();
   }
 
   @override
   Future<List<Employee>> getEmployees() async {
     final models = await service.fetchEmployees();
-    return models
-        .map(
-          (m) => Employee(
-            id: m.id,
-            nombreCompleto: m.nombreCompleto,
-            nacimiento: m.nacimiento,
-            correoElectronico: m.correoElectronico,
-            numeroTelefono: m.numeroTelefono,
-            dni: m.dni,
-          ),
-        )
-        .toList();
+    return models.map((m) => _mapModelToEntity(m)).toList();
   }
 
-  // Método corregido para agregar un empleado sin el campo `id`
   Future<bool> addEmployeeWithoutId(Employee employee) async {
     try {
-      // Crear el modelo de empleado, pero sin incluir el id
       final model = EmployeeModel(
         nombreCompleto: employee.nombreCompleto,
         nacimiento: employee.nacimiento,
         correoElectronico: employee.correoElectronico,
         numeroTelefono: employee.numeroTelefono,
         dni: employee.dni,
+        sueldo: employee.sueldo,
+        cargo: employee.cargo,
+        fechaContratacion: employee.fechaContratacion,
+        activo: employee.activo,
       );
-
-      // Llamada al servicio para agregar el empleado
       final response = await service.addEmployee(model);
-
-      // Si la respuesta es exitosa (por ejemplo, código 200), retornamos true
-      return true;
+      return response;
     } catch (e) {
-      // En caso de error, devolvemos false
       return false;
     }
+  }
+
+  Employee _mapModelToEntity(EmployeeModel m) {
+    return Employee(
+      id: m.id,
+      nombreCompleto: m.nombreCompleto,
+      nacimiento: m.nacimiento,
+      correoElectronico: m.correoElectronico,
+      numeroTelefono: m.numeroTelefono,
+      dni: m.dni,
+      sueldo: m.sueldo,
+      cargo: m.cargo,
+      fechaContratacion: m.fechaContratacion,
+      activo: m.activo,
+    );
+  }
+
+  @override
+  Future<void> updateEmployee(Employee employee) async {
+    final model = EmployeeModel(
+      id: employee.id,
+      nombreCompleto: employee.nombreCompleto,
+      nacimiento: employee.nacimiento,
+      correoElectronico: employee.correoElectronico,
+      numeroTelefono: employee.numeroTelefono,
+      dni: employee.dni,
+      sueldo: employee.sueldo,
+      cargo: employee.cargo,
+      fechaContratacion: employee.fechaContratacion,
+      activo: employee.activo,
+    );
+    await service.updateEmployee(model);
   }
 }

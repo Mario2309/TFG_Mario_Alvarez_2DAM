@@ -4,6 +4,9 @@ import 'package:nexuserp/features/product/presentation/pages/products_page.dart'
 import 'package:nexuserp/features/supliers/presentation/pages/supplier_page.dart';
 import 'package:nexuserp/features/inventory/presentation/pages/inventory_details_page.dart';
 
+// Importa la página de Vacaciones
+import 'package:nexuserp/features/vacation/presentation/pages/vacations_page.dart';
+
 class SearchPage extends StatefulWidget {
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -73,6 +76,20 @@ class _SearchPageState extends State<SearchPage> {
                         );
                       },
                     ),
+                    // Nueva opción Vacaciones
+                    _buildModernOption(
+                      context,
+                      'Vacaciones',
+                      Icons.beach_access_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => VacationsPage(),
+                          ), // Pasa la lista real aquí
+                        );
+                      },
+                    ),
                   ],
                 )
                 : ListView(
@@ -123,6 +140,21 @@ class _SearchPageState extends State<SearchPage> {
                           MaterialPageRoute(
                             builder: (_) => InventoryDetailsPage(),
                           ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8.0),
+                    // Nueva opción Vacaciones
+                    _buildModernOption(
+                      context,
+                      'Vacaciones',
+                      Icons.beach_access_outlined,
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => VacationsPage(),
+                          ), // Pasa la lista real aquí
                         );
                       },
                     ),
