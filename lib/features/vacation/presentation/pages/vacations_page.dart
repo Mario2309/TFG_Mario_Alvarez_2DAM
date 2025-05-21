@@ -114,20 +114,6 @@ class _VacationsPageState extends State<VacationsPage> {
 
   // Función para navegar a la pantalla de añadir vacaciones
   void _navigateToAddVacationScreen() {
-    // Aquí deberías navegar a tu pantalla de añadir vacaciones.
-    // Por ejemplo:
-    // Navigator.push(context, MaterialPageRoute(builder: (_) => AddVacationScreen(vacationService: _vacationService))).then((newVacation) {
-    //   if (newVacation != null && mounted) {
-    //     _loadVacations(); // Recargar la lista si se añadió una nueva vacación
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(
-    //         content: Text('Solicitud de ${newVacation.employeeName} agregada con éxito'),
-    //         backgroundColor: Colors.green.shade600,
-    //       ),
-    //     );
-    //   }
-    // });
-    // Para este ejemplo, solo mostramos un SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

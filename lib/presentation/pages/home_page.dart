@@ -7,7 +7,7 @@ import 'package:nexuserp/features/product/data/datasources/product_service.dart'
 import '../../features/employee/data/datasources/employee_service.dart';
 
 // Enum para los tipos de gráfico
-enum ChartType { line, pie } // Removed 'bar'
+enum ChartType { line, pie }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,19 +19,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Employee> _employees = [];
   List<Product> _products = [];
-  // Removed _suppliers list
-  // List<Supplier> _suppliers = [];
 
   final EmployeeService _employeeService = EmployeeService();
   final ProductService _productService = ProductService();
-  // Removed SupplierService instance
-  // final SupplierService _supplierService = SupplierService();
 
   // Estados para controlar el tipo de gráfico seleccionado para cada sección
   ChartType _employeeChartType = ChartType.line;
   ChartType _productChartType = ChartType.line;
-  // Removed _supplierChartType
-  // ChartType _supplierChartType = ChartType.line;
 
   @override
   void initState() {
@@ -43,8 +37,6 @@ class _HomePageState extends State<HomePage> {
     try {
       final employeeModels = await _employeeService.fetchEmployees();
       final productModels = await _productService.fetchProducts();
-      // Removed fetching suppliers
-      // final supplierModels = await _supplierService.fetchSuppliers();
 
       if (!mounted) return;
 
@@ -81,22 +73,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 )
                 .toList();
-
-        // Removed suppliers mapping
-        // _suppliers =
-        //     supplierModels
-        //         .map(
-        //           (model) => Supplier(
-        //             id: model.id,
-        //             nombre: model.nombre,
-        //             nifCif: model.nifCif,
-        //             personaContacto: model.personaContacto,
-        //             telefono: model.telefono,
-        //             correoElectronico: model.correoElectronico,
-        //             direccion: model.direccion,
-        //           ),
-        //         )
-        //         .toList();
       });
     } catch (e) {
       debugPrint('Error loading data: $e');
@@ -115,107 +91,183 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text('Dashboard de Gestión'),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        elevation: 2,
+      ),
       body: RefreshIndicator(
         onRefresh: _loadInitialData,
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(top: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Main title for the page
-              _buildChartSection(
-                title: 'Gráfico de Empleados',
-                isEmpty: _employees.isEmpty,
-                emptyMessage: 'No hay datos de empleados disponibles.',
-                chartType: _employeeChartType,
-                onChartTypeChanged: (type) {
-                  setState(() {
-                    _employeeChartType = type;
-                  });
-                },
-                lineChartBuilder:
-                    (constraints) => CustomPaint(
-                      painter: EmployeeLineChartPainter(
-                        _employees.map((e) => e.sueldo).toList(),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Determina si la pantalla es lo suficientemente grande para un diseño de dos columnas
+              final bool isLargeScreen = constraints.maxWidth > 600;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Sección de gráficos
+                  isLargeScreen
+                      ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _buildChartSection(
+                              title: 'Gráfico de Empleados',
+                              isEmpty: _employees.isEmpty,
+                              emptyMessage:
+                                  'No hay datos de empleados disponibles.',
+                              chartType: _employeeChartType,
+                              onChartTypeChanged: (type) {
+                                setState(() {
+                                  _employeeChartType = type;
+                                });
+                              },
+                              lineChartBuilder:
+                                  (constraints) => CustomPaint(
+                                    painter: EmployeeLineChartPainter(
+                                      _employees.map((e) => e.sueldo).toList(),
+                                    ),
+                                    size: Size(
+                                      constraints.maxWidth,
+                                      constraints.maxHeight,
+                                    ),
+                                  ),
+                              pieChartBuilder:
+                                  (constraints) => CustomPaint(
+                                    painter: EmployeePieChartPainter(
+                                      _employees,
+                                    ),
+                                    size: Size(
+                                      constraints.maxWidth,
+                                      constraints.maxHeight,
+                                    ),
+                                  ),
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildChartSection(
+                              title: 'Gráfico de Productos',
+                              isEmpty: _products.isEmpty,
+                              emptyMessage:
+                                  'No hay datos de productos disponibles.',
+                              chartType: _productChartType,
+                              onChartTypeChanged: (type) {
+                                setState(() {
+                                  _productChartType = type;
+                                });
+                              },
+                              lineChartBuilder:
+                                  (constraints) => CustomPaint(
+                                    painter: ProductLineChartPainter(
+                                      _products
+                                          .map((p) => p.cantidad.toDouble())
+                                          .toList(),
+                                    ),
+                                    size: Size(
+                                      constraints.maxWidth,
+                                      constraints.maxHeight,
+                                    ),
+                                  ),
+                              pieChartBuilder:
+                                  (constraints) => CustomPaint(
+                                    painter: ProductPieChartPainter(_products),
+                                    size: Size(
+                                      constraints.maxWidth,
+                                      constraints.maxHeight,
+                                    ),
+                                  ),
+                            ),
+                          ),
+                        ],
+                      )
+                      : Column(
+                        children: [
+                          _buildChartSection(
+                            title: 'Gráfico de Empleados',
+                            isEmpty: _employees.isEmpty,
+                            emptyMessage:
+                                'No hay datos de empleados disponibles.',
+                            chartType: _employeeChartType,
+                            onChartTypeChanged: (type) {
+                              setState(() {
+                                _employeeChartType = type;
+                              });
+                            },
+                            lineChartBuilder:
+                                (constraints) => CustomPaint(
+                                  painter: EmployeeLineChartPainter(
+                                    _employees.map((e) => e.sueldo).toList(),
+                                  ),
+                                  size: Size(
+                                    constraints.maxWidth,
+                                    constraints.maxHeight,
+                                  ),
+                                ),
+                            pieChartBuilder:
+                                (constraints) => CustomPaint(
+                                  painter: EmployeePieChartPainter(_employees),
+                                  size: Size(
+                                    constraints.maxWidth,
+                                    constraints.maxHeight,
+                                  ),
+                                ),
+                          ),
+                          const SizedBox(height: 24.0),
+                          _buildChartSection(
+                            title: 'Gráfico de Productos',
+                            isEmpty: _products.isEmpty,
+                            emptyMessage:
+                                'No hay datos de productos disponibles.',
+                            chartType: _productChartType,
+                            onChartTypeChanged: (type) {
+                              setState(() {
+                                _productChartType = type;
+                              });
+                            },
+                            lineChartBuilder:
+                                (constraints) => CustomPaint(
+                                  painter: ProductLineChartPainter(
+                                    _products
+                                        .map((p) => p.cantidad.toDouble())
+                                        .toList(),
+                                  ),
+                                  size: Size(
+                                    constraints.maxWidth,
+                                    constraints.maxHeight,
+                                  ),
+                                ),
+                            pieChartBuilder:
+                                (constraints) => CustomPaint(
+                                  painter: ProductPieChartPainter(_products),
+                                  size: Size(
+                                    constraints.maxWidth,
+                                    constraints.maxHeight,
+                                  ),
+                                ),
+                          ),
+                        ],
                       ),
-                      size: Size(constraints.maxWidth, constraints.maxHeight),
+                  const SizedBox(height: 24.0),
+                  // Nuevo contenido añadido aquí
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'Este es un espacio para añadir más contenido debajo de los gráficos.',
+                      style: TextStyle(fontSize: 16, color: Colors.black54),
+                      textAlign: TextAlign.center,
                     ),
-                pieChartBuilder:
-                    (constraints) => CustomPaint(
-                      painter: EmployeePieChartPainter(_employees),
-                      size: Size(constraints.maxWidth, constraints.maxHeight),
-                    ),
-                // Removed barChartBuilder
-              ),
-              const SizedBox(height: 24.0),
-              _buildChartSection(
-                title: 'Gráfico de Productos',
-                isEmpty: _products.isEmpty,
-                emptyMessage: 'No hay datos de productos disponibles.',
-                chartType: _productChartType,
-                onChartTypeChanged: (type) {
-                  setState(() {
-                    _productChartType = type;
-                  });
-                },
-                lineChartBuilder:
-                    (constraints) => CustomPaint(
-                      painter: ProductLineChartPainter(
-                        _products.map((p) => p.cantidad.toDouble()).toList(),
-                      ),
-                      size: Size(constraints.maxWidth, constraints.maxHeight),
-                    ),
-                pieChartBuilder:
-                    (constraints) => CustomPaint(
-                      painter: ProductPieChartPainter(_products),
-                      size: Size(constraints.maxWidth, constraints.maxHeight),
-                    ),
-                // Removed barChartBuilder
-              ),
-              // Removed the entire suppliers chart section
-              // const SizedBox(height: 24.0),
-              // _buildChartSection(
-              //   title: 'Gráfico de Proveedores',
-              //   isEmpty: _suppliers.isEmpty,
-              //   emptyMessage: 'No hay datos de proveedores disponibles.',
-              //   chartType: _supplierChartType,
-              //   onChartTypeChanged: (type) {
-              //     setState(() {
-              //       _supplierChartType = type;
-              //     });
-              //   },
-              //   lineChartBuilder: (constraints) => CustomPaint(
-              //     painter: SupplierLineChartPainter(
-              //       _suppliers.map((s) => s.nombre).toList(),
-              //     ),
-              //     size: Size(constraints.maxWidth, constraints.maxHeight),
-              //   ),
-              //   pieChartBuilder: (constraints) => CustomPaint(
-              //     painter: SupplierPieChartPainter(_suppliers),
-              //     size: Size(constraints.maxWidth, constraints.maxHeight),
-              //   ),
-              //   // Removed barChartBuilder
-              // ),
-              const SizedBox(height: 24.0),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
-      floatingActionButton: Align(
-        alignment: Alignment.bottomLeft,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 24.0, bottom: 16.0),
-          child: FloatingActionButton(
-            onPressed: _loadInitialData,
-            tooltip: 'Recargar página',
-            backgroundColor: Colors.blue,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.refresh, color: Colors.white),
-          ),
-        ),
-      ),
+      // El FloatingActionButton ha sido eliminado para optimización
     );
   }
 
@@ -227,7 +279,6 @@ class _HomePageState extends State<HomePage> {
     required ValueChanged<ChartType> onChartTypeChanged,
     required Widget Function(BoxConstraints) lineChartBuilder,
     required Widget Function(BoxConstraints) pieChartBuilder,
-    // Removed barChartBuilder parameter
   }) {
     // Determine the specific chart title based on the selected type
     String currentChartTitle;
@@ -242,8 +293,7 @@ class _HomePageState extends State<HomePage> {
               ? 'Cantidad de Productos'
               : 'Productos por Tipo';
     } else {
-      currentChartTitle =
-          title; // Fallback for other sections (though only employees and products remain)
+      currentChartTitle = title; // Fallback for other sections
     }
 
     return Column(
@@ -251,92 +301,116 @@ class _HomePageState extends State<HomePage> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.blue,
-                ),
-              ),
-              SegmentedButton<ChartType>(
-                segments: const <ButtonSegment<ChartType>>[
-                  ButtonSegment<ChartType>(
-                    value: ChartType.line,
-                    label: Text('Línea'),
-                    icon: Icon(Icons.show_chart),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final bool showTextLabels =
+                  constraints.maxWidth >
+                  400; // Define breakpoint for showing text labels
+              final double fontSize =
+                  showTextLabels
+                      ? 14
+                      : 0; // Set font size to 0 if not showing text
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.blue,
+                    ),
                   ),
-                  ButtonSegment<ChartType>(
-                    value: ChartType.pie,
-                    label: Text('Circular'),
-                    icon: Icon(Icons.pie_chart),
+                  SegmentedButton<ChartType>(
+                    segments: <ButtonSegment<ChartType>>[
+                      ButtonSegment<ChartType>(
+                        value: ChartType.line,
+                        label:
+                            showTextLabels
+                                ? Text(
+                                  'Línea',
+                                  style: TextStyle(fontSize: fontSize),
+                                )
+                                : null, // Conditionally set label to null
+                        icon: const Icon(Icons.show_chart),
+                      ),
+                      ButtonSegment<ChartType>(
+                        value: ChartType.pie,
+                        label:
+                            showTextLabels
+                                ? Text(
+                                  'Circular',
+                                  style: TextStyle(fontSize: fontSize),
+                                )
+                                : null, // Conditionally set label to null
+                        icon: const Icon(Icons.pie_chart),
+                      ),
+                    ],
+                    selected: <ChartType>{chartType},
+                    onSelectionChanged: (Set<ChartType> newSelection) {
+                      onChartTypeChanged(newSelection.first);
+                    },
+                    style: SegmentedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade50,
+                      selectedBackgroundColor: Colors.blue.shade100,
+                      selectedForegroundColor: Colors.blue.shade800,
+                      foregroundColor: Colors.blue.shade600,
+                    ),
                   ),
-                  // Removed ButtonSegment for bar chart
                 ],
-                selected: <ChartType>{chartType},
-                onSelectionChanged: (Set<ChartType> newSelection) {
-                  onChartTypeChanged(newSelection.first);
-                },
-                style: SegmentedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade50,
-                  selectedBackgroundColor: Colors.blue.shade100,
-                  selectedForegroundColor: Colors.blue.shade800,
-                  foregroundColor: Colors.blue.shade600,
-                ),
-              ),
-            ],
+              );
+            },
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.3,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child:
-                  isEmpty
-                      ? _buildEmptyState(emptyMessage)
-                      : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            currentChartTitle, // Display the specific chart title
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+          child: AspectRatio(
+            // Added AspectRatio for consistent scaling
+            aspectRatio: 16 / 9, // Common aspect ratio for charts
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child:
+                    isEmpty
+                        ? _buildEmptyState(emptyMessage)
+                        : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              currentChartTitle, // Display the specific chart title
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                if (chartType == ChartType.line) {
-                                  return lineChartBuilder(constraints);
-                                } else {
-                                  // Only line and pie remain
-                                  return pieChartBuilder(constraints);
-                                }
-                              },
+                            const SizedBox(height: 12),
+                            Expanded(
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  if (chartType == ChartType.line) {
+                                    return lineChartBuilder(constraints);
+                                  } else {
+                                    return pieChartBuilder(constraints);
+                                  }
+                                },
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+              ),
             ),
           ),
         ),
@@ -764,9 +838,6 @@ class ProductPieChartPainter extends CustomPainter {
     return true;
   }
 }
-
-// Removed SupplierLineChartPainter class
-// Removed SupplierPieChartPainter class
 
 // Clase de datos para los gráficos circulares
 class PieData {
