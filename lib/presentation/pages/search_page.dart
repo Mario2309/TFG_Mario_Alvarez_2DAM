@@ -3,8 +3,6 @@ import 'package:nexuserp/features/employee/presentation/pages/employees_page.dar
 import 'package:nexuserp/features/product/presentation/pages/products_page.dart';
 import 'package:nexuserp/features/supliers/presentation/pages/supplier_page.dart';
 import 'package:nexuserp/features/inventory/presentation/pages/inventory_details_page.dart';
-
-// Importa la página de Vacaciones
 import 'package:nexuserp/features/vacation/presentation/pages/vacations_page.dart';
 
 class SearchPage extends StatefulWidget {
@@ -12,154 +10,150 @@ class SearchPage extends StatefulWidget {
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
+  final TextEditingController _searchController = TextEditingController();
+  late List<_SearchOption> _filteredOptions;
+  late final List<_SearchOption> _allOptions;
+
+  @override
+  void initState() {
+    super.initState();
+    _allOptions = [
+      _SearchOption("Products", Icons.shopping_bag_outlined, ProductsPage()),
+      _SearchOption("Employees", Icons.people_alt_outlined, EmployeesPage()),
+      _SearchOption(
+        "Suppliers",
+        Icons.local_shipping_outlined,
+        SuppliersPage(),
+      ),
+      _SearchOption(
+        "Inventory",
+        Icons.inventory_2_outlined,
+        InventoryDetailsPage(),
+      ),
+      _SearchOption("Vacaciones", Icons.beach_access_outlined, VacationsPage()),
+    ];
+    _filteredOptions = List.from(_allOptions);
+
+    _searchController.addListener(() {
+      final query = _searchController.text.toLowerCase();
+      setState(() {
+        _filteredOptions =
+            _allOptions
+                .where((option) => option.title.toLowerCase().contains(query))
+                .toList();
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    final isSmartphone = screenWidth <= 600;
-
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child:
-            isSmartphone
-                ? GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 20.0,
-                  mainAxisSpacing: 20.0,
-                  children: <Widget>[
-                    _buildModernOption(
-                      context,
-                      'Products',
-                      Icons.shopping_bag_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => ProductsPage()),
-                        );
-                      },
-                    ),
-                    _buildModernOption(
-                      context,
-                      'Employees',
-                      Icons.people_alt_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => EmployeesPage()),
-                        );
-                      },
-                    ),
-                    _buildModernOption(
-                      context,
-                      'Suppliers',
-                      Icons.local_shipping_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => SuppliersPage()),
-                        );
-                      },
-                    ),
-                    _buildModernOption(
-                      context,
-                      'Inventory',
-                      Icons.inventory_2_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => InventoryDetailsPage(),
-                          ),
-                        );
-                      },
-                    ),
-                    // Nueva opción Vacaciones
-                    _buildModernOption(
-                      context,
-                      'Vacaciones',
-                      Icons.beach_access_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => VacationsPage(),
-                          ), // Pasa la lista real aquí
-                        );
-                      },
-                    ),
-                  ],
-                )
-                : ListView(
-                  children: <Widget>[
-                    _buildModernOption(
-                      context,
-                      'Products',
-                      Icons.shopping_bag_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => ProductsPage()),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8.0),
-                    _buildModernOption(
-                      context,
-                      'Employees',
-                      Icons.people_alt_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => EmployeesPage()),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8.0),
-                    _buildModernOption(
-                      context,
-                      'Suppliers',
-                      Icons.local_shipping_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => SuppliersPage()),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8.0),
-                    _buildModernOption(
-                      context,
-                      'Inventory',
-                      Icons.inventory_2_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => InventoryDetailsPage(),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8.0),
-                    // Nueva opción Vacaciones
-                    _buildModernOption(
-                      context,
-                      'Vacaciones',
-                      Icons.beach_access_outlined,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => VacationsPage(),
-                          ), // Pasa la lista real aquí
-                        );
-                      },
+      appBar: AppBar(
+        title: const Text('Buscar opciones'),
+        backgroundColor: Colors.blue.shade700,
+        elevation: 4,
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isMobile = constraints.maxWidth < 600;
+          final crossAxisCount = isMobile ? 2 : 3;
+
+          return Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 1000),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    _buildSearchBar(),
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child:
+                          _filteredOptions.isEmpty
+                              ? Center(
+                                child: Text(
+                                  'No se encontraron resultados.',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              )
+                              : GridView.builder(
+                                itemCount: _filteredOptions.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount,
+                                      crossAxisSpacing: 20,
+                                      mainAxisSpacing: 20,
+                                      childAspectRatio: 1,
+                                    ),
+                                itemBuilder: (context, index) {
+                                  final option = _filteredOptions[index];
+                                  return _buildAnimatedOption(
+                                    context,
+                                    option,
+                                    index,
+                                  );
+                                },
+                              ),
                     ),
                   ],
                 ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return TextField(
+      controller: _searchController,
+      decoration: InputDecoration(
+        hintText: 'Buscar...',
+        prefixIcon: Icon(Icons.search),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedOption(
+    BuildContext context,
+    _SearchOption option,
+    int index,
+  ) {
+    final animationDuration = Duration(milliseconds: 300 + (index * 100));
+
+    return TweenAnimationBuilder(
+      duration: animationDuration,
+      curve: Curves.easeOut,
+      tween: Tween<Offset>(begin: Offset(0, 0.2), end: Offset.zero),
+      builder: (context, offset, child) {
+        return AnimatedOpacity(
+          opacity: 1.0,
+          duration: animationDuration,
+          child: Transform.translate(offset: offset * 100, child: child),
+        );
+      },
+      child: _buildModernOption(
+        context,
+        option.title,
+        option.icon,
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => option.page),
+        ),
       ),
     );
   }
@@ -170,39 +164,38 @@ class _SearchPageState extends State<SearchPage> {
     IconData icon,
     VoidCallback onTap,
   ) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      splashColor: Colors.blue.shade100,
-      child: Ink(
-        decoration: BoxDecoration(
-          color: Colors.blue[50],
-          borderRadius: BorderRadius.circular(20.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.shade100,
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        splashColor: Colors.blue.withOpacity(0.2),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(icon, size: 50.0, color: Colors.blue.shade700),
-                const SizedBox(height: 12.0),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 50, color: Colors.blue.shade700),
+                const SizedBox(height: 16),
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                     color: Colors.blue.shade700,
-                    letterSpacing: 0.8,
+                    letterSpacing: 0.5,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -213,4 +206,12 @@ class _SearchPageState extends State<SearchPage> {
       ),
     );
   }
+}
+
+class _SearchOption {
+  final String title;
+  final IconData icon;
+  final Widget page;
+
+  _SearchOption(this.title, this.icon, this.page);
 }

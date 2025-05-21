@@ -18,12 +18,26 @@ class VacationService {
   }
 
   // Agregar una nueva solicitud de vacaciones
+  // Agregar una nueva solicitud de vacaciones
   Future<bool> addVacation(VacationModel vacation) async {
     try {
-      await supabase.from('vacaciones').insert(vacation.toJson());
-      return true;
+      final data = vacation.toJson();
+      print('🟡 Enviando a Supabase: $data');
+
+      final response = await supabase.from('vacaciones').insert(data).select();
+
+      if (response != null && response is List && response.isNotEmpty) {
+        print('🟢 Vacación insertada correctamente: ${response.first}');
+        return true;
+      } else {
+        print('🔴 Insert falló sin error aparente. Respuesta: $response');
+        return false;
+      }
+    } on PostgrestException catch (e) {
+      print('🔴 Error PostgREST: ${e.message}');
+      return false;
     } catch (e) {
-      print('Error al insertar vacaciones: $e');
+      print('🔴 Error inesperado al insertar vacaciones: $e');
       return false;
     }
   }
@@ -50,11 +64,24 @@ class VacationService {
       await supabase
           .from('vacaciones')
           .update(vacation.toJson())
-          .eq('employeeDni', vacation.employeeDni);
+          .eq('id', vacation.id as int);
       return true;
     } catch (e) {
       print('Error al actualizar vacaciones: $e');
       return false;
+    }
+  }
+
+  // Actualizar solo el estado de una solicitud de vacaciones
+  Future<void> updateVacationStatus(int id, String newStatus) async {
+    try {
+      await supabase
+          .from('vacaciones')
+          .update({'status': newStatus})
+          .eq('id', id);
+    } catch (e) {
+      print('Error al actualizar el estado de la vacación: $e');
+      rethrow;
     }
   }
 

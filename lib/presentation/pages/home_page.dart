@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
+
 import 'package:nexuserp/features/employee/data/models/employee_model.dart';
 import 'package:nexuserp/features/employee/data/repositories/employee_repository_impl.dart';
 import 'package:nexuserp/features/employee/domain/entities/employee.dart';
-import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart';
+import 'package:nexuserp/features/employee/presentation/pages/employee_options_page.dart';
 import 'package:nexuserp/features/product/domain/entities/product.dart';
 import 'package:nexuserp/features/product/presentation/pages/edit_product.dart';
 import 'package:nexuserp/features/supliers/domain/entities/supplier.dart';
 import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
 import 'package:nexuserp/features/product/data/datasources/product_service.dart';
 import 'package:nexuserp/features/product/data/models/product_model.dart';
-import '../../features/employee/presentation/pages/employee_options_page.dart';
 import '../../features/supliers/data/datasources/suppliers_service.dart';
+//import 'package:charts_flutter/flutter.dart' as charts; // Importar charts_flutter - Eliminado
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -90,8 +94,18 @@ class _HomePageState extends State<HomePage> {
                 .toList();
       });
     } catch (e) {
-      // Puedes manejar errores aquí (mostrar un mensaje, etc.)
-      debugPrint('Error cargando datos: $e');
+      // Log the error with más detalles (opcional, para debugging)
+      debugPrint('Error loading data: $e');
+      // Mostrar un mensaje de error amigable para el usuario (opcional)
+      if (mounted) {
+        // Check if the widget is still in the tree
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to load data. Please check your connection.'),
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
 
@@ -99,27 +113,36 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle('Employees'),
-            _employees.isEmpty
-                ? _buildEmptyState('No employees data available.')
-                : _buildEmployeeList(),
-            const SizedBox(height: 24.0),
-            _buildSectionTitle('Products'),
-            _products.isEmpty
-                ? _buildEmptyState('No products data available.')
-                : _buildProductList(),
-            const SizedBox(height: 24.0),
-            _buildSectionTitle('Suppliers'),
-            _suppliers.isEmpty
-                ? _buildEmptyState('No suppliers data available.')
-                : _buildSupplierList(),
-            const SizedBox(height: 24.0),
-          ],
+      body: RefreshIndicator(
+        onRefresh: _loadInitialData,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(top: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle('Gráfico de Empleados'),
+              _employees.isEmpty
+                  ? _buildEmptyState('No hay datos de empleados disponibles.')
+                  : _buildEmployeeChart(
+                    context,
+                  ), // Muestra el gráfico de empleados
+              const SizedBox(height: 24.0),
+              _buildSectionTitle('Gráfico de Productos'),
+              _products.isEmpty
+                  ? _buildEmptyState('No hay datos de productos disponibles.')
+                  : _buildProductChart(
+                    context,
+                  ), // Muestra el gráfico de productos
+              const SizedBox(height: 24.0),
+              _buildSectionTitle('Gráfico de Proveedores'),
+              _suppliers.isEmpty
+                  ? _buildEmptyState('No hay datos de proveedores disponibles.')
+                  : _buildSupplierChart(
+                    context,
+                  ), // Muestra el gráfico de proveedores
+              const SizedBox(height: 24.0),
+            ],
+          ),
         ),
       ),
       floatingActionButton: Align(
@@ -129,8 +152,11 @@ class _HomePageState extends State<HomePage> {
           child: FloatingActionButton(
             onPressed: _loadInitialData,
             tooltip: 'Recargar página',
-            backgroundColor: Colors.blue.shade700,
-            child: const Icon(Icons.refresh),
+            backgroundColor: Colors.blue,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.refresh, color: Colors.white),
           ),
         ),
       ),
@@ -139,14 +165,13 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
       child: Text(
         title,
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-          color: Colors.blue.shade700,
-          letterSpacing: 0.5,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w500,
+          color: Colors.blue,
         ),
       ),
     );
@@ -156,155 +181,85 @@ class _HomePageState extends State<HomePage> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Text(message, style: TextStyle(color: Colors.grey)),
-      ),
-    );
-  }
-
-  Widget _buildEmployeeList() {
-    return SizedBox(
-      height: 190,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        scrollDirection: Axis.horizontal,
-        itemCount: _employees.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
-        itemBuilder: (context, index) {
-          final employee = _employees[index];
-          return _buildEmployeeCard(employee);
-        },
-      ),
-    );
-  }
-
-  Widget _buildEmployeeCard(Employee employee) {
-    return Material(
-      borderRadius: BorderRadius.circular(16),
-      elevation: 3,
-      color: Colors.blue[50],
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () async {
-          final result = await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => EmployeeOptionsPage(
-                    employee: employee,
-                    employeeService: EmployeeRepositoryImpl(_employeeService),
-                  ),
-            ),
-          );
-          if (result == true && mounted) {
-            _loadInitialData();
-          }
-        },
-        child: Container(
-          width: 180,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.person, color: Colors.blue.shade700, size: 32),
-              const SizedBox(height: 8),
-              Text(
-                employee.nombreCompleto,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(height: 4),
-              _buildInfoLine(Icons.email, employee.correoElectronico ?? 'N/A'),
-              if (employee.numeroTelefono?.isNotEmpty ?? false)
-                _buildInfoLine(Icons.phone, employee.numeroTelefono!),
-              if (employee.dni?.isNotEmpty ?? false)
-                _buildInfoLine(Icons.badge, 'DNI: ${employee.dni!}'),
-              if (employee.nacimiento != null)
-                _buildInfoLine(
-                  Icons.cake,
-                  'Nacimiento: ${employee.nacimiento!.day}/${employee.nacimiento!.month}/${employee.nacimiento!.year}',
-                ),
-            ],
-          ),
+        child: Text(
+          message,
+          style: const TextStyle(color: Colors.grey, fontSize: 16),
         ),
       ),
     );
   }
 
-  Widget _buildProductList() {
-    return SizedBox(
-      height: 190,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        scrollDirection: Axis.horizontal,
-        itemCount: _products.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
-        itemBuilder: (context, index) {
-          final product = _products[index];
-          return _buildProductCard(product);
-        },
-      ),
-    );
-  }
+  // Widget para mostrar el gráfico de empleados
+  Widget _buildEmployeeChart(BuildContext context) {
+    // Preparar los datos para el gráfico
+    final List<double> employeeSalaries =
+        _employees.map((employee) => employee.sueldo).toList();
+    final double maxSalary =
+        employeeSalaries.isNotEmpty ? employeeSalaries.reduce(max) : 0;
+    final int numberOfEmployees = _employees.length;
 
-  Widget _buildProductCard(Product product) {
-    return Material(
-      borderRadius: BorderRadius.circular(16),
-      elevation: 3,
-      color: Colors.green[50],
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () async {
-          final result = await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => EditProductPage(
-                    product: ProductModel(
-                      id: product.id,
-                      nombre: product.nombre,
-                      tipo: product.tipo,
-                      precio: product.precio,
-                      cantidad: product.cantidad,
-                      descripcion: product.descripcion,
-                      proveedorId: product.proveedorId,
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Container(
+        height: 200, // Altura del gráfico
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12), // Más redondeado
+          color: Colors.white,
+          boxShadow: [
+            // Sombra para dar profundidad
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 2), // Desplazamiento de la sombra
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Salarios de Empleados',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ), // Aumentar tamaño título
+              ),
+              const SizedBox(height: 12),
+              if (numberOfEmployees > 0)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Empleados: $numberOfEmployees',
+                      style: const TextStyle(fontSize: 14),
+                    ), // Estilo para el texto
+                    Text(
+                      'Salario Máximo: \$${maxSalary.toStringAsFixed(2)}',
+                      style: const TextStyle(fontSize: 14),
                     ),
-                    productService: _productService,
+                  ],
+                )
+              else
+                const Text(
+                  'No hay empleados registrados.',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              const SizedBox(height: 16),
+              Expanded(
+                child:
+                // Aquí se muestra el gráfico de líneas
+                CustomPaint(
+                  painter: EmployeeChartPainter(
+                    employeeSalaries,
+                    isLineChart: true,
                   ),
-            ),
-          );
-          if (result == true && mounted) {
-            _loadInitialData();
-          }
-        },
-        child: Container(
-          width: 180,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.shopping_bag, color: Colors.green.shade700, size: 32),
-              const SizedBox(height: 8),
-              Text(
-                product.nombre,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  overflow: TextOverflow.ellipsis,
+                  size: Size(MediaQuery.of(context).size.width, 200),
                 ),
               ),
-              const SizedBox(height: 4),
-              _buildInfoLine(Icons.category, 'Tipo: ${product.tipo}'),
-              _buildInfoLine(
-                Icons.monetization_on,
-                'Precio: \$${product.precio.toStringAsFixed(2)}',
-              ),
-              _buildInfoLine(Icons.inventory, 'Stock: ${product.cantidad}'),
-              if (product.descripcion != null &&
-                  product.descripcion!.isNotEmpty)
-                _buildInfoLine(Icons.info, product.descripcion!),
             ],
           ),
         ),
@@ -312,86 +267,160 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSupplierList() {
-    return SizedBox(
-      height: 190,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        scrollDirection: Axis.horizontal,
-        itemCount: _suppliers.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
-        itemBuilder: (context, index) {
-          final supplier = _suppliers[index];
-          return _buildSupplierCard(supplier);
-        },
-      ),
-    );
-  }
+  // Widget para mostrar el gráfico de productos
+  Widget _buildProductChart(BuildContext context) {
+    // Preparar los datos para el gráfico
+    final List<double> productQuantities =
+        _products.map((product) => product.cantidad.toDouble()).toList();
+    final double maxQuantity =
+        productQuantities.isNotEmpty ? productQuantities.reduce(max) : 0;
+    final int numberOfProducts = _products.length;
 
-  Widget _buildSupplierCard(Supplier supplier) {
-    return Material(
-      borderRadius: BorderRadius.circular(16),
-      elevation: 3,
-      color: Colors.orange[50],
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          // Navegación para editar proveedor si lo deseas
-        },
-        child: Container(
-          width: 180,
-          padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.local_shipping,
-                  color: Colors.orange.shade700,
-                  size: 32,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  supplier.nombre,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                if (supplier.nifCif != null && supplier.nifCif!.isNotEmpty)
-                  _buildInfoLine(Icons.badge, supplier.nifCif!),
-                if (supplier.personaContacto != null &&
-                    supplier.personaContacto!.isNotEmpty)
-                  _buildInfoLine(Icons.person, supplier.personaContacto!),
-                if (supplier.telefono != null && supplier.telefono!.isNotEmpty)
-                  _buildInfoLine(Icons.phone, supplier.telefono!),
-                if (supplier.correoElectronico != null &&
-                    supplier.correoElectronico!.isNotEmpty)
-                  _buildInfoLine(Icons.email, supplier.correoElectronico!),
-                if (supplier.direccion != null &&
-                    supplier.direccion!.isNotEmpty)
-                  _buildInfoLine(Icons.location_on, supplier.direccion!),
-              ],
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Container(
+        height: 200,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12), // Más redondeado
+          color: Colors.white,
+          boxShadow: [
+            // Sombra para dar profundidad
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 2), // Desplazamiento de la sombra
             ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Cantidad de Productos',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ), // Aumentar tamaño título
+              ),
+              const SizedBox(height: 12),
+              if (numberOfProducts > 0)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Productos: $numberOfProducts',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    Text(
+                      'Máxima Cantidad: ${maxQuantity.toInt()}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                )
+              else
+                const Text(
+                  'No hay productos registrados.',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              const SizedBox(height: 16),
+              Expanded(
+                child:
+                // Aquí se muestra el gráfico de líneas
+                CustomPaint(
+                  painter: ProductChartPainter(
+                    productQuantities,
+                    isLineChart: true,
+                  ),
+                  size: Size(MediaQuery.of(context).size.width, 200),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildInfoLine(IconData icon, String text) {
+  // Widget para mostrar el gráfico de proveedores
+  Widget _buildSupplierChart(BuildContext context) {
+    final int numberOfSuppliers = _suppliers.length;
+    final List<String> supplierNames =
+        _suppliers.map((supplier) => supplier.nombre).toList();
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Container(
+        height: 200,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12), // Más redondeado
+          color: Colors.white,
+          boxShadow: [
+            // Sombra para dar profundidad
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 2), // Desplazamiento de la sombra
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Número de Proveedores',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ), // Aumentar tamaño título
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Total Proveedores: $numberOfSuppliers',
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child:
+                // Aquí se muestra el gráfico de líneas
+                CustomPaint(
+                  painter: SupplierChartPainter(
+                    supplierNames,
+                    isLineChart: true,
+                  ),
+                  size: Size(MediaQuery.of(context).size.width, 200),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoLine(
+    IconData icon,
+    String text, {
+    Color textColor = Colors.grey,
+    Color iconColor = Colors.blue,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: Colors.blue.shade700),
-          const SizedBox(width: 6),
+          Icon(icon, size: 18, color: iconColor),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+              style: TextStyle(fontSize: 14, color: textColor),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -399,5 +428,240 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+}
+
+// Clase para dibujar el gráfico de líneas de salarios de empleados
+class EmployeeChartPainter extends CustomPainter {
+  final List<double> employeeSalaries;
+  final bool isLineChart;
+
+  EmployeeChartPainter(this.employeeSalaries, {this.isLineChart = false});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (employeeSalaries.isEmpty) {
+      return;
+    }
+
+    double maxSalary = employeeSalaries.reduce(max);
+    double availableHeight = size.height - 30; // Espacio para etiquetas
+    double xSpace = size.width / (employeeSalaries.length - 1);
+
+    List<Offset> points = [];
+    for (int i = 0; i < employeeSalaries.length; i++) {
+      double x = i * xSpace;
+      double y =
+          size.height -
+          (employeeSalaries[i] / maxSalary) * availableHeight -
+          20;
+      points.add(Offset(x, y));
+    }
+
+    // Dibujar la línea
+    Paint linePaint =
+        Paint()
+          ..color = Colors.blue
+          ..style = PaintingStyle.stroke
+          ..strokeWidth =
+              3 // Línea más gruesa
+          ..strokeCap = StrokeCap.round; // Línea redondeada
+
+    if (isLineChart) {
+      Path path = Path();
+      path.moveTo(points[0].dx, points[0].dy);
+      for (var point in points) {
+        path.lineTo(point.dx, point.dy);
+      }
+      canvas.drawPath(path, linePaint);
+    }
+
+    // Dibujar los puntos y las etiquetas
+    for (int i = 0; i < employeeSalaries.length; i++) {
+      // Dibujar los puntos
+      Paint pointPaint = Paint()..color = Colors.blue;
+      canvas.drawCircle(points[i], 6, pointPaint); // Puntos más grandes
+
+      // Dibujar etiqueta de salario
+      TextPainter textPainter = TextPainter(
+        text: TextSpan(
+          text: '\$${employeeSalaries[i].toStringAsFixed(0)}',
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+          ), // Aumentar tamaño fuente
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+      textPainter.paint(
+        canvas,
+        Offset(
+          points[i].dx - textPainter.width / 2,
+          points[i].dy - 25,
+        ), // Ajustar posición etiqueta
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+// Clase para dibujar el gráfico de líneas de cantidad de productos
+class ProductChartPainter extends CustomPainter {
+  final List<double> productQuantities;
+  final bool isLineChart;
+
+  ProductChartPainter(this.productQuantities, {this.isLineChart = false});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (productQuantities.isEmpty) {
+      return;
+    }
+
+    double maxQuantity = productQuantities.reduce(max);
+    double availableHeight = size.height - 30;
+    double xSpace = size.width / (productQuantities.length - 1);
+
+    List<Offset> points = [];
+    for (int i = 0; i < productQuantities.length; i++) {
+      double x = i * xSpace;
+      double y =
+          size.height -
+          (productQuantities[i] / maxQuantity) * availableHeight -
+          20;
+      points.add(Offset(x, y));
+    }
+
+    // Dibujar la línea
+    Paint linePaint =
+        Paint()
+          ..color = Colors.green
+          ..style = PaintingStyle.stroke
+          ..strokeWidth =
+              3 // Línea más gruesa
+          ..strokeCap = StrokeCap.round; // Línea redondeada
+
+    if (isLineChart) {
+      Path path = Path();
+      path.moveTo(points[0].dx, points[0].dy);
+      for (var point in points) {
+        path.lineTo(point.dx, point.dy);
+      }
+      canvas.drawPath(path, linePaint);
+    }
+
+    // Dibujar los puntos y las etiquetas
+    for (int i = 0; i < productQuantities.length; i++) {
+      // Dibujar los puntos
+      Paint pointPaint = Paint()..color = Colors.green;
+      canvas.drawCircle(points[i], 6, pointPaint); // Puntos más grandes
+
+      // Dibujar etiqueta de cantidad
+      TextPainter textPainter = TextPainter(
+        text: TextSpan(
+          text: '${productQuantities[i].toInt()}',
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+          ), // Aumentar tamaño fuente
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+      textPainter.paint(
+        canvas,
+        Offset(
+          points[i].dx - textPainter.width / 2,
+          points[i].dy - 25,
+        ), // Ajustar posición etiqueta
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+// Clase para dibujar el gráfico de líneas de proveedores
+class SupplierChartPainter extends CustomPainter {
+  final List<String> supplierNames;
+  final bool isLineChart;
+
+  SupplierChartPainter(this.supplierNames, {this.isLineChart = false});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (supplierNames.isEmpty) {
+      return;
+    }
+
+    double availableHeight = size.height - 30;
+    double xSpace = size.width / (supplierNames.length - 1);
+
+    List<Offset> points = [];
+    for (int i = 0; i < supplierNames.length; i++) {
+      double x = i * xSpace;
+      double y =
+          size.height -
+          (i / supplierNames.length) * availableHeight -
+          20; // Suponiendo distribución uniforme
+      points.add(Offset(x, y));
+    }
+
+    // Dibujar la línea
+    Paint linePaint =
+        Paint()
+          ..color = Colors.orange
+          ..style = PaintingStyle.stroke
+          ..strokeWidth =
+              3 // Línea más gruesa
+          ..strokeCap = StrokeCap.round; // Línea redondeada
+
+    if (isLineChart) {
+      Path path = Path();
+      path.moveTo(points[0].dx, points[0].dy);
+      for (var point in points) {
+        path.lineTo(point.dx, point.dy);
+      }
+      canvas.drawPath(path, linePaint);
+    }
+
+    // Dibujar los puntos y las etiquetas
+    for (int i = 0; i < supplierNames.length; i++) {
+      // Dibujar los puntos
+      Paint pointPaint = Paint()..color = Colors.orange;
+      canvas.drawCircle(points[i], 6, pointPaint); // Puntos más grandes
+      // Dibujar etiqueta del nombre del proveedor
+      TextPainter textPainter = TextPainter(
+        text: TextSpan(
+          text: supplierNames[i],
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+          ), // Aumentar tamaño fuente
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+      textPainter.paint(
+        canvas,
+        Offset(
+          points[i].dx - textPainter.width / 2,
+          points[i].dy - 25,
+        ), // Ajustar posición etiqueta
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }

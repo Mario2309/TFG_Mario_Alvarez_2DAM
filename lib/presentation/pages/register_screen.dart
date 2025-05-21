@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:nexuserp/presentation/pages/login.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nexuserp/core/utils/password_visibility_controller.dart';
+import 'package:animated_text_kit/animated_text_kit.dart'; // Importa para el texto animado
+import 'package:another_flushbar/flushbar.dart'; // Importa para las notificaciones
 
 class RegisterScreen extends StatelessWidget {
   @override
@@ -65,46 +67,65 @@ class _RegisterFormState extends State<RegisterForm> {
       );
 
       if (response.user != null) {
-        await showDialog(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                title: Text('Registro exitoso'),
-                content: Text(
-                  'Tu cuenta ha sido creada. Revisa tu correo para verificar tu cuenta.',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      );
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              ),
-        );
+        _showSuccessDialog(context); // Muestra el diálogo de éxito
       } else {
-        setState(() {
-          _error = "El registro falló. Inténtalo de nuevo.";
-        });
+        _showErrorSnackbar(
+          context,
+          "El registro falló. Inténtalo de nuevo.",
+        ); // Muestra la notificación de error
       }
     } on AuthException catch (e) {
-      setState(() {
-        _error = e.message;
-      });
+      _showErrorSnackbar(
+        context,
+        e.message,
+      ); // Muestra la notificación de error
     } catch (e) {
-      setState(() {
-        _error = 'Ocurrió un error inesperado. Inténtalo de nuevo.';
-      });
+      _showErrorSnackbar(
+        context,
+        'Ocurrió un error inesperado. Inténtalo de nuevo.',
+      ); // Muestra la notificación de error
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  // Función para mostrar el diálogo de éxito
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Registro exitoso'),
+            content: const Text(
+              'Tu cuenta ha sido creada. Revisa tu correo para verificar tu cuenta.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  // Función para mostrar la notificación de error
+  void _showErrorSnackbar(BuildContext context, String message) {
+    Flushbar(
+      message: message,
+      icon: const Icon(Icons.error_outline, color: Colors.red),
+      duration: const Duration(seconds: 3),
+      backgroundColor: Colors.red.shade100,
+      messageColor: Colors.red.shade900,
+    ).show(context);
   }
 
   @override
@@ -122,14 +143,14 @@ class _RegisterFormState extends State<RegisterForm> {
       backgroundColor: const Color(0xFFF6F9FC),
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24.0),
           child: Container(
-            padding: EdgeInsets.all(24.0),
-            constraints: BoxConstraints(maxWidth: 500),
+            padding: const EdgeInsets.all(24.0),
+            constraints: const BoxConstraints(maxWidth: 500),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16.0),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 10,
@@ -142,31 +163,41 @@ class _RegisterFormState extends State<RegisterForm> {
               children: <Widget>[
                 Column(
                   children: [
-                    SizedBox(height: 20.0),
-                    Text(
-                      'Crea tu cuenta en NexusERP',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.blue.shade700,
-                      ),
+                    const SizedBox(height: 20.0),
+                    AnimatedTextKit(
+                      // Widget de texto animado
+                      animatedTexts: [
+                        TyperAnimatedText(
+                          'Crea tu cuenta en NexusERP',
+                          textStyle: TextStyle(
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue.shade700,
+                          ),
+                          textAlign: TextAlign.center,
+                          speed: const Duration(
+                            milliseconds: 50,
+                          ), // Velocidad de la animación
+                        ),
+                      ],
+                      isRepeatingAnimation: false, // No se repite la animación
+                      displayFullTextOnTap: true,
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Text(
                       'Completa los campos para registrarte',
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   ],
                 ),
-                SizedBox(height: 24.0),
+                const SizedBox(height: 24.0),
                 if (_error != null) ...[
                   Text(
                     _error!,
-                    style: TextStyle(color: Colors.red),
+                    style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 12.0),
+                  const SizedBox(height: 12.0),
                 ],
                 Form(
                   key: _formKey,
@@ -175,12 +206,12 @@ class _RegisterFormState extends State<RegisterForm> {
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.person_outline),
+                          prefixIcon: const Icon(Icons.person_outline),
                           labelText: 'Nombre completo',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
-                          contentPadding: EdgeInsets.all(16.0),
+                          contentPadding: const EdgeInsets.all(16.0),
                         ),
                         validator:
                             (value) =>
@@ -188,16 +219,16 @@ class _RegisterFormState extends State<RegisterForm> {
                                     ? 'Por favor ingresa tu nombre'
                                     : null,
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       TextFormField(
                         controller: _phoneController,
                         decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.phone),
+                          prefixIcon: const Icon(Icons.phone),
                           labelText: 'Número de teléfono',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
-                          contentPadding: EdgeInsets.all(16.0),
+                          contentPadding: const EdgeInsets.all(16.0),
                         ),
                         keyboardType: TextInputType.phone,
                         validator:
@@ -206,16 +237,16 @@ class _RegisterFormState extends State<RegisterForm> {
                                     ? 'Por favor ingresa tu teléfono'
                                     : null,
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.email_outlined),
+                          prefixIcon: const Icon(Icons.email_outlined),
                           labelText: 'Correo electrónico',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
-                          contentPadding: EdgeInsets.all(16.0),
+                          contentPadding: const EdgeInsets.all(16.0),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
@@ -225,19 +256,19 @@ class _RegisterFormState extends State<RegisterForm> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       Consumer<PasswordVisibilityController>(
                         builder:
                             (_, visibility, __) => TextFormField(
                               controller: _passwordController,
                               obscureText: visibility.isObscured,
                               decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.lock_outline),
+                                prefixIcon: const Icon(Icons.lock_outline),
                                 labelText: 'Contraseña',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
-                                contentPadding: EdgeInsets.all(16.0),
+                                contentPadding: const EdgeInsets.all(16.0),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     visibility.isObscured
@@ -256,19 +287,19 @@ class _RegisterFormState extends State<RegisterForm> {
                               },
                             ),
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       Consumer<PasswordVisibilityController>(
                         builder:
                             (_, visibility, __) => TextFormField(
                               controller: _confirmPasswordController,
                               obscureText: confirmVisibility.isObscured,
                               decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.lock_outline),
+                                prefixIcon: const Icon(Icons.lock_outline),
                                 labelText: 'Confirmar contraseña',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
-                                contentPadding: EdgeInsets.all(16.0),
+                                contentPadding: const EdgeInsets.all(16.0),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     confirmVisibility.isObscured
@@ -287,20 +318,24 @@ class _RegisterFormState extends State<RegisterForm> {
                               },
                             ),
                       ),
-                      SizedBox(height: 24.0),
+                      const SizedBox(height: 24.0),
                       ElevatedButton(
                         onPressed: _isLoading ? null : _submit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue.shade700,
-                          padding: EdgeInsets.symmetric(vertical: 14.0),
+                          padding: const EdgeInsets.symmetric(vertical: 14.0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
+                          elevation: 8, // Añade sombra al botón
+                          shadowColor: Colors.blue.shade900,
                         ),
                         child:
                             _isLoading
-                                ? CircularProgressIndicator(color: Colors.white)
-                                : Text(
+                                ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                                : const Text(
                                   'Registrar',
                                   style: TextStyle(
                                     color: Colors.white,
@@ -311,7 +346,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     ],
                   ),
                 ),
-                SizedBox(height: 28.0),
+                const SizedBox(height: 28.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -333,6 +368,9 @@ class _RegisterFormState extends State<RegisterForm> {
                         style: TextStyle(
                           color: Colors.blue.shade700,
                           fontWeight: FontWeight.bold,
+                          decoration:
+                              TextDecoration
+                                  .underline, // Añade subrayado al texto del botón
                         ),
                       ),
                     ),

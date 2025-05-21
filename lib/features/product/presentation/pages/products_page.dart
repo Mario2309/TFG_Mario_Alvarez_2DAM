@@ -7,8 +7,6 @@ import 'package:nexuserp/features/product/data/models/product_model.dart';
 import 'package:nexuserp/features/product/data/datasources/product_service.dart';
 import 'package:nexuserp/features/product/data/repositories/product_repository_impl.dart';
 
-import '../../../employee/presentation/pages/delete_employee_page.dart';
-
 class ProductsPage extends StatefulWidget {
   @override
   _ProductsPageState createState() => _ProductsPageState();

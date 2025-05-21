@@ -9,13 +9,13 @@ class VacationRepositoryImpl implements VacationRepository {
   VacationRepositoryImpl(this.service);
 
   @override
-  Future<void> addVacation(Vacation v) async {
+  Future<void> addVacation(Vacation vacation) async {
     final model = VacationModel(
-      employeeDni: v.employeeDni,
-      employeeName: v.employeeName,
-      startDate: v.startDate,
-      endDate: v.endDate,
-      status: v.status,
+      employeeDni: vacation.employeeDni,
+      employeeName: vacation.employeeName,
+      startDate: vacation.startDate,
+      endDate: vacation.endDate,
+      status: vacation.status,
     );
     await service.addVacation(model);
   }
@@ -31,33 +31,6 @@ class VacationRepositoryImpl implements VacationRepository {
     return models.map(_mapModelToEntity).toList();
   }
 
-  Future<bool> addVacationWithoutId(Vacation vacation) async {
-    try {
-      final model = VacationModel(
-        employeeDni: vacation.employeeDni,
-        employeeName: vacation.employeeName,
-        startDate: vacation.startDate,
-        endDate: vacation.endDate,
-        status: vacation.status,
-      );
-      final response = await service.addVacation(model);
-      return response;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Vacation _mapModelToEntity(VacationModel m) {
-    return Vacation(
-      id: m.id,
-      employeeDni: m.employeeDni,
-      employeeName: m.employeeName,
-      startDate: m.startDate,
-      endDate: m.endDate,
-      status: m.status,
-    );
-  }
-
   @override
   Future<void> updateVacation(Vacation vacation) async {
     final model = VacationModel(
@@ -70,10 +43,20 @@ class VacationRepositoryImpl implements VacationRepository {
     );
     await service.updateVacation(model);
   }
-  
+
   @override
-  Future<void> updateVacationStatus(int id, String newStatus) {
-    // TODO: implement updateVacationStatus
-    throw UnimplementedError();
+  Future<void> updateVacationStatus(int id, String newStatus) async {
+    await service.updateVacationStatus(id, newStatus);
+  }
+
+  Vacation _mapModelToEntity(VacationModel model) {
+    return Vacation(
+      id: model.id,
+      employeeDni: model.employeeDni,
+      employeeName: model.employeeName,
+      startDate: model.startDate,
+      endDate: model.endDate,
+      status: model.status,
+    );
   }
 }

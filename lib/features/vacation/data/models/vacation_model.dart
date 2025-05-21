@@ -29,12 +29,14 @@ class VacationModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'employee_name': employeeName,
-    'employee_dni': employeeDni,
-    'start_date': startDate.toIso8601String(),
-    'end_date': endDate.toIso8601String(),
-    'status': status,
-    'reason': reason,
-  };
+  Map<String, dynamic> toJson() {
+    return {
+      'employeeDni': employeeDni,
+      'employeeName': employeeName,
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
+      'status': status,
+      'reason': reason,
+    };
+  }
 }

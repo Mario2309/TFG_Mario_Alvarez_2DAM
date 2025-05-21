@@ -35,7 +35,10 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
           UserAttributes(password: _passwordController.text),
         );
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password updated successfully')),
+          const SnackBar(
+            content: Text('Password updated successfully'),
+            duration: Duration(seconds: 2), // Added duration for better UX
+          ),
         );
         Navigator.pop(context);
       } catch (e) {
@@ -55,22 +58,30 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: Colors.grey.shade100,
+      fillColor: Colors.grey.shade50, // Lighter background color
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16), // More rounded corners
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.blue.shade700),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(
+          color: Colors.blue.shade500,
+        ), // More subtle focus color
       ),
       suffixIcon: IconButton(
         icon: Icon(
-          controller.isObscured ? Icons.visibility_off : Icons.visibility,
-          color: Colors.grey,
+          controller.isObscured
+              ? Icons.visibility_off_rounded
+              : Icons.visibility_rounded, // Use rounded icons
+          color: Colors.grey.shade500, // More subtle icon color
         ),
         onPressed: controller.toggleVisibility,
       ),
+      contentPadding: const EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 20,
+      ), // Increased padding
     );
   }
 
@@ -84,12 +95,18 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         title: const Text(
-          'Change Password',
-          style: TextStyle(color: Colors.black),
+          'Cambiar Contraseña',
+          style: TextStyle(
+            color: Color(0xFF1A202C),
+            fontWeight: FontWeight.w500,
+          ), // Darker title color, medium weight
         ),
         backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        elevation: 1,
+        iconTheme: const IconThemeData(
+          color: Color(0xFF1A202C),
+        ), // Darker icon color
+        elevation: 0, // Removed app bar shadow
+        centerTitle: true, // Center the title
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -101,14 +118,21 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
               children: [
                 const Text(
                   'Secure your account',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 28, // Increased font size
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1A202C), // Darker title color
+                  ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12), // Increased spacing
                 const Text(
                   'Enter your new password below to update it.',
-                  style: TextStyle(fontSize: 15, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF4A5568),
+                  ), // Slightly larger font, darker grey
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 40), // Increased spacing
                 TextFormField(
                   controller: _passwordController,
                   obscureText: visibilityController.isObscured,
@@ -117,13 +141,15 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
                     visibilityController,
                   ),
                   validator: (value) {
-                    if (value == null || value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                    if (value == null || value.length < 8) {
+                      // Increased minimum password length to 8
+                      return 'Password must be at least 8 characters';
                     }
                     return null;
                   },
+                  style: const TextStyle(fontSize: 16), // Increased font size
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24), // Increased spacing
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: visibilityController.isObscured,
@@ -137,29 +163,35 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
                     }
                     return null;
                   },
+                  style: const TextStyle(fontSize: 16), // Increased font size
                 ),
-                const SizedBox(height: 36),
+                const SizedBox(height: 48), // Increased spacing
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _changePassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor:
+                          Colors.blue.shade600, // Slightly darker blue
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 18,
+                      ), // Increased vertical padding
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
+                      elevation: 2, // Add elevation
+                      shadowColor: Colors.blue.withOpacity(0.2), // Add shadow
                     ),
                     child:
                         _isLoading
                             ? const CircularProgressIndicator(
                               color: Colors.white,
-                              strokeWidth: 2,
+                              strokeWidth: 3, // Increased stroke width
                             )
                             : const Text(
                               'Update Password',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

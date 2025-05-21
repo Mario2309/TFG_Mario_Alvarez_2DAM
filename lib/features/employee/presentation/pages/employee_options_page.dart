@@ -4,6 +4,7 @@ import 'package:nexuserp/features/employee/domain/entities/employee.dart';
 import 'package:nexuserp/features/employee/data/models/employee_model.dart';
 import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart';
 import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
+import 'package:nexuserp/features/employee/presentation/pages/select_vacation_period_page.dart';
 
 class EmployeeOptionsPage extends StatefulWidget {
   final Employee employee;
@@ -40,6 +41,14 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
               color: Colors.blue.shade100,
               iconColor: Colors.blue.shade700,
               onTap: () => _showDetailsDialog(context),
+            ),
+            const SizedBox(height: 12),
+            _buildOptionCard(
+              icon: Icons.calendar_month,
+              label: 'Seleccionar vacaciones',
+              color: Colors.green.shade100,
+              iconColor: Colors.green.shade700,
+              onTap: () => _navigateToVacationSelection(context),
             ),
             const SizedBox(height: 12),
             _buildOptionCard(
@@ -223,5 +232,16 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
         );
       }
     }
+  }
+
+  Future<void> _navigateToVacationSelection(BuildContext context) async {
+    final employee = widget.employee;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SelectVacationPeriodPage(employee: employee),
+      ),
+    );
   }
 }
