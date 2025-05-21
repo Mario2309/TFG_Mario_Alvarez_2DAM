@@ -52,7 +52,7 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
         employeeDni: widget.employee.dni,
         startDate: _startDate!,
         endDate: _endDate!,
-        status: 'pendiente',
+        status: 'Pendiente',
       );
 
       await _vacationRepository.addVacation(vacation);

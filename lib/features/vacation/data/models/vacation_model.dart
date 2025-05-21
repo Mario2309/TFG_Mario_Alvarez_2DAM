@@ -5,7 +5,6 @@ class VacationModel {
   final DateTime startDate;
   final DateTime endDate;
   final String status; // e.g., "pending", "approved", "rejected"
-  final String? reason; // motivo o comentario opcional
 
   VacationModel({
     this.id,
@@ -14,29 +13,26 @@ class VacationModel {
     required this.startDate,
     required this.endDate,
     required this.status,
-    this.reason,
   });
 
   factory VacationModel.fromJson(Map<String, dynamic> json) {
     return VacationModel(
       id: json['id'],
-      employeeName: json['employee_name'],
-      employeeDni: json['employee_dni'],
-      startDate: DateTime.parse(json['start_date']),
-      endDate: DateTime.parse(json['end_date']),
-      status: json['status'],
-      reason: json['reason'],
+      employeeName: json['nombre_empleado'],
+      employeeDni: json['dni_empleado'],
+      startDate: DateTime.parse(json['fecha_inicio']),
+      endDate: DateTime.parse(json['fecha_fin']),
+      status: json['estado'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'employeeDni': employeeDni,
-      'employeeName': employeeName,
-      'startDate': startDate.toIso8601String(),
-      'endDate': endDate.toIso8601String(),
-      'status': status,
-      'reason': reason,
+      'dni_empleado': employeeDni,
+      'nombre_empleado': employeeName,
+      'fecha_inicio': startDate.toIso8601String(),
+      'fecha_fin': endDate.toIso8601String(),
+      'estado': status,
     };
   }
 }

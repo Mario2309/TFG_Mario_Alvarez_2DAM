@@ -7,6 +7,10 @@ import 'package:nexuserp/features/employee/data/datasources/employee_service.dar
 import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart'
     show EditEmployeePage;
 import 'package:nexuserp/features/employee/presentation/pages/employee_options_page.dart';
+import 'package:nexuserp/presentation/pages/search_page.dart';
+// Importa la nueva página de búsqueda si estuviera en un archivo separado.
+// Para este ejemplo, la SearchPage se define en el mismo archivo al final.
+// import 'package:nexuserp/features/employee/presentation/pages/search_page.dart';
 
 class EmployeesPage extends StatefulWidget {
   @override
@@ -20,9 +24,11 @@ class _EmployeesPageState extends State<EmployeesPage> {
   late final EmployeeService _employeeService;
 
   String _filtroEstado = 'Todos';
-  String _searchQuery = '';
+  String _searchQuery =
+      ''; // Esta variable se vuelve a usar para la búsqueda en línea
 
-  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController =
+      TextEditingController(); // Este controlador se vuelve a usar para la búsqueda en línea
 
   @override
   void initState() {
@@ -31,6 +37,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
     _repository = EmployeeRepositoryImpl(_employeeService);
     _loadEmployees();
 
+    // Se vuelve a añadir el listener del _searchController
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text.trim().toLowerCase();
@@ -41,7 +48,8 @@ class _EmployeesPageState extends State<EmployeesPage> {
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _searchController
+        .dispose(); // Es necesario disponer de este controlador aquí
     super.dispose();
   }
 
@@ -63,7 +71,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
       temp = temp.where((e) => !e.activo).toList();
     }
 
-    // Filtrar por búsqueda
+    // Se vuelve a añadir la lógica de filtrado por búsqueda
     if (_searchQuery.isNotEmpty) {
       temp =
           temp
@@ -95,7 +103,8 @@ class _EmployeesPageState extends State<EmployeesPage> {
     });
   }
 
-  Widget _buildFilterOptions() {
+  // Se añadió un parámetro 'showBackButton' para controlar la visibilidad del botón de retroceso.
+  Widget _buildFilterOptions(bool showBackButton) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -104,15 +113,33 @@ class _EmployeesPageState extends State<EmployeesPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Opciones",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              Row(
+                // Contenedor para el título y el botón de retroceso
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Opciones",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  // Muestra el botón de retroceso solo si showBackButton es true
+                  if (showBackButton)
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => SearchPage()),
+                        );
+                      },
+                    ),
+                ],
               ),
               const SizedBox(height: 10),
+              // Se ha vuelto a añadir el TextField de búsqueda aquí
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
@@ -183,17 +210,21 @@ class _EmployeesPageState extends State<EmployeesPage> {
             ),
           ),
         ),
+        // Se ha eliminado el ListTile de "Buscar empleados" de aquí
         ListTile(
           leading: const Icon(Icons.sync),
           title: const Text('Recargar empleados'),
           onTap: () {
             _loadEmployees();
+            if (showBackButton)
+              Navigator.pop(context); // Cierra el Drawer al recargar
           },
         ),
         ListTile(
           leading: const Icon(Icons.add_circle_outline),
           title: const Text('Agregar empleado'),
           onTap: () {
+            // Ya se cierra el Drawer aquí, pero se mantiene la lógica para claridad
             Navigator.pop(context);
             _navigateToAddEmployeeScreen();
           },
@@ -202,6 +233,8 @@ class _EmployeesPageState extends State<EmployeesPage> {
           leading: const Icon(Icons.info_outline),
           title: const Text('Acerca de'),
           onTap: () {
+            // Cierra el Drawer antes de mostrar el diálogo
+            if (showBackButton) Navigator.pop(context);
             showAboutDialog(
               context: context,
               applicationName: 'Gestión de Empleados',
@@ -232,14 +265,16 @@ class _EmployeesPageState extends State<EmployeesPage> {
         backgroundColor: Colors.blue.shade700,
         elevation: 2,
       ),
-      drawer: isLargeScreen ? null : Drawer(child: _buildFilterOptions()),
+      // Pasa 'true' a _buildFilterOptions si es una pantalla pequeña para mostrar el botón de retroceso
+      drawer: isLargeScreen ? null : Drawer(child: _buildFilterOptions(true)),
       body: Row(
         children: [
           if (isLargeScreen)
             Container(
               width: 280,
               color: Colors.grey.shade100,
-              child: _buildFilterOptions(),
+              // Pasa 'false' a _buildFilterOptions si es una pantalla grande (no necesita botón de retroceso)
+              child: _buildFilterOptions(false),
             ),
           Expanded(
             child: Stack(
