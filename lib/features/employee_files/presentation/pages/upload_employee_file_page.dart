@@ -55,12 +55,11 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
       _isUploading = true;
     });
     try {
-      // Suponiendo que recibes el nombre del empleado como parámetro en el widget
-      final employeeName = widget.employeeName
-          .replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
+      // Normalizar nombre de empleado y archivo
+      final employeeName = widget.employeeName.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
       final fileName = _selectedFile!.path.split(Platform.pathSeparator).last;
-      final normalizedFileName = fileName.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
-      final filePath = '${employeeName}_$normalizedFileName';
+      final normalizedFileName = _normalizeFileName(fileName);
+      final filePath = '$employeeName/$normalizedFileName';
       final fileBytes = await _selectedFile!.readAsBytes();
       if (fileBytes.isEmpty) {
         throw Exception('El archivo está vacío o dañado');
@@ -72,9 +71,11 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
       if (response.isEmpty) {
         throw Exception('No se pudo subir el archivo');
       }
+      // Obtener URL pública
       final publicUrl = _service.supabase.storage
           .from('empleados')
           .getPublicUrl(filePath);
+      // Registrar archivo en la tabla empleado_archivo
       final fileEntity = EmployeeFile(
         employeeId: widget.employeeId,
         fileType: _fileType!,
@@ -93,7 +94,7 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error al subir archivo: $e')));
+      ).showSnackBar(SnackBar(content: Text('Error al subir o registrar archivo: $e')));
     } finally {
       setState(() {
         _isUploading = false;

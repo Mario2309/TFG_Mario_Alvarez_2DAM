@@ -22,7 +22,7 @@ class EmployeeFileModel {
   factory EmployeeFileModel.fromJson(Map<String, dynamic> json) {
     return EmployeeFileModel(
       id: json['id'],
-      employeeId: json['employee_id'],
+      employeeId: json['empleado_id'],
       fileType: json['tipo_archivo'],
       fileName: json['nombre_archivo'],
       filePath: json['ruta_archivo'],
