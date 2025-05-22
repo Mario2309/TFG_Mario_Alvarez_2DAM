@@ -1,5 +1,5 @@
 import 'package:nexuserp/features/employee_files/domain/entities/employee_file.dart';
-import 'package:nexuserp/features/employee_files/domain/repositories/emplyee_file_repositorY.dart';
+import 'package:nexuserp/features/employee_files/domain/repositories/employee_file_repository.dart';
 
 class GetAllEmployeesFile {
   final EmployeeFileRepository repository;

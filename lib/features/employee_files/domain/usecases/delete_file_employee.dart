@@ -1,5 +1,5 @@
 import 'package:nexuserp/features/employee_files/domain/entities/employee_file.dart';
-import '../repositories/emplyee_file_repositorY.dart';
+import '../repositories/employee_file_repository.dart';
 
 class DeleteFileEmployee {
   final EmployeeFileRepository repository;

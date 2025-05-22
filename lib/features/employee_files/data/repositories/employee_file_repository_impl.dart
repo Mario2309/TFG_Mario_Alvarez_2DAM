@@ -1,5 +1,5 @@
 import 'package:nexuserp/features/employee_files/domain/entities/employee_file.dart';
-import '../../domain/repositories/emplyee_file_repositorY.dart';
+import '../../domain/repositories/employee_file_repository.dart';
 import '../datasources/employee_file_service.dart';
 import '../models/emplyee_file_model.dart';
 
@@ -9,6 +9,7 @@ class EmployeeFileRepositoryImpl implements EmployeeFileRepository {
   EmployeeFileRepositoryImpl(this.service);
 
   @override
+  // ignore: override_on_non_overriding_member
   Future<void> addFile(EmployeeFile file) async {
     final model = EmployeeFileModel(
       id: file.id,
