@@ -66,6 +66,12 @@ class EmployeeFileRepositoryImpl implements EmployeeFileRepository {
     return file;
   }
 
+  @override
+  Future<List<EmployeeFile>> getAllFiles() async {
+    final models = await service.fetchAllFiles();
+    return models.map(_mapModelToEntity).toList();
+  }
+
   EmployeeFile _mapModelToEntity(EmployeeFileModel model) {
     return EmployeeFile(
       id: model.id,

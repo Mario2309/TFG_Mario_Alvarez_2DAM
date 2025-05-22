@@ -8,9 +8,7 @@ import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page
     show EditEmployeePage;
 import 'package:nexuserp/features/employee/presentation/pages/employee_options_page.dart';
 import 'package:nexuserp/presentation/pages/search_page.dart';
-// Importa la nueva página de búsqueda si estuviera en un archivo separado.
-// Para este ejemplo, la SearchPage se define en el mismo archivo al final.
-// import 'package:nexuserp/features/employee/presentation/pages/search_page.dart';
+import 'package:nexuserp/features/employee_files/presentation/pages/files_employee_page.dart';
 
 class EmployeesPage extends StatefulWidget {
   @override
@@ -227,6 +225,22 @@ class _EmployeesPageState extends State<EmployeesPage> {
             // Ya se cierra el Drawer aquí, pero se mantiene la lógica para claridad
             Navigator.pop(context);
             _navigateToAddEmployeeScreen();
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.folder_shared),
+          title: const Text('Archivos de empleados'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => FilesEmployeePage(
+                      employeeId: 0,
+                    ), // 0 para mostrar todos
+              ),
+            );
           },
         ),
         ListTile(

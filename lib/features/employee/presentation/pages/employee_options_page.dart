@@ -5,6 +5,7 @@ import 'package:nexuserp/features/employee/data/models/employee_model.dart';
 import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart';
 import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
 import 'package:nexuserp/features/employee/presentation/pages/select_vacation_period_page.dart';
+import 'package:nexuserp/features/employee_files/presentation/pages/upload_employee_file_page.dart';
 
 class EmployeeOptionsPage extends StatefulWidget {
   final Employee employee;
@@ -57,6 +58,14 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
               color: Colors.orange.shade100,
               iconColor: Colors.orange.shade700,
               onTap: () => _navigateToEdit(context),
+            ),
+            const SizedBox(height: 12),
+            _buildOptionCard(
+              icon: Icons.upload_file,
+              label: 'Subir archivo',
+              color: Colors.purple.shade100,
+              iconColor: Colors.purple.shade700,
+              onTap: () => _navigateToUploadFile(context),
             ),
             const SizedBox(height: 12),
             _buildOptionCard(
@@ -241,6 +250,20 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
       context,
       MaterialPageRoute(
         builder: (_) => SelectVacationPeriodPage(employee: employee),
+      ),
+    );
+  }
+
+  Future<void> _navigateToUploadFile(BuildContext context) async {
+    final employee = widget.employee;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => UploadEmployeeFilePage(
+              employeeId: employee.id!,
+              employeeName: employee.nombreCompleto,
+            ),
       ),
     );
   }

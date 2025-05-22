@@ -32,6 +32,12 @@ class VacationRepositoryImpl implements VacationRepository {
   }
 
   @override
+  Future<List<Vacation>> getAllVacations() async {
+    final models = await service.fetchVacations();
+    return models.map(_mapModelToEntity).toList();
+  }
+
+  @override
   Future<void> updateVacation(Vacation vacation) async {
     final model = VacationModel(
       id: vacation.id,

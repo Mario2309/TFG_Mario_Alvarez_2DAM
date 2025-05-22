@@ -16,6 +16,16 @@ class EmployeeFileService {
         .toList();
   }
 
+  /// Obtener todos los archivos de todos los empleados
+  Future<List<EmployeeFileModel>> fetchAllFiles() async {
+    final response = await supabase
+        .from('empleado_archivo')
+        .select();
+    return (response as List)
+        .map((e) => EmployeeFileModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   /// Agregar un nuevo archivo
   Future<bool> addFile(EmployeeFileModel file) async {
     try {
