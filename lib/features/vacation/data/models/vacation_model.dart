@@ -35,4 +35,6 @@ class VacationModel {
       'estado': status,
     };
   }
+
+  
 }

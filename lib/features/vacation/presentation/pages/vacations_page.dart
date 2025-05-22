@@ -5,11 +5,7 @@ import 'package:nexuserp/features/vacation/data/datasources/vacation_service.dar
 import 'package:nexuserp/features/vacation/domain/entities/vacation.dart';
 
 import '../../../../presentation/pages/search_page.dart';
-
-// Importa las páginas de añadir y opciones de vacaciones (si existen)
-// Si no existen, necesitarías crearlas o adaptar las de empleados.
-// import 'package:nexuserp/features/vacation/presentation/pages/add_vacation_screen.dart';
-// import 'package:nexuserp/features/vacation/presentation/pages/vacation_options_page.dart';
+import 'vacation_details_page.dart'; // Importa la página de detalles de vacaciones
 
 class VacationsPage extends StatefulWidget {
   @override
@@ -87,7 +83,7 @@ class _VacationsPageState extends State<VacationsPage> {
     switch (status.toLowerCase()) {
       case 'aprobada':
         return Colors.green.shade400;
-      case 'rechadada':
+      case 'rechazada':
         return Colors.red.shade400;
       case 'pendiente':
         return Colors.yellow.shade700; // Color amarillo para 'pendiente'
@@ -98,31 +94,17 @@ class _VacationsPageState extends State<VacationsPage> {
     }
   }
 
-  // Función para obtener el icono del estado
   IconData _getStatusIcon(String status) {
     switch (status.toLowerCase()) {
       case 'aprobada':
         return Icons.check_circle;
-      case 'rechadada':
+      case 'rechazada':
         return Icons.cancel;
       case 'pendiente':
         return Icons.hourglass_empty;
       default:
-        return Icons.info_outline; // Icono por defecto
+        return Icons.info_outline;
     }
-  }
-
-  // Función para navegar a la pantalla de añadir vacaciones
-  void _navigateToAddVacationScreen() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Navegar a la pantalla de "Agregar Solicitud de Vacaciones"',
-        ),
-        backgroundColor: Colors.blue.shade600,
-      ),
-    );
-    Navigator.pop(context); // Cierra el Drawer
   }
 
   // Widget para las opciones de filtro y acciones rápidas en el Drawer
@@ -209,7 +191,7 @@ class _VacationsPageState extends State<VacationsPage> {
           },
         ),
         RadioListTile<String>(
-          value: 'Rechazado',
+          value: 'Rechazada',
           groupValue: _filtroEstado,
           title: const Text("Rechazadas"),
           onChanged: (value) {
@@ -241,13 +223,6 @@ class _VacationsPageState extends State<VacationsPage> {
               color: Colors.grey.shade700,
             ),
           ),
-        ),
-        ListTile(
-          leading: const Icon(Icons.add_circle_outline),
-          title: const Text('Agregar Solicitud'),
-          onTap: () {
-            _navigateToAddVacationScreen();
-          },
         ),
         ListTile(
           leading: const Icon(Icons.sync),
@@ -286,10 +261,12 @@ class _VacationsPageState extends State<VacationsPage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isLargeScreen = width >= 800;
-    final crossAxisCount = (width / 300).floor().clamp(
-      1,
-      4,
-    ); // adaptable para GridView
+
+    // Define el número de columnas basado en el ancho de la pantalla
+    final crossAxisCount = (width / 300).floor().clamp(1, 4);
+
+    // Relación de aspecto fija para las tarjetas, similar a las de empleados
+    final double fixedCardAspectRatio = 2.0;
 
     return Scaffold(
       appBar: _buildAppBar(),
@@ -316,11 +293,12 @@ class _VacationsPageState extends State<VacationsPage> {
                       child: GridView.builder(
                         itemCount: _filteredVacations.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
+                          crossAxisCount:
+                              crossAxisCount, // Número de columnas adaptable
+                          childAspectRatio:
+                              fixedCardAspectRatio, // Relación de aspecto fija
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          childAspectRatio:
-                              2.5, // Ajustar para tarjetas de vacaciones
                         ),
                         itemBuilder: (context, index) {
                           return _buildVacationCard(_filteredVacations[index]);
@@ -353,20 +331,19 @@ class _VacationsPageState extends State<VacationsPage> {
     );
   }
 
-  // Se ha adaptado para mostrar las vacaciones en un GridView
+  // Tarjeta de vacación con estilo similar a la tarjeta de empleado
   Widget _buildVacationCard(Vacation vacation) {
     return Card(
-      elevation: 3,
+      elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          // Aquí puedes navegar a una página de detalles o edición de la vacación
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Detalles de la solicitud de ${vacation.employeeName}',
-              ),
+          // Navega a la página de detalles de la vacación
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VacationDetailPage(vacation: vacation),
             ),
           );
         },
@@ -397,6 +374,7 @@ class _VacationsPageState extends State<VacationsPage> {
                         fontWeight: FontWeight.bold,
                       ),
                       overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                   Container(
@@ -420,13 +398,17 @@ class _VacationsPageState extends State<VacationsPage> {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
-                'Desde: ${vacation.startDate.toLocal().toString().split(' ')[0]}',
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              // Detalles de la vacación
+              _buildInfoRow(
+                icon: Icons.calendar_today,
+                label: 'Desde:',
+                value: vacation.startDate.toLocal().toString().split(' ')[0],
               ),
-              Text(
-                'Hasta: ${vacation.endDate.toLocal().toString().split(' ')[0]}',
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              const SizedBox(height: 4),
+              _buildInfoRow(
+                icon: Icons.calendar_today,
+                label: 'Hasta:',
+                value: vacation.endDate.toLocal().toString().split(' ')[0],
               ),
               const Spacer(),
               Align(
@@ -446,12 +428,12 @@ class _VacationsPageState extends State<VacationsPage> {
                     style: TextStyle(fontSize: 13),
                   ),
                   onPressed: () {
-                    // Acción para ver más detalles de la solicitud
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Ver detalles de ${vacation.employeeName}',
-                        ),
+                    // Navega a la página de detalles de la vacación
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => VacationDetailPage(vacation: vacation),
                       ),
                     );
                   },
@@ -461,6 +443,36 @@ class _VacationsPageState extends State<VacationsPage> {
           ),
         ),
       ),
+    );
+  }
+
+  // Widget auxiliar para construir filas de información
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.grey),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.black87,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }

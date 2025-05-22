@@ -91,12 +91,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('Dashboard de Gestión'),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        elevation: 2,
-      ),
       body: RefreshIndicator(
         onRefresh: _loadInitialData,
         child: SingleChildScrollView(

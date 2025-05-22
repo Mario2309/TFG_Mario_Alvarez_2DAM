@@ -77,7 +77,7 @@ class VacationService {
     try {
       await supabase
           .from('vacaciones')
-          .update({'status': newStatus})
+          .update({'estado': newStatus})
           .eq('id', id);
     } catch (e) {
       print('Error al actualizar el estado de la vacación: $e');
