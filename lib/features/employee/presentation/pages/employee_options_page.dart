@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:nexuserp/features/credentials_employees/data/datasources/vacation_service.dart';
 import 'package:nexuserp/features/employee/data/repositories/employee_repository_impl.dart';
 import 'package:nexuserp/features/employee/domain/entities/employee.dart';
-import 'package:nexuserp/features/employee/data/models/employee_model.dart';
 import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart';
 import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
 import 'package:nexuserp/features/employee/presentation/pages/select_vacation_period_page.dart';
 import 'package:nexuserp/features/employee_files/presentation/pages/upload_employee_file_page.dart';
+import 'package:nexuserp/features/credentials_employees/presentation/pages/add_credential_for_employee_page.dart';
+import 'package:nexuserp/features/credentials_employees/data/repositories/vacation_repository_impl.dart';
 
 class EmployeeOptionsPage extends StatefulWidget {
   final Employee employee;
@@ -66,6 +68,14 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
               color: Colors.purple.shade100,
               iconColor: Colors.purple.shade700,
               onTap: () => _navigateToUploadFile(context),
+            ),
+            const SizedBox(height: 12),
+            _buildOptionCard(
+              icon: Icons.vpn_key,
+              label: 'Asignar credencial',
+              color: Colors.teal.shade100,
+              iconColor: Colors.teal.shade700,
+              onTap: () => _navigateToAddCredential(context),
             ),
             const SizedBox(height: 12),
             _buildOptionCard(
@@ -263,6 +273,23 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
             (_) => UploadEmployeeFilePage(
               employeeId: employee.id!,
               employeeName: employee.nombreCompleto,
+            ),
+      ),
+    );
+  }
+
+  Future<void> _navigateToAddCredential(BuildContext context) async {
+    final employee = widget.employee;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => AddCredentialForEmployeePage(
+              employeeDni: employee.dni,
+              correo: employee.correoElectronico,
+              repository: EmployeeCredentialRepositoryImpl(
+                credentialService: CredentialService(),
+              ),
             ),
       ),
     );

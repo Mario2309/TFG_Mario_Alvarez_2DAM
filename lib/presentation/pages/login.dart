@@ -8,6 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPre
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:animated_text_kit/animated_text_kit.dart'; // Importa para el texto animado
 import 'package:another_flushbar/flushbar.dart'; // Import para las notificaciones
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import 'package:nexuserp/features/employee/domain/entities/employee.dart';
+import 'package:nexuserp/features/employee/presentation/pages/employee_simple_options_page.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -36,6 +40,7 @@ class _LoginFormState extends State<LoginForm> {
   String? _error;
   bool _rememberMe = false; // Estado para "Recordarme"
   late SharedPreferences _prefs;
+  bool _isEmployeeLogin = false;
 
   @override
   void initState() {
@@ -84,32 +89,80 @@ class _LoginFormState extends State<LoginForm> {
     });
 
     try {
-      final response = await supabase.auth.signInWithPassword(
+      if (!_isEmployeeLogin) {
+        // Login normal Supabase
+        final response = await supabase.auth.signInWithPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        if (response.session != null) {
+          if (_rememberMe) {
+            _rememberUser();
+          } else {
+            _clearRememberedUser();
+          }
+          _navigateToMainPage();
+          return;
+        }
+      } else {
+        // Login empleado (credencial_empleado)
+        final credenciales = await Supabase.instance.client
+            .from('credencial_empleado')
+            .select()
+            .eq('correo_electronico', _emailController.text.trim());
+        if (credenciales.isNotEmpty) {
+          final credencial = credenciales.first;
+          final storedHash = credencial['contrasena_hashed'] ?? '';
+          final inputPassword = _passwordController.text.trim();
+          final inputHash =
+              sha256.convert(utf8.encode(inputPassword)).toString();
+          if (storedHash == inputHash) {
+            if (_rememberMe) {
+              _rememberUser();
+            } else {
+              _clearRememberedUser();
+            }
+            // Buscar el empleado por correo electrónico
+            final empleados = await Supabase.instance.client
+                .from('empleado')
+                .select()
+                .eq('correo_electronico', _emailController.text.trim());
+            if (empleados.isNotEmpty) {
+              final emp = empleados.first;
+              final employee = Employee(
+                id: emp['id'],
+                nombreCompleto: emp['nombre_completo'],
+                nacimiento: DateTime.parse(emp['nacimiento']),
+                correoElectronico: emp['correo_electronico'],
+                numeroTelefono: emp['numero_telefono'],
+                dni: emp['dni'],
+                sueldo: (emp['sueldo'] as num).toDouble(),
+                cargo: emp['cargo'],
+                fechaContratacion: DateTime.parse(emp['fecha_contratacion']),
+                activo: emp['activo'],
+              );
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          EmployeeSimpleOptionsPage(employee: employee),
+                ),
+              );
+              return;
+            }
+          }
+        }
+      }
+      _showErrorSnackbar(
+        context,
+        "Inicio de sesión fallido. Por favor, verifica tus credenciales.",
+      );
+    } on AuthException catch (e) {
+      await supabase.auth.signInWithPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-
-      if (response.session != null) {
-        // Guardar datos de "Recordarme"
-        if (_rememberMe) {
-          _rememberUser();
-        } else {
-          _clearRememberedUser(); // Clear if remember me is false
-        }
-        _navigateToMainPage();
-      } else {
-        _showErrorSnackbar(
-          context,
-          "Inicio de sesión fallido. Por favor, verifica tus credenciales.",
-        );
-      }
-    } on AuthException catch (e) {
-      _showErrorSnackbar(context, e.message);
-    } catch (e) {
-      _showErrorSnackbar(
-        context,
-        'Ocurrió un error inesperado. Inténtalo de nuevo.',
-      ); // Muestra la notificación de error
     } finally {
       setState(() {
         _isLoading = false;
@@ -256,10 +309,41 @@ class _LoginFormState extends State<LoginForm> {
           _buildEmailField(),
           const SizedBox(height: 16.0),
           _buildPasswordField(visibilityController),
-          const SizedBox(height: 12.0), // Espacio para el Checkbox
+          const SizedBox(height: 12.0),
           _buildRememberMeCheckbox(),
-          const SizedBox(height: 24.0),
-          _buildLoginButton(),
+          const SizedBox(height: 16.0),
+          Row(
+            children: [
+              Expanded(child: _buildLoginButton()),
+              const SizedBox(width: 12),
+              OutlinedButton.icon(
+                onPressed:
+                    _isLoading
+                        ? null
+                        : () {
+                          setState(() {
+                            _isEmployeeLogin = !_isEmployeeLogin;
+                          });
+                        },
+                icon: Icon(
+                  _isEmployeeLogin ? Icons.person : Icons.verified_user,
+                ),
+                label: Text(_isEmployeeLogin ? 'Empleado' : 'Usuario'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor:
+                      _isEmployeeLogin
+                          ? Colors.teal.shade700
+                          : Colors.blue.shade700,
+                  side: BorderSide(
+                    color:
+                        _isEmployeeLogin
+                            ? Colors.teal.shade700
+                            : Colors.blue.shade700,
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 16.0),
           _buildGoogleSignInButton(),
         ],
@@ -277,11 +361,10 @@ class _LoginFormState extends State<LoginForm> {
         contentPadding: const EdgeInsets.all(16.0),
       ),
       keyboardType: TextInputType.emailAddress,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Introduce tu correo';
-        }
-        if (!value.contains('@')) {
+        if (value == null) return null;
+        if (value.isNotEmpty && !value.contains('@')) {
           return 'Correo inválido';
         }
         return null;
