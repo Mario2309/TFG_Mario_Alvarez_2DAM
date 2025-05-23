@@ -193,9 +193,9 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void> _signInWithGoogle() async {
     try {
-      await supabase.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: 'io.supabase.flutter://login-callback',
+      _showErrorSnackbar(
+        context,
+        'Inicio de sesión con Google sin implementar',
       );
     } catch (e) {
       _showErrorSnackbar(context, 'Inicio de sesión con Google fallido');
@@ -301,37 +301,31 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: 12.0),
           _buildRememberMeCheckbox(),
           const SizedBox(height: 16.0),
-          Row(
-            children: [
-              Expanded(child: _buildLoginButton()),
-              const SizedBox(width: 12),
-              OutlinedButton.icon(
-                onPressed:
-                    _isLoading
-                        ? null
-                        : () {
-                          setState(() {
-                            _isEmployeeLogin = !_isEmployeeLogin;
-                          });
-                        },
-                icon: Icon(
-                  _isEmployeeLogin ? Icons.person : Icons.verified_user,
-                ),
-                label: Text(_isEmployeeLogin ? 'Empleado' : 'Administrador'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor:
-                      _isEmployeeLogin
-                          ? Colors.teal.shade700
-                          : Colors.blue.shade700,
-                  side: BorderSide(
-                    color:
-                        _isEmployeeLogin
-                            ? Colors.teal.shade700
-                            : Colors.blue.shade700,
-                  ),
-                ),
+          _buildLoginButton(),
+          const SizedBox(height: 12.0),
+          OutlinedButton.icon(
+            onPressed:
+                _isLoading
+                    ? null
+                    : () {
+                      setState(() {
+                        _isEmployeeLogin = !_isEmployeeLogin;
+                      });
+                    },
+            icon: Icon(_isEmployeeLogin ? Icons.person : Icons.verified_user),
+            label: Text(_isEmployeeLogin ? 'Empleado' : 'Administrador'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor:
+                  _isEmployeeLogin
+                      ? Colors.teal.shade700
+                      : Colors.blue.shade700,
+              side: BorderSide(
+                color:
+                    _isEmployeeLogin
+                        ? Colors.teal.shade700
+                        : Colors.blue.shade700,
               ),
-            ],
+            ),
           ),
           const SizedBox(height: 16.0),
           _buildGoogleSignInButton(),
@@ -418,10 +412,8 @@ class _LoginFormState extends State<LoginForm> {
         backgroundColor: const Color(
           0xFF2196F3,
         ), // Changed to use constant color
-        padding: const EdgeInsets.symmetric(vertical: 14.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         elevation: 8, // Añade sombra al botón
         shadowColor: Colors.blue.shade900,
       ),
@@ -451,7 +443,7 @@ class _LoginFormState extends State<LoginForm> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 14.0),
+        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
       ),
     );
   }

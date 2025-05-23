@@ -79,15 +79,12 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
     });
 
     try {
-      // Normalizar nombre de empleado y archivo para evitar problemas en la ruta de almacenamiento.
-      final employeeNameNormalized = widget.employeeName.replaceAll(
-        RegExp(r'[^A-Za-z0-9._-]'),
-        '_',
-      );
+      // Normalizar nombre del archivo para evitar problemas en la ruta de almacenamiento.
       final fileName = _selectedFile!.path.split(Platform.pathSeparator).last;
-      final normalizedFileName = _normalizeFileName(fileName);
-      final filePath =
-          '$employeeNameNormalized/$normalizedFileName'; // Ruta en el almacenamiento.
+      final normalizedFileName = _normalizeFileName(
+        '${widget.employeeName}_$fileName',
+      );
+      final filePath = normalizedFileName; // Ruta simplificada sin carpetas.
       final fileBytes = await _selectedFile!.readAsBytes();
 
       if (fileBytes.isEmpty) {

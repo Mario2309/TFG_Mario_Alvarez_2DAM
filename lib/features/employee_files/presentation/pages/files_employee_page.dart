@@ -99,7 +99,22 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Archivos almacenados')),
+      appBar: AppBar(
+        title: const Text(
+          'Archivos almacenados',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue.shade700, Colors.blue.shade900],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        elevation: 8,
+      ),
       body: Column(
         children: [
           Padding(
@@ -108,10 +123,21 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Buscar por nombre, tipo o ruta...',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search, color: Colors.blue),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue.shade300),
                 ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue.shade300),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue.shade700, width: 2),
+                ),
+                filled: true,
+                fillColor: Colors.blue.shade50.withOpacity(0.5),
               ),
             ),
           ),
@@ -121,7 +147,10 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
               child:
                   _filteredFiles.isEmpty
                       ? const Center(
-                        child: Text('No hay archivos almacenados.'),
+                        child: Text(
+                          'No hay archivos almacenados.',
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        ),
                       )
                       : ListView.builder(
                         itemCount: _filteredFiles.length,
@@ -132,14 +161,29 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                               horizontal: 16,
                               vertical: 8,
                             ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 4,
                             child: ListTile(
-                              leading: const Icon(
+                              leading: Icon(
                                 Icons.insert_drive_file,
-                                color: Colors.blue,
+                                color: Colors.blue.shade700,
+                                size: 32,
                               ),
-                              title: Text(file.fileName),
+                              title: Text(
+                                file.fileName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
                               subtitle: Text(
                                 'Tipo: ${file.fileType}\nSubido: ${file.uploadDate.toLocal().toString().split(' ')[0]}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
                               ),
                               isThreeLine: true,
                               trailing: IconButton(
@@ -187,7 +231,6 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                                 },
                               ),
                               onTap: () async {
-                                // Abre el archivo en el navegador si es una URL pública
                                 if (file.filePath.startsWith('http')) {
                                   await launchUrl(Uri.parse(file.filePath));
                                 } else {
@@ -207,15 +250,10 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Funcionalidad de subida no implementada.'),
-            ),
-          );
-        },
-        child: const Icon(Icons.upload_file),
-        tooltip: 'Subir archivo',
+        onPressed: _loadFiles,
+        child: const Icon(Icons.refresh, size: 28),
+        backgroundColor: Colors.blue.shade700,
+        tooltip: 'Recargar archivos',
       ),
     );
   }

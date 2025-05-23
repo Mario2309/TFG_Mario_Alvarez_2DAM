@@ -19,15 +19,15 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _allOptions = [
-      _SearchOption("Products", Icons.shopping_bag_outlined, ProductsPage()),
-      _SearchOption("Employees", Icons.people_alt_outlined, EmployeesPage()),
+      _SearchOption("Productos", Icons.shopping_bag_outlined, ProductsPage()),
+      _SearchOption("Empleados", Icons.people_alt_outlined, EmployeesPage()),
       _SearchOption(
-        "Suppliers",
+        "Proveedores",
         Icons.local_shipping_outlined,
         SuppliersPage(),
       ),
       _SearchOption(
-        "Inventory",
+        "Inventario",
         Icons.inventory_2_outlined,
         InventoryDetailsPage(),
       ),

@@ -18,7 +18,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final user = supabase.auth.currentUser;
 
     if (user == null) {
-      return const Scaffold(body: Center(child: Text('No user logged in.')));
+      return const Scaffold(
+        body: Center(child: Text('No hay usuario conectado.')),
+      );
     }
 
     final email = user.email ?? 'No email';

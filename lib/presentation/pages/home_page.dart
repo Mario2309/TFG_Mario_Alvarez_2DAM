@@ -79,7 +79,9 @@ class _HomePageState extends State<HomePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to load data. Please check your connection.'),
+            content: Text(
+              'Error al cargar los datos. Por favor, verifica tu conexión.',
+            ),
             duration: Duration(seconds: 5),
           ),
         );
