@@ -82,25 +82,21 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() {
       _isLoading = true;
       _error = null;
     });
-
     try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
       if (!_isEmployeeLogin) {
         // Login normal Supabase
         final response = await supabase.auth.signInWithPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+          email: email,
+          password: password,
         );
-        if (response.session != null) {
-          if (_rememberMe) {
-            _rememberUser();
-          } else {
-            _clearRememberedUser();
-          }
+        if (response.session?.user != null) {
+          _rememberMe ? _rememberUser() : _clearRememberedUser();
           _navigateToMainPage();
           return;
         }
@@ -109,24 +105,18 @@ class _LoginFormState extends State<LoginForm> {
         final credenciales = await Supabase.instance.client
             .from('credencial_empleado')
             .select()
-            .eq('correo_electronico', _emailController.text.trim());
+            .eq('correo_electronico', email);
         if (credenciales.isNotEmpty) {
           final credencial = credenciales.first;
           final storedHash = credencial['contrasena_hashed'] ?? '';
-          final inputPassword = _passwordController.text.trim();
-          final inputHash =
-              sha256.convert(utf8.encode(inputPassword)).toString();
+          final inputHash = sha256.convert(utf8.encode(password)).toString();
           if (storedHash == inputHash) {
-            if (_rememberMe) {
-              _rememberUser();
-            } else {
-              _clearRememberedUser();
-            }
+            _rememberMe ? _rememberUser() : _clearRememberedUser();
             // Buscar el empleado por correo electrónico
             final empleados = await Supabase.instance.client
                 .from('empleado')
                 .select()
-                .eq('correo_electronico', _emailController.text.trim());
+                .eq('correo_electronico', email);
             if (empleados.isNotEmpty) {
               final emp = empleados.first;
               final employee = Employee(
@@ -158,11 +148,10 @@ class _LoginFormState extends State<LoginForm> {
         context,
         "Inicio de sesión fallido. Por favor, verifica tus credenciales.",
       );
-    } on AuthException catch (e) {
-      await supabase.auth.signInWithPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+    } catch (e) {
+      if (e is AuthException) {
+        _showErrorSnackbar(context, e.message);
+      }
     } finally {
       setState(() {
         _isLoading = false;
