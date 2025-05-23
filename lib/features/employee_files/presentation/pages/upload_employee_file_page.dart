@@ -250,7 +250,7 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
                 value: _fileType,
                 decoration: InputDecoration(
                   labelText: 'Tipo de Archivo',
-                  hintText: 'Selecciona el tipo de documento',
+                  hintText: 'Selecciona el tipo',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.blue.shade400),
