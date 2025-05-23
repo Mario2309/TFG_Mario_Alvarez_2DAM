@@ -317,7 +317,7 @@ class _LoginFormState extends State<LoginForm> {
                 icon: Icon(
                   _isEmployeeLogin ? Icons.person : Icons.verified_user,
                 ),
-                label: Text(_isEmployeeLogin ? 'Empleado' : 'Usuario'),
+                label: Text(_isEmployeeLogin ? 'Empleado' : 'Administrador'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor:
                       _isEmployeeLogin

@@ -295,66 +295,13 @@ class _HomePageState extends State<HomePage> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final bool showTextLabels =
-                  constraints.maxWidth >
-                  400; // Define breakpoint for showing text labels
-              final double fontSize =
-                  showTextLabels
-                      ? 14
-                      : 0; // Set font size to 0 if not showing text
-
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  SegmentedButton<ChartType>(
-                    segments: <ButtonSegment<ChartType>>[
-                      ButtonSegment<ChartType>(
-                        value: ChartType.line,
-                        label:
-                            showTextLabels
-                                ? Text(
-                                  'Línea',
-                                  style: TextStyle(fontSize: fontSize),
-                                )
-                                : null, // Conditionally set label to null
-                        icon: const Icon(Icons.show_chart),
-                      ),
-                      ButtonSegment<ChartType>(
-                        value: ChartType.pie,
-                        label:
-                            showTextLabels
-                                ? Text(
-                                  'Circular',
-                                  style: TextStyle(fontSize: fontSize),
-                                )
-                                : null, // Conditionally set label to null
-                        icon: const Icon(Icons.pie_chart),
-                      ),
-                    ],
-                    selected: <ChartType>{chartType},
-                    onSelectionChanged: (Set<ChartType> newSelection) {
-                      onChartTypeChanged(newSelection.first);
-                    },
-                    style: SegmentedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade50,
-                      selectedBackgroundColor: Colors.blue.shade100,
-                      selectedForegroundColor: Colors.blue.shade800,
-                      foregroundColor: Colors.blue.shade600,
-                    ),
-                  ),
-                ],
-              );
-            },
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: Colors.blue,
+            ),
           ),
         ),
         Padding(
@@ -401,6 +348,68 @@ class _HomePageState extends State<HomePage> {
                                   }
                                 },
                               ),
+                            ),
+                            const SizedBox(height: 16),
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final bool showTextLabels =
+                                    constraints.maxWidth >
+                                    400; // Define breakpoint for showing text labels
+                                final double fontSize =
+                                    showTextLabels
+                                        ? 14
+                                        : 0; // Set font size to 0 if not showing text
+
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SegmentedButton<ChartType>(
+                                      segments: <ButtonSegment<ChartType>>[
+                                        ButtonSegment<ChartType>(
+                                          value: ChartType.line,
+                                          label:
+                                              showTextLabels
+                                                  ? Text(
+                                                    'Línea',
+                                                    style: TextStyle(
+                                                      fontSize: fontSize,
+                                                    ),
+                                                  )
+                                                  : null, // Conditionally set label to null
+                                          icon: const Icon(Icons.show_chart),
+                                        ),
+                                        ButtonSegment<ChartType>(
+                                          value: ChartType.pie,
+                                          label:
+                                              showTextLabels
+                                                  ? Text(
+                                                    'Circular',
+                                                    style: TextStyle(
+                                                      fontSize: fontSize,
+                                                    ),
+                                                  )
+                                                  : null, // Conditionally set label to null
+                                          icon: const Icon(Icons.pie_chart),
+                                        ),
+                                      ],
+                                      selected: <ChartType>{chartType},
+                                      onSelectionChanged: (
+                                        Set<ChartType> newSelection,
+                                      ) {
+                                        onChartTypeChanged(newSelection.first);
+                                      },
+                                      style: SegmentedButton.styleFrom(
+                                        backgroundColor: Colors.blue.shade50,
+                                        selectedBackgroundColor:
+                                            Colors.blue.shade100,
+                                        selectedForegroundColor:
+                                            Colors.blue.shade800,
+                                        foregroundColor: Colors.blue.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ],
                         ),
