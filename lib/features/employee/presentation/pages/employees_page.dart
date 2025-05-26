@@ -7,6 +7,8 @@ import 'package:nexuserp/features/employee/data/datasources/employee_service.dar
 import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart'
     show EditEmployeePage;
 import 'package:nexuserp/features/employee/presentation/pages/employee_options_page.dart';
+import 'package:nexuserp/presentation/pages/home_page.dart';
+import 'package:nexuserp/presentation/pages/main_page.dart';
 import 'package:nexuserp/presentation/pages/search_page.dart';
 import 'package:nexuserp/features/employee_files/presentation/pages/files_employee_page.dart';
 
@@ -288,6 +290,15 @@ class _EmployeesPageState extends State<EmployeesPage> {
               ),
             ],
           ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MainPage()),
+            );
+          },
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
