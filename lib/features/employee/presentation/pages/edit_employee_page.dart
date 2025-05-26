@@ -35,11 +35,19 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   @override
   void initState() {
     super.initState();
-    _nombreController = TextEditingController(text: widget.employee.nombreCompleto);
-    _emailController = TextEditingController(text: widget.employee.correoElectronico);
-    _telefonoController = TextEditingController(text: widget.employee.numeroTelefono);
+    _nombreController = TextEditingController(
+      text: widget.employee.nombreCompleto,
+    );
+    _emailController = TextEditingController(
+      text: widget.employee.correoElectronico,
+    );
+    _telefonoController = TextEditingController(
+      text: widget.employee.numeroTelefono,
+    );
     _dniController = TextEditingController(text: widget.employee.dni);
-    _sueldoController = TextEditingController(text: widget.employee.sueldo.toString());
+    _sueldoController = TextEditingController(
+      text: widget.employee.sueldo.toString(),
+    );
     _cargoController = TextEditingController(text: widget.employee.cargo);
 
     _nacimiento = widget.employee.nacimiento;
@@ -109,7 +117,9 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
         activo: _activo,
       );
 
-      final success = await widget.employeeService.updateEmployee(updatedEmployee);
+      final success = await widget.employeeService.updateEmployee(
+        updatedEmployee,
+      );
 
       if (success) {
         Navigator.pop(context);
@@ -122,15 +132,19 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   void _showErrorDialog() {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Error'),
-        content: const Text('No se pudo actualizar al empleado. Inténtalo nuevamente.'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Aceptar')),
-        ],
-      ),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Error'),
+            content: const Text(
+              'No se pudo actualizar al empleado. Inténtalo nuevamente.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Aceptar'),
+              ),
+            ],
+          ),
     );
   }
 
@@ -225,7 +239,8 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
         controller: controller,
-        validator: validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
+        validator:
+            validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
         enabled: isEnabled,
         keyboardType: keyboardType,
         decoration: InputDecoration(
@@ -285,7 +300,9 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
         ),
         ElevatedButton(
           onPressed: _submitForm,
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade700),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue.shade700,
+          ),
           child: const Text('Guardar'),
         ),
       ],

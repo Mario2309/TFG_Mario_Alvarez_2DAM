@@ -5,6 +5,8 @@ import 'package:nexuserp/features/employee_files/data/datasources/employee_file_
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart'; // Para formatear fechas
 
+import '../../../employee/presentation/pages/employees_page.dart';
+
 // Definición del enum SortingOption
 enum SortingOption { name, type, date }
 
@@ -247,6 +249,15 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
           ),
         ),
         elevation: 12,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EmployeesPage()),
+            );
+          },
+        ),
         actions: [
           PopupMenuButton<SortingOption>(
             onSelected: (SortingOption result) {

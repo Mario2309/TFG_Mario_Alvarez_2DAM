@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexuserp/features/employee/data/repositories/employee_repository_impl.dart';
+import 'package:nexuserp/features/employee/presentation/pages/employees_page.dart';
 import '../../domain/entities/employee.dart';
 
 class AddEmployeePage extends StatefulWidget {
@@ -93,7 +94,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       );
 
       if (success) {
-        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EmployeesPage()),
+        );
       } else {
         _showErrorDialog();
       }
@@ -125,6 +129,15 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       appBar: AppBar(
         title: const Text('Agregar Empleado'),
         backgroundColor: Colors.blue.shade700,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EmployeesPage()),
+            );
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -263,7 +276,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         OutlinedButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EmployeesPage()),
+            );
+          },
           child: const Text('Cancelar'),
         ),
         ElevatedButton(

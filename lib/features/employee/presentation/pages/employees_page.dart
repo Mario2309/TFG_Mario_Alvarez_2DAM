@@ -432,34 +432,6 @@ class _EmployeesPageState extends State<EmployeesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton.icon(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    minimumSize: const Size(60, 28),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  icon: const Icon(Icons.edit_outlined, size: 18),
-                  label: const Text('Editar', style: TextStyle(fontSize: 13)),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => EditEmployeePage(
-                              employee: employee,
-                              employeeService: _employeeService,
-                            ),
-                      ),
-                    ).then((updatedEmployee) {
-                      if (updatedEmployee != null && mounted) {
-                        _loadEmployees();
-                      }
-                    });
-                  },
-                ),
                 const SizedBox(width: 8),
                 TextButton.icon(
                   style: TextButton.styleFrom(
