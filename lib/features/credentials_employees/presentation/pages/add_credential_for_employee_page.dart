@@ -47,49 +47,30 @@ class _AddCredentialForEmployeePageState
       final credential = EmployeeCredentialModel(
         employeeDni: widget.employeeDni,
         email: widget.correo,
-        hashedPassword: _passwordController.text.trim(),
+        hashedPassword: _hashPassword(_passwordController.text.trim()),
       );
       await widget.repository.addCredential(credential);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Credencial agregada correctamente.')),
+          const SnackBar(
+            content: Text('Credencial agregada correctamente.'),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.green,
+          ),
         );
         Navigator.pop(context, true);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al agregar credencial: $e')),
+        SnackBar(
+          content: Text('Error al agregar credencial: $e'),
+          duration: const Duration(seconds: 5),
+          backgroundColor: Colors.red,
+        ),
       );
     } finally {
       setState(() => _isLoading = false);
     }
-  }
-
-  void _showPasswordHashDialog() {
-    final password = _passwordController.text.trim();
-    if (password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Introduce una contraseña para comprobar.'),
-        ),
-      );
-      return;
-    }
-    final hash = _hashPassword(password);
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Hash de la contraseña'),
-            content: SelectableText(hash),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cerrar'),
-              ),
-            ],
-          ),
-    );
   }
 
   String _hashPassword(String password) {
@@ -98,30 +79,88 @@ class _AddCredentialForEmployeePageState
     return digest.toString();
   }
 
+  InputDecoration _buildInputDecoration(String label, {bool enabled = true}) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(
+        fontWeight: FontWeight.w400,
+        color: enabled ? Colors.grey.shade700 : Colors.grey.shade500,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.blue.shade500), // Borde azul
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.blue.shade500), // Borde azul
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.blue.shade700, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red, width: 2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red, width: 2),
+      ),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Agregar credencial al empleado')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      backgroundColor: Colors.white, // Fondo blanco
+      appBar: AppBar(
+        title: const Text(
+          'Agregar Credencial',
+          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+        ),
+        backgroundColor: Colors.blue.shade700, // Cabecera azul
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text(
+                'Datos de la Credencial',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A202C),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Introduce la contraseña para la nueva credencial del empleado.',
+                style: TextStyle(fontSize: 16, color: Color(0xFF4A5568)),
+              ),
+              const SizedBox(height: 40),
               TextFormField(
                 controller: _emailController,
                 enabled: false,
-                decoration: const InputDecoration(
-                  labelText: 'Correo electrónico',
-                  border: OutlineInputBorder(),
+                decoration: _buildInputDecoration(
+                  'Correo electrónico',
+                  enabled: false,
                 ),
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Introduce el correo';
+                    return 'Introduce el correo electrónico';
                   }
                   if (!value.contains('@')) {
-                    return 'Correo inválido';
+                    return 'Correo electrónico inválido';
                   }
                   return null;
                 },
@@ -130,10 +169,8 @@ class _AddCredentialForEmployeePageState
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Contraseña',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: _buildInputDecoration('Contraseña'),
+                style: const TextStyle(fontSize: 16),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Introduce la contraseña';
@@ -145,29 +182,34 @@ class _AddCredentialForEmployeePageState
                 },
               ),
               const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _submit,
-                        child:
-                            _isLoading
-                                ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                                : const Text('Agregar credencial'),
-                      ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.add_task, color: Colors.white),
+                  label: const Text(
+                    'Agregar Credencial',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                  onPressed: _isLoading ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade600,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 18.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0),
                     ),
+                    elevation: 4,
+                    shadowColor: Colors.blue.withOpacity(0.3),
                   ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () => _showPasswordHashDialog(),
-                    child: const Text('Ver hash'),
-                  ),
-                ],
+                ),
               ),
+              if (_isLoading)
+                Padding(
+                  padding: const EdgeInsets.only(top: 24),
+                  child: Center(
+                    child: CircularProgressIndicator(color: Colors.blue),
+                  ),
+                ),
             ],
           ),
         ),

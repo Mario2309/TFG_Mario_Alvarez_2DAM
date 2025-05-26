@@ -10,11 +10,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
-  final List<Widget> _pages = [
-    HomePage(),
-    SearchPage(),
-    ProfilePage(),
-  ];
+  final List<Widget> _pages = [HomePage(), SearchPage(), ProfilePage()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -26,17 +22,14 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text('NexusERP', style: TextStyle(fontWeight: FontWeight.bold))),
+        title: const Center(
+          child: Text(
+            'NexusERP',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
         backgroundColor: Colors.blue.shade700, // Consistent app bar color
         elevation: 4, // Slight shadow for the app bar
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // Implement notification action if needed
-            },
-          ),
-        ],
       ),
       body: AnimatedSwitcher(
         duration: Duration(milliseconds: 300),
@@ -45,16 +38,25 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
+            icon: Icon(Icons.home), // Icono de "Inicio" relleno
+            activeIcon: Icon(
+              Icons.home_outlined,
+            ), // Icono de "Inicio" sin relleno cuando está inactivo
+            label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            label: 'Search',
+            icon: Icon(Icons.view_module), // Icono de "Módulos" relleno
+            activeIcon: Icon(
+              Icons.view_module_outlined,
+            ), // Icono de "Módulos" sin relleno cuando está inactivo
+            label: 'Módulos',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
+            icon: Icon(Icons.person), // Icono de "Perfil" relleno
+            activeIcon: Icon(
+              Icons.person_outline,
+            ), // Icono de "Perfil" sin relleno cuando está inactivo
+            label: 'Perfil',
           ),
         ],
         currentIndex: _selectedIndex,

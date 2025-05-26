@@ -133,17 +133,65 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Perfil actualizado correctamente.'),
-            duration: Duration(seconds: 2), // Added duration
+            duration: Duration(seconds: 3), // Added duration
+            backgroundColor: Colors.green, // Color de éxito
           ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error al actualizar perfil: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al actualizar perfil: $e'),
+          duration: const Duration(
+            seconds: 5,
+          ), // Duración más larga para errores
+          backgroundColor: Colors.red, // Color de error
+        ),
+      );
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  // Función para crear la decoración de entrada de texto con el estilo deseado
+  InputDecoration _buildInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(fontWeight: FontWeight.w400),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: Colors.blue.shade500,
+        ), // Borde azul por defecto
+      ),
+      enabledBorder: OutlineInputBorder(
+        // Definir explícitamente el borde habilitado
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: Colors.blue.shade500,
+        ), // Borde azul por defecto
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: Colors.blue.shade700, // Color de enfoque más oscuro
+          width: 2, // Borde de enfoque ligeramente más grueso
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        // Definir borde de error
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red, width: 2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        // Definir borde de error enfocado
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.red, width: 2),
+      ),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+    );
   }
 
   @override
@@ -155,44 +203,46 @@ class _EditProfilePageState extends State<EditProfilePage> {
               height: 120,
               width: 120,
               fit: BoxFit.cover,
-            ) // Increased size
+            )
             : (_selectedImage != null && !kIsWeb
                 ? Image.file(
                   _selectedImage!,
                   height: 120,
                   width: 120,
                   fit: BoxFit.cover,
-                ) // Increased size
+                )
                 : (_avatarUrl != null && _avatarUrl!.isNotEmpty
                     ? Image.network(
                       _avatarUrl!,
                       height: 120,
                       width: 120,
                       fit: BoxFit.cover,
-                    ) // Increased size
-                    : const Icon(
-                      Icons.person,
-                      size: 60,
-                      color: Colors.grey,
-                    ))); // Changed size and color
+                    )
+                    : const Icon(Icons.person, size: 60, color: Colors.grey)));
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA), // Fondo claro
       appBar: AppBar(
         title: const Text(
           'Editar Perfil',
-          style: TextStyle(fontWeight: FontWeight.w500), // Added fontWeight
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // Título ligeramente más negrita
+            color: Colors.white, // Color de título blanco
+          ),
         ),
-        backgroundColor: Colors.blue.shade600, // Changed color
-        elevation: 0, // Removed shadow
-        centerTitle: true, // Center title
+        backgroundColor: Colors.blue.shade700, // Barra de aplicación azul
+        iconTheme: const IconThemeData(
+          color: Colors.white, // Color de icono blanco
+        ),
+        elevation: 0, // Sombra de la barra de aplicación eliminada
+        centerTitle: true, // Centrar título
       ),
-      backgroundColor: Colors.grey.shade50, // Changed background color
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center, // Center alignment
+            crossAxisAlignment: CrossAxisAlignment.center, // Alineación central
             children: [
               GestureDetector(
                 onTap: _pickImage,
@@ -201,15 +251,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     CircleAvatar(
                       radius: 60,
                       backgroundColor: Colors.grey.shade300,
-                      child: avatarPreview,
+                      child: ClipOval(
+                        child: avatarPreview,
+                      ), // Asegura que la imagen sea circular
                     ),
                     Positioned(
                       bottom: 0,
                       right: 0,
                       child: Container(
                         decoration: BoxDecoration(
-                          // Added a shape
-                          color: Colors.blue.shade600, // Changed color
+                          color: Colors.blue.shade600, // Color azul
                           borderRadius: BorderRadius.circular(16),
                         ),
                         padding: const EdgeInsets.all(4),
@@ -223,25 +274,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24), // Increased spacing
+              const SizedBox(height: 24),
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Nombre',
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.w400,
-                  ), // Added labelStyle and weight to all
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 16,
-                  ), // Added padding
-                ),
+                decoration: _buildInputDecoration('Nombre'),
                 validator:
                     (value) =>
                         value == null || value.isEmpty
@@ -252,40 +288,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: 'Descripción',
-                  labelStyle: const TextStyle(fontWeight: FontWeight.w400),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 16,
-                  ),
-                ),
+                decoration: _buildInputDecoration('Descripción'),
                 maxLines: 3,
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _phoneController,
-                decoration: InputDecoration(
-                  labelText: 'Teléfono',
-                  labelStyle: const TextStyle(fontWeight: FontWeight.w400),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 16,
-                  ),
-                ),
+                decoration: _buildInputDecoration('Teléfono'),
                 validator:
                     (value) =>
                         value == null || value.isEmpty
@@ -296,47 +306,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _avatarUrlController,
-                decoration: InputDecoration(
-                  labelText: 'Avatar URL (opcional)',
-                  labelStyle: const TextStyle(fontWeight: FontWeight.w400),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 16,
-                  ),
-                ),
+                decoration: _buildInputDecoration('Avatar URL (opcional)'),
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 32),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.save, color: Colors.white),
-                label: const Text(
-                  'Guardar Cambios',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ), // Increased font size and color
-                onPressed: _isLoading ? null : _updateProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade600, // Changed color
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 18.0,
-                  ), // Increased padding
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14.0), // More rounded
+              SizedBox(
+                width:
+                    double.infinity, // Asegura que el botón ocupe todo el ancho
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.save, color: Colors.white),
+                  label: const Text(
+                    'Guardar Cambios',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
-                  elevation: 3, // Add elevation
-                  shadowColor: Colors.blue.withOpacity(0.3), // Add shadow
+                  onPressed: _isLoading ? null : _updateProfile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Colors.blue.shade600, // Color azul del botón
+                    foregroundColor: Colors.white, // Color del texto del botón
+                    padding: const EdgeInsets.symmetric(vertical: 18.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0),
+                    ),
+                    elevation: 4, // Elevación aumentada
+                    shadowColor: Colors.blue.withOpacity(0.3), // Sombra
+                  ),
                 ),
               ),
               if (_isLoading)
                 const Padding(
-                  padding: EdgeInsets.only(top: 24), // Increased spacing
+                  padding: EdgeInsets.only(top: 24),
                   child: CircularProgressIndicator(
-                    color: Colors.blue, // Changed color
+                    color: Colors.blue, // Color azul del indicador de carga
                   ),
                 ),
             ],

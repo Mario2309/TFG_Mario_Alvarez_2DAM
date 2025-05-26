@@ -274,10 +274,44 @@ class _EmployeesPageState extends State<EmployeesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestión de Empleados'),
+        title: const Text(
+          'Gestión de Empleados',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 26,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                offset: Offset(2.0, 2.0),
+                blurRadius: 3.0,
+                color: Colors.black45,
+              ),
+            ],
+          ),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.blue.shade900,
+                Colors.blue.shade600,
+                Colors.blue.shade400,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+        ),
+        elevation: 12,
         centerTitle: true,
-        backgroundColor: Colors.blue.shade700,
-        elevation: 2,
       ),
       // Pasa 'true' a _buildFilterOptions si es una pantalla pequeña para mostrar el botón de retroceso
       drawer: isLargeScreen ? null : Drawer(child: _buildFilterOptions(true)),

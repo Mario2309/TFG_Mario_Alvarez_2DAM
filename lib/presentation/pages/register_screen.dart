@@ -323,7 +323,10 @@ class _RegisterFormState extends State<RegisterForm> {
                         onPressed: _isLoading ? null : _submit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue.shade700,
-                          padding: const EdgeInsets.symmetric(vertical: 14.0),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14.0,
+                            horizontal: 24.0,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),

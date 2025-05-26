@@ -96,7 +96,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
             child: FloatingActionButton(
               heroTag: 'addSupplier',
               onPressed: _navigateToAddSupplierScreen,
-              backgroundColor: Colors.green.shade400,
+              backgroundColor: Colors.blue.shade700,
               tooltip: 'Agregar proveedor',
               child: const Icon(Icons.add, color: Colors.white),
             ),
@@ -120,7 +120,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
   AppBar _buildAppBar() {
     return AppBar(
       title: const Text('Proveedores'),
-      backgroundColor: Colors.orange.shade700,
+      backgroundColor: Colors.blue.shade700,
     );
   }
 
@@ -170,11 +170,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              Icon(
-                Icons.local_shipping,
-                size: 32,
-                color: Colors.orange.shade400,
-              ),
+              Icon(Icons.local_shipping, size: 32, color: Colors.blue.shade700),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
