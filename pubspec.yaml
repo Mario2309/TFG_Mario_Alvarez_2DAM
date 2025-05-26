@@ -53,17 +53,17 @@ dependencies:
   file_picker: 10.1.9 
   url_launcher: ^6.3.1
   crypto: ^3.0.6
+  flutter_launcher_icons: 0.14.3
 
 dev_dependencies:
-  flutter_launcher_icons: 0.14.3
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/NexusERP.png" # Reemplaza con la ruta a tu imagen
+  image_path: "assets/icon/NexusERP.png" # Reemplaza con la ruta a tu imagen
 
 flutter:
   uses-material-design: true
