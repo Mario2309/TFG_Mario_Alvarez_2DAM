@@ -4,6 +4,8 @@ import 'package:nexuserp/features/employee/presentation/pages/select_vacation_pe
 import 'package:nexuserp/features/employee_files/presentation/pages/upload_employee_file_page.dart';
 import 'package:nexuserp/presentation/pages/login.dart';
 
+import '../../../employee_signing/presentation/pages/add_employee_signing_page.dart';
+
 // Esta clase representa una página de opciones rápidas para un empleado.
 // Muestra un saludo personalizado y botones para acciones comunes como
 // solicitar vacaciones, subir archivos y cerrar sesión.
@@ -130,6 +132,24 @@ class EmployeeSimpleOptionsPage extends StatelessWidget {
                           ),
                     ),
                   ),
+            ),
+            const SizedBox(height: 20), // Espacio entre botones.
+            // Botón para la opción de Agregar Fichaje.
+            _buildOptionButton(
+              context,
+              icon: Icons.fingerprint,
+              label: 'Agregar Fichaje',
+              color: Colors.orange.shade50,
+              iconColor: Colors.orange.shade700,
+              onTap: () {
+                // TODO: Cambia 'AddEmployeeSigningPage' por la página real de fichajes si el nombre es diferente
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddEmployeeSigningPage(employee: employee),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 20), // Espacio entre botones.
             // Botón para la opción de Cerrar Sesión.

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexuserp/features/employee/presentation/pages/employees_page.dart';
+import 'package:nexuserp/features/employee_signing/presentation/pages/employee_signing_page.dart';
 import 'package:nexuserp/features/product/presentation/pages/products_page.dart';
 import 'package:nexuserp/features/supliers/presentation/pages/supplier_page.dart';
 import 'package:nexuserp/features/inventory/presentation/pages/inventory_details_page.dart';
@@ -32,6 +33,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         InventoryDetailsPage(),
       ),
       _SearchOption("Vacaciones", Icons.beach_access_outlined, VacationsPage()),
+      _SearchOption(
+        "Horario",
+        Icons.access_time,
+        FichajesPage(), // Cambia el nombre si tu página de fichajes tiene otro nombre
+      ),
     ];
     _filteredOptions = List.from(_allOptions);
 

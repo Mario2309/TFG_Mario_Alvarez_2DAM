@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nexuserp/features/employee/data/models/employee_model.dart';
 import 'package:nexuserp/features/employee/presentation/pages/add_employee_screen.dart';
 import 'package:nexuserp/features/employee/domain/entities/employee.dart';
 import 'package:nexuserp/features/employee/data/repositories/employee_repository_impl.dart';
 import 'package:nexuserp/features/employee/data/datasources/employee_service.dart';
-import 'package:nexuserp/features/employee/presentation/pages/edit_employee_page.dart'
-    show EditEmployeePage;
 import 'package:nexuserp/features/employee/presentation/pages/employee_options_page.dart';
-import 'package:nexuserp/presentation/pages/home_page.dart';
 import 'package:nexuserp/presentation/pages/main_page.dart';
 import 'package:nexuserp/presentation/pages/search_page.dart';
 import 'package:nexuserp/features/employee_files/presentation/pages/files_employee_page.dart';
