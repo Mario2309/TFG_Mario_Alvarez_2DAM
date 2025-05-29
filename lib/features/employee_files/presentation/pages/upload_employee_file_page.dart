@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:nexuserp/features/employee_files/domain/entities/employee_file.dart';
 import 'package:nexuserp/features/employee_files/data/repositories/employee_file_repository_impl.dart';
 import 'package:nexuserp/features/employee_files/data/datasources/employee_file_service.dart';
+import 'package:nexuserp/features/employee/presentation/pages/employees_strings.dart';
 
 // Esta página permite a los usuarios subir archivos relacionados con un empleado,
 // especificando el tipo de archivo y añadiendo observaciones.
@@ -67,10 +68,7 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
   Future<void> _uploadFile() async {
     // Valida el formulario antes de intentar la subida.
     if (!_formKey.currentState!.validate() || _selectedFile == null) {
-      _showSnackBar(
-        'Por favor, selecciona un archivo y un tipo de archivo.',
-        isError: true,
-      );
+      _showSnackBar(EmployeesStrings.selectFileAndType, isError: true);
       return;
     }
 
@@ -116,7 +114,7 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
       await _repository.uploadFile(fileEntity);
 
       if (mounted) {
-        _showSnackBar('Archivo subido correctamente.', isError: false);
+        _showSnackBar(EmployeesStrings.fileUploaded, isError: false);
         Navigator.pop(
           context,
           true,
@@ -125,7 +123,7 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
     } catch (e) {
       // Muestra un mensaje de error si algo sale mal durante la subida o registro.
       _showSnackBar(
-        'Error al subir o registrar archivo: ${e.toString().split(':').last.trim()}',
+        '${EmployeesStrings.uploadError} ${e.toString().split(':').last.trim()}',
         isError: true,
       );
     } finally {
@@ -158,7 +156,7 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Subir Archivo - ${widget.employeeName.split(' ').first}',
+          '${EmployeesStrings.uploadFileTitle} - ${widget.employeeName.split(' ').first}',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -177,17 +175,15 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
         elevation: 8,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0), // Padding uniforme y generoso.
+        padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment
-                    .stretch, // Estira los elementos horizontalmente.
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
               Text(
-                'Adjunta un nuevo documento para ${widget.employeeName.split(' ').first}',
+                '${EmployeesStrings.attachDocument} ${widget.employeeName.split(' ').first}',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -196,14 +192,12 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 30),
-
-              // Botón para seleccionar archivo.
               ElevatedButton.icon(
                 icon: const Icon(Icons.attach_file, size: 24),
                 label: Text(
                   _selectedFile != null
-                      ? 'Archivo Seleccionado'
-                      : 'Seleccionar Archivo',
+                      ? EmployeesStrings.fileSelected
+                      : EmployeesStrings.selectFile,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -231,7 +225,7 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
                 Padding(
                   padding: const EdgeInsets.only(top: 12.0),
                   child: Text(
-                    'Archivo: ${_selectedFile!.path.split(Platform.pathSeparator).last}',
+                    '${EmployeesStrings.file}: ${_selectedFile!.path.split(Platform.pathSeparator).last}',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey.shade700,
@@ -241,13 +235,11 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
                   ),
                 ),
               const SizedBox(height: 30),
-
-              // Selector de tipo de archivo.
               DropdownButtonFormField<String>(
                 value: _fileType,
                 decoration: InputDecoration(
-                  labelText: 'Tipo de Archivo',
-                  hintText: 'Selecciona el tipo',
+                  labelText: EmployeesStrings.fileType,
+                  hintText: EmployeesStrings.selectType,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.blue.shade400),
@@ -271,32 +263,42 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
                   prefixIcon: Icon(Icons.category, color: Colors.blue.shade700),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'Contrato', child: Text('Contrato')),
-                  DropdownMenuItem(value: 'Nómina', child: Text('Nómina')),
-                  DropdownMenuItem(value: 'DNI', child: Text('DNI')),
                   DropdownMenuItem(
-                    value: 'Certificado',
-                    child: Text('Certificado'),
-                  ), // Añadido un tipo más
-                  DropdownMenuItem(value: 'Otro', child: Text('Otro')),
+                    value: EmployeesStrings.contract,
+                    child: Text(EmployeesStrings.contract),
+                  ),
+                  DropdownMenuItem(
+                    value: EmployeesStrings.payroll,
+                    child: Text(EmployeesStrings.payroll),
+                  ),
+                  DropdownMenuItem(
+                    value: EmployeesStrings.dniFile,
+                    child: Text(EmployeesStrings.dniFile),
+                  ),
+                  DropdownMenuItem(
+                    value: EmployeesStrings.certificate,
+                    child: Text(EmployeesStrings.certificate),
+                  ),
+                  DropdownMenuItem(
+                    value: EmployeesStrings.other,
+                    child: Text(EmployeesStrings.other),
+                  ),
                 ],
                 onChanged: (value) => setState(() => _fileType = value),
                 validator:
                     (value) =>
                         value == null
-                            ? 'Por favor, selecciona un tipo de archivo.'
+                            ? EmployeesStrings.selectFileTypeError
                             : null,
                 style: TextStyle(fontSize: 16, color: Colors.blue.shade800),
                 dropdownColor: Colors.white,
               ),
               const SizedBox(height: 20),
-
-              // Campo de texto para observaciones.
               TextFormField(
                 controller: _notesController,
                 decoration: InputDecoration(
-                  labelText: 'Observaciones (opcional)',
-                  hintText: 'Añade cualquier nota relevante aquí',
+                  labelText: EmployeesStrings.notes,
+                  hintText: EmployeesStrings.notesHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.grey.shade400),
@@ -319,34 +321,27 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
                   fillColor: Colors.grey.shade50.withOpacity(0.5),
                   prefixIcon: Icon(Icons.notes, color: Colors.grey.shade600),
                 ),
-                maxLines: 3, // Permite más líneas para las observaciones.
+                maxLines: 3,
                 keyboardType: TextInputType.multiline,
               ),
               const SizedBox(height: 40),
-
-              // Botón de subida de archivo.
               ElevatedButton.icon(
-                onPressed:
-                    _isUploading
-                        ? null
-                        : _uploadFile, // Deshabilita si está subiendo.
+                onPressed: _isUploading ? null : _uploadFile,
                 icon:
                     _isUploading
                         ? const SizedBox(
-                          width:
-                              24, // Tamaño ligeramente más grande para el indicador.
+                          width: 24,
                           height: 24,
                           child: CircularProgressIndicator(
                             color: Colors.white,
-                            strokeWidth: 2.5, // Grosor del indicador.
+                            strokeWidth: 2.5,
                           ),
                         )
-                        : const Icon(
-                          Icons.cloud_upload_rounded,
-                          size: 28,
-                        ), // Icono de subida más moderno.
+                        : const Icon(Icons.cloud_upload_rounded, size: 28),
                 label: Text(
-                  _isUploading ? 'Subiendo...' : 'Subir Archivo',
+                  _isUploading
+                      ? EmployeesStrings.uploading
+                      : EmployeesStrings.uploadFileButton,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -358,11 +353,11 @@ class _UploadEmployeeFilePageState extends State<UploadEmployeeFilePage> {
                   padding: const EdgeInsets.symmetric(
                     vertical: 18,
                     horizontal: 24,
-                  ), // Mayor padding.
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  elevation: 10, // Mayor sombra.
+                  elevation: 10,
                   shadowColor: Colors.blue.shade900.withOpacity(0.5),
                 ),
               ),

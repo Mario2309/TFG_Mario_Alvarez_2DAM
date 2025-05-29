@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import '../../../employee/presentation/pages/employees_strings.dart';
 import '../../data/repositories/vacation_repository_impl.dart';
 import '../../data/models/credential_employee_model.dart';
 
@@ -40,6 +41,7 @@ class _AddCredentialForEmployeePageState
     super.dispose();
   }
 
+  /// Envía el formulario para agregar la credencial del empleado.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
@@ -53,7 +55,7 @@ class _AddCredentialForEmployeePageState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Credencial agregada correctamente.'),
+            content: Text(EmployeesStrings.credentialAdded),
             duration: Duration(seconds: 3),
             backgroundColor: Colors.green,
           ),
@@ -63,7 +65,7 @@ class _AddCredentialForEmployeePageState
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al agregar credencial: $e'),
+          content: Text('${EmployeesStrings.credentialError} $e'),
           duration: const Duration(seconds: 5),
           backgroundColor: Colors.red,
         ),
@@ -73,12 +75,14 @@ class _AddCredentialForEmployeePageState
     }
   }
 
+  /// Genera el hash SHA-256 de la contraseña proporcionada.
   String _hashPassword(String password) {
     final bytes = utf8.encode(password);
     final digest = sha256.convert(bytes);
     return digest.toString();
   }
 
+  /// Construye la decoración para los campos de texto del formulario.
   InputDecoration _buildInputDecoration(String label, {bool enabled = true}) {
     return InputDecoration(
       labelText: label,
@@ -88,11 +92,11 @@ class _AddCredentialForEmployeePageState
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.blue.shade500), // Borde azul
+        borderSide: BorderSide(color: Colors.blue.shade500),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.blue.shade500), // Borde azul
+        borderSide: BorderSide(color: Colors.blue.shade500),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -115,13 +119,13 @@ class _AddCredentialForEmployeePageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Agregar Credencial',
+          EmployeesStrings.addCredentialTitle,
           style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
         ),
-        backgroundColor: Colors.blue.shade700, // Cabecera azul
+        backgroundColor: Colors.blue.shade700,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
         centerTitle: true,
@@ -134,7 +138,7 @@ class _AddCredentialForEmployeePageState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Datos de la Credencial',
+                EmployeesStrings.credentialData,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -143,7 +147,7 @@ class _AddCredentialForEmployeePageState
               ),
               const SizedBox(height: 12),
               const Text(
-                'Introduce la contraseña para la nueva credencial del empleado.',
+                EmployeesStrings.credentialSubtitle,
                 style: TextStyle(fontSize: 16, color: Color(0xFF4A5568)),
               ),
               const SizedBox(height: 40),
@@ -151,16 +155,16 @@ class _AddCredentialForEmployeePageState
                 controller: _emailController,
                 enabled: false,
                 decoration: _buildInputDecoration(
-                  'Correo electrónico',
+                  EmployeesStrings.credentialEmail,
                   enabled: false,
                 ),
                 style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Introduce el correo electrónico';
+                    return EmployeesStrings.enterEmail;
                   }
                   if (!value.contains('@')) {
-                    return 'Correo electrónico inválido';
+                    return EmployeesStrings.invalidCredentialEmail;
                   }
                   return null;
                 },
@@ -169,14 +173,14 @@ class _AddCredentialForEmployeePageState
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: _buildInputDecoration('Contraseña'),
+                decoration: _buildInputDecoration(EmployeesStrings.password),
                 style: const TextStyle(fontSize: 16),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Introduce la contraseña';
+                    return EmployeesStrings.enterPassword;
                   }
                   if (value.length < 6) {
-                    return 'Debe tener al menos 6 caracteres';
+                    return EmployeesStrings.passwordMinLength;
                   }
                   return null;
                 },
@@ -187,7 +191,7 @@ class _AddCredentialForEmployeePageState
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.add_task, color: Colors.white),
                   label: const Text(
-                    'Agregar Credencial',
+                    EmployeesStrings.addCredentialButton,
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   onPressed: _isLoading ? null : _submit,

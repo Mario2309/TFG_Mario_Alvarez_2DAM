@@ -6,11 +6,14 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart'; // Para formatear fechas
 
 import '../../../employee/presentation/pages/employees_page.dart';
+import '../../../employee/presentation/pages/employees_strings.dart';
 
 // Definición del enum SortingOption
 enum SortingOption { name, type, date }
 
+/// Página para visualizar, filtrar y gestionar archivos de empleados.
 class FilesEmployeePage extends StatefulWidget {
+  /// ID del empleado cuyos archivos se muestran.
   final int employeeId;
   const FilesEmployeePage({Key? key, required this.employeeId})
     : super(key: key);
@@ -30,11 +33,9 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
   String? _selectedFileType;
   DateTimeRange? _selectedDateRange;
 
-  // --- Paginación ---
   final int _itemsPerPage = 10;
   int _currentPage = 0;
 
-  // --- Ordenamiento ---
   SortingOption _currentSorting = SortingOption.name;
   bool _isAscending = true;
 
@@ -58,6 +59,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
     super.dispose();
   }
 
+  /// Carga los archivos del empleado desde el almacenamiento.
   Future<void> _loadFiles() async {
     final List<EmployeeFile> files = [];
     final storageList =
@@ -91,10 +93,9 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
     });
   }
 
+  /// Aplica los filtros de búsqueda, tipo y fecha a la lista de archivos.
   void _applyFilters() {
     List<EmployeeFile> temp = _files;
-
-    // Filtrado por búsqueda
     if (_searchQuery.isNotEmpty) {
       temp =
           temp
@@ -106,13 +107,9 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
               )
               .toList();
     }
-
-    // Filtrado por tipo de archivo
     if (_selectedFileType != null && _selectedFileType != 'Todos') {
       temp = temp.where((f) => f.fileType == _selectedFileType).toList();
     }
-
-    // Filtrado por rango de fechas
     if (_selectedDateRange != null) {
       temp =
           temp
@@ -129,22 +126,21 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
               )
               .toList();
     }
-
     _filteredFiles = temp;
-    _currentPage = 0; // Resetear la página al aplicar filtros
+    _currentPage = 0;
     _applySorting();
   }
 
+  /// Elimina un archivo por su ID (lógica pendiente de implementación real).
   Future<void> _deleteFile(int? fileId) async {
     if (fileId != null) {
-      // Como estamos listando directamente desde Storage, la lógica de eliminación podría ser diferente.
-      // Necesitarías saber el nombre del archivo para eliminarlo de Storage.
-      // Por ahora, solo recargamos la lista.
+      _service.deleteFile(fileId);
       print('Implementar eliminación de Storage para el ID: $fileId');
       _loadFiles();
     }
   }
 
+  /// Aplica el ordenamiento seleccionado a la lista filtrada de archivos.
   void _applySorting() {
     setState(() {
       switch (_currentSorting) {
@@ -176,7 +172,6 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
     });
   }
 
-  // --- Iconos por tipo de archivo ---
   final Map<String, IconData> _fileTypeIcons = {
     'pdf': Icons.picture_as_pdf,
     'docx': Icons.description,
@@ -185,13 +180,14 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
     'jpg': Icons.image,
     'jpeg': Icons.image,
     'txt': Icons.text_snippet,
-    // Añade más tipos de archivo e iconos según necesites
   };
 
+  /// Devuelve el icono correspondiente según el tipo de archivo.
   IconData _getFileIcon(String fileType) {
     return _fileTypeIcons[fileType.toLowerCase()] ?? Icons.insert_drive_file;
   }
 
+  /// Obtiene la lista de archivos para la página actual.
   List<EmployeeFile> get _pagedFiles {
     final startIndex = _currentPage * _itemsPerPage;
     final endIndex = (startIndex + _itemsPerPage).clamp(
@@ -201,6 +197,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
     return _filteredFiles.sublist(startIndex, endIndex);
   }
 
+  /// Calcula el número total de páginas para la paginación.
   int get _totalPages => (_filteredFiles.length / _itemsPerPage).ceil();
 
   @override
@@ -213,7 +210,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Archivos almacenados',
+          EmployeesStrings.filesTitle,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 26,
@@ -273,25 +270,25 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
             },
             itemBuilder:
                 (BuildContext context) => <PopupMenuEntry<SortingOption>>[
-                  const PopupMenuItem<SortingOption>(
+                  PopupMenuItem<SortingOption>(
                     value: SortingOption.name,
                     child: Text(
-                      'Nombre',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      EmployeesStrings.sortByName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const PopupMenuItem<SortingOption>(
+                  PopupMenuItem<SortingOption>(
                     value: SortingOption.type,
                     child: Text(
-                      'Tipo',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      EmployeesStrings.sortByType,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const PopupMenuItem<SortingOption>(
+                  PopupMenuItem<SortingOption>(
                     value: SortingOption.date,
                     child: Text(
-                      'Fecha de subida',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      EmployeesStrings.sortByDate,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -308,7 +305,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                 TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Buscar por nombre, tipo o ruta...',
+                    hintText: EmployeesStrings.searchFilesHint,
                     prefixIcon: const Icon(Icons.search, color: Colors.blue),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -334,9 +331,9 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          labelText: 'Filtrar por tipo',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: EmployeesStrings.filterByType,
+                          border: const OutlineInputBorder(),
                         ),
                         value: _selectedFileType,
                         items:
@@ -374,15 +371,15 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                           }
                         },
                         child: InputDecorator(
-                          decoration: const InputDecoration(
-                            labelText: 'Filtrar por fecha',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: EmployeesStrings.filterByDate,
+                            border: const OutlineInputBorder(),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 12.0),
                             child: Text(
                               _selectedDateRange == null
-                                  ? 'Seleccionar rango'
+                                  ? EmployeesStrings.selectRange
                                   : '${DateFormat('dd/MM/yyyy').format(_selectedDateRange!.start)} - ${DateFormat('dd/MM/yyyy').format(_selectedDateRange!.end)}',
                             ),
                           ),
@@ -400,10 +397,13 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
               onRefresh: _loadFiles,
               child:
                   _filteredFiles.isEmpty
-                      ? const Center(
+                      ? Center(
                         child: Text(
-                          'No hay archivos que coincidan con los filtros.',
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                          EmployeesStrings.noFilesMatch,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
+                          ),
                         ),
                       )
                       : ListView.builder(
@@ -433,7 +433,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                                 ),
                               ),
                               subtitle: Text(
-                                'Tipo: ${file.fileType}\nSubido: ${DateFormat('dd/MM/yyyy').format(file.uploadDate.toLocal())}',
+                                '${EmployeesStrings.type}: ${file.fileType}\n${EmployeesStrings.uploaded}: ${DateFormat('dd/MM/yyyy').format(file.uploadDate.toLocal())}',
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey,
@@ -450,9 +450,11 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                                     context: context,
                                     builder:
                                         (context) => AlertDialog(
-                                          title: const Text('Eliminar archivo'),
+                                          title: const Text(
+                                            EmployeesStrings.deleteFileTitle,
+                                          ),
                                           content: const Text(
-                                            '¿Estás seguro de que deseas eliminar este archivo?',
+                                            EmployeesStrings.deleteFileMsg,
                                           ),
                                           actions: [
                                             TextButton(
@@ -461,7 +463,9 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                                                     context,
                                                     false,
                                                   ),
-                                              child: const Text('Cancelar'),
+                                              child: const Text(
+                                                EmployeesStrings.cancelFile,
+                                              ),
                                             ),
                                             TextButton(
                                               onPressed:
@@ -470,7 +474,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                                                     true,
                                                   ),
                                               child: const Text(
-                                                'Eliminar',
+                                                EmployeesStrings.deleteFile,
                                                 style: TextStyle(
                                                   color: Colors.red,
                                                 ),
@@ -480,9 +484,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                                         ),
                                   );
                                   if (confirm == true) {
-                                    await _deleteFile(
-                                      null,
-                                    ); // Necesitas la lógica correcta para eliminar por nombre/ruta
+                                    await _deleteFile(null);
                                   }
                                 },
                               ),
@@ -492,7 +494,9 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Ruta: ${file.filePath}'),
+                                      content: Text(
+                                        '${EmployeesStrings.filePath}: ${file.filePath}',
+                                      ),
                                     ),
                                   );
                                 }
@@ -516,7 +520,9 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                             : null,
                     icon: const Icon(Icons.arrow_back),
                   ),
-                  Text('Página ${_currentPage + 1} de $_totalPages'),
+                  Text(
+                    '${EmployeesStrings.page} ${_currentPage + 1} ${EmployeesStrings.of} $_totalPages',
+                  ),
                   IconButton(
                     onPressed:
                         _currentPage < _totalPages - 1
@@ -528,11 +534,11 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
               ),
             ),
           if (_filteredFiles.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Text(
-                'No hay archivos almacenados.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                EmployeesStrings.noFiles,
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
             ),
         ],
@@ -541,7 +547,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
         onPressed: _loadFiles,
         child: const Icon(Icons.refresh, size: 30, color: Colors.white),
         backgroundColor: Colors.blue.shade900,
-        tooltip: 'Recargar archivos',
+        tooltip: EmployeesStrings.reloadFiles,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       ),
     );

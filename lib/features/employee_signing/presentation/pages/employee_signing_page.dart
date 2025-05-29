@@ -40,6 +40,7 @@ class _FichajesPageState extends State<FichajesPage> {
     super.dispose();
   }
 
+  /// Carga los fichajes desde el repositorio y actualiza el estado.
   Future<void> _loadFichajes() async {
     final fichajes = await _repository.getAllAttendances();
     setState(() {
@@ -48,6 +49,7 @@ class _FichajesPageState extends State<FichajesPage> {
     });
   }
 
+  /// Aplica el filtro de tipo y búsqueda sobre la lista de fichajes.
   void _applyFilter() {
     List<EmployeeSigning> temp = _fichajes;
 
@@ -70,6 +72,7 @@ class _FichajesPageState extends State<FichajesPage> {
     _filteredFichajes = temp;
   }
 
+  /// Devuelve el color asociado al tipo de fichaje (entrada/salida).
   Color _getTipoColor(String tipo) {
     switch (tipo.toLowerCase()) {
       case 'entrada':
@@ -81,6 +84,7 @@ class _FichajesPageState extends State<FichajesPage> {
     }
   }
 
+  /// Devuelve el icono asociado al tipo de fichaje (entrada/salida).
   IconData _getTipoIcon(String tipo) {
     switch (tipo.toLowerCase()) {
       case 'entrada':
@@ -92,6 +96,7 @@ class _FichajesPageState extends State<FichajesPage> {
     }
   }
 
+  /// Construye el panel lateral de filtros y búsqueda.
   Widget _buildFilterOptions() {
     return Column(
       children: [
@@ -211,6 +216,7 @@ class _FichajesPageState extends State<FichajesPage> {
     );
   }
 
+  /// Construye la tarjeta visual para un fichaje individual.
   Widget _buildFichajeCard(EmployeeSigning fichaje) {
     return Card(
       elevation: 2,
@@ -287,6 +293,7 @@ class _FichajesPageState extends State<FichajesPage> {
     );
   }
 
+  /// Construye una fila de información con icono, etiqueta y valor.
   Widget _buildInfoRow({
     required IconData icon,
     required String label,
