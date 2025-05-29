@@ -3,6 +3,7 @@ import 'package:nexuserp/features/vacation/data/models/vacation_model.dart';
 import 'package:nexuserp/features/vacation/data/repositories/vacation_repository_impl.dart';
 import 'package:nexuserp/features/vacation/data/datasources/vacation_service.dart';
 import 'package:nexuserp/features/vacation/domain/entities/vacation.dart';
+import '../../../../core/utils/vacations_strings.dart';
 
 import '../../../../presentation/pages/search_page.dart';
 import 'vacation_details_page.dart'; // Importa la página de detalles de vacaciones
@@ -113,9 +114,7 @@ class _VacationsPageState extends State<VacationsPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DrawerHeader(
-          decoration: BoxDecoration(
-            color: Colors.blue.shade700,
-          ), // Color adaptado a la AppBar
+          decoration: BoxDecoration(color: Colors.blue.shade700),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -123,7 +122,7 @@ class _VacationsPageState extends State<VacationsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Opciones",
+                    VacationsStrings.options,
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -146,11 +145,11 @@ class _VacationsPageState extends State<VacationsPage> {
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Buscar por nombre de empleado...',
+                  hintText: VacationsStrings.searchHint,
                   hintStyle: const TextStyle(color: Colors.white70),
                   prefixIcon: const Icon(Icons.search, color: Colors.white70),
                   filled: true,
-                  fillColor: Colors.blue.shade600, // Color adaptado
+                  fillColor: Colors.blue.shade600,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -164,14 +163,14 @@ class _VacationsPageState extends State<VacationsPage> {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'Filtrar por estado',
+            VacationsStrings.filterByStatus,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
         RadioListTile<String>(
-          value: 'Todos',
+          value: VacationsStrings.all,
           groupValue: _filtroEstado,
-          title: const Text("Todos"),
+          title: const Text(VacationsStrings.all),
           onChanged: (value) {
             setState(() {
               _filtroEstado = value!;
@@ -182,7 +181,7 @@ class _VacationsPageState extends State<VacationsPage> {
         RadioListTile<String>(
           value: 'Aprobada',
           groupValue: _filtroEstado,
-          title: const Text("Aprobadas"),
+          title: const Text(VacationsStrings.approved),
           onChanged: (value) {
             setState(() {
               _filtroEstado = value!;
@@ -193,7 +192,7 @@ class _VacationsPageState extends State<VacationsPage> {
         RadioListTile<String>(
           value: 'Rechazada',
           groupValue: _filtroEstado,
-          title: const Text("Rechazadas"),
+          title: const Text(VacationsStrings.rejected),
           onChanged: (value) {
             setState(() {
               _filtroEstado = value!;
@@ -204,7 +203,7 @@ class _VacationsPageState extends State<VacationsPage> {
         RadioListTile<String>(
           value: 'Pendiente',
           groupValue: _filtroEstado,
-          title: const Text("Pendientes"),
+          title: const Text(VacationsStrings.pending),
           onChanged: (value) {
             setState(() {
               _filtroEstado = value!;
@@ -216,40 +215,33 @@ class _VacationsPageState extends State<VacationsPage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'Acciones rápidas',
+            VacationsStrings.quickActions,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: Colors.grey.shade700,
+              color: Colors.grey,
             ),
           ),
         ),
         ListTile(
           leading: const Icon(Icons.sync),
-          title: const Text('Recargar solicitudes'),
+          title: const Text(VacationsStrings.reload),
           onTap: () {
             _loadVacations();
-            if (showBackButton)
-              Navigator.pop(context); // Cierra el Drawer al recargar
+            if (showBackButton) Navigator.pop(context);
           },
         ),
         ListTile(
           leading: const Icon(Icons.info_outline),
-          title: const Text('Acerca de'),
+          title: const Text(VacationsStrings.about),
           onTap: () {
             if (showBackButton) Navigator.pop(context);
             showAboutDialog(
               context: context,
-              applicationName: 'Gestión de Vacaciones',
+              applicationName: VacationsStrings.aboutTitle,
               applicationVersion: '1.0.0',
-              applicationIcon: const Icon(
-                Icons.beach_access,
-              ), // Icono de vacaciones
-              children: [
-                const Text(
-                  'Aplicación para gestionar solicitudes de vacaciones, con filtros y búsqueda.',
-                ),
-              ],
+              applicationIcon: const Icon(Icons.beach_access),
+              children: [const Text(VacationsStrings.aboutDescription)],
             );
           },
         ),
@@ -261,27 +253,18 @@ class _VacationsPageState extends State<VacationsPage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isLargeScreen = width >= 800;
-
-    // Define el número de columnas basado en el ancho de la pantalla
     final crossAxisCount = (width / 300).floor().clamp(1, 4);
-
-    // Relación de aspecto fija para las tarjetas, similar a las de empleados
     final double fixedCardAspectRatio = 2.0;
-
     return Scaffold(
       appBar: _buildAppBar(),
-      // El Drawer se muestra solo en pantallas pequeñas
       drawer: isLargeScreen ? null : Drawer(child: _buildFilterOptions(true)),
       body: Row(
         children: [
-          // La barra lateral de opciones se muestra en pantallas grandes
           if (isLargeScreen)
             Container(
               width: 280,
               color: Colors.blue.shade50,
-              child: _buildFilterOptions(
-                false,
-              ), // No necesita botón de retroceso aquí
+              child: _buildFilterOptions(false),
             ),
           Expanded(
             child: Stack(
@@ -293,10 +276,8 @@ class _VacationsPageState extends State<VacationsPage> {
                       child: GridView.builder(
                         itemCount: _filteredVacations.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount:
-                              crossAxisCount, // Número de columnas adaptable
-                          childAspectRatio:
-                              fixedCardAspectRatio, // Relación de aspecto fija
+                          crossAxisCount: crossAxisCount,
+                          childAspectRatio: fixedCardAspectRatio,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
                         ),
@@ -315,7 +296,7 @@ class _VacationsPageState extends State<VacationsPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: const Text('Gestión de Vacaciones'),
+      title: const Text(VacationsStrings.pageTitle),
       centerTitle: true,
       backgroundColor: Colors.blue,
       elevation: 2,
@@ -325,7 +306,7 @@ class _VacationsPageState extends State<VacationsPage> {
   Widget _buildEmptyState() {
     return const Center(
       child: Text(
-        'No hay solicitudes de vacaciones registradas.',
+        VacationsStrings.noRequests,
         style: TextStyle(fontSize: 16, color: Colors.grey),
       ),
     );
@@ -401,13 +382,13 @@ class _VacationsPageState extends State<VacationsPage> {
               // Detalles de la vacación
               _buildInfoRow(
                 icon: Icons.calendar_today,
-                label: 'Desde:',
+                label: VacationsStrings.from,
                 value: vacation.startDate.toLocal().toString().split(' ')[0],
               ),
               const SizedBox(height: 4),
               _buildInfoRow(
                 icon: Icons.calendar_today,
-                label: 'Hasta:',
+                label: VacationsStrings.to,
                 value: vacation.endDate.toLocal().toString().split(' ')[0],
               ),
               const Spacer(),
@@ -424,7 +405,7 @@ class _VacationsPageState extends State<VacationsPage> {
                   ),
                   icon: const Icon(Icons.info_outline, size: 18),
                   label: const Text(
-                    'Ver Detalles',
+                    VacationsStrings.viewDetails,
                     style: TextStyle(fontSize: 13),
                   ),
                   onPressed: () {

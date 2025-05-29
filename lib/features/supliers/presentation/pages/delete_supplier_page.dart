@@ -3,7 +3,9 @@ import 'package:nexuserp/features/supliers/data/datasources/suppliers_service.da
 import 'package:nexuserp/features/supliers/data/models/supplier_model.dart';
 import 'package:nexuserp/features/supliers/domain/entities/supplier.dart';
 import 'package:nexuserp/features/supliers/presentation/pages/supplier_page.dart';
+import 'package:nexuserp/core/utils/suppliers_strings.dart';
 
+/// Pantalla para eliminar proveedores del sistema.
 class DeleteSupplierScreen extends StatefulWidget {
   @override
   _DeleteSupplierScreenState createState() => _DeleteSupplierScreenState();
@@ -19,6 +21,7 @@ class _DeleteSupplierScreenState extends State<DeleteSupplierScreen> {
     _loadSuppliers();
   }
 
+  /// Carga la lista de proveedores desde el servicio.
   Future<void> _loadSuppliers() async {
     try {
       final list = await _supplierService.getAllSuppliers();
@@ -29,30 +32,31 @@ class _DeleteSupplierScreenState extends State<DeleteSupplierScreen> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cargar los proveedores: $e')),
+        SnackBar(content: Text('${SuppliersStrings.loadError} $e')),
       );
     }
   }
 
+  /// Muestra un diálogo de confirmación y elimina el proveedor si se acepta.
   Future<void> _deleteSupplier(Supplier supplier) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirmación'),
+          title: Text(SuppliersStrings.confirmDelete),
           content: Text(
-            '¿Estás seguro de que deseas eliminar "${supplier.nombre}"?',
+            '${SuppliersStrings.confirmDeleteMsg} "${supplier.nombre}"?',
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Cerrar diálogo
+                Navigator.of(context).pop();
               },
-              child: const Text('Cancelar'),
+              child: Text(SuppliersStrings.cancel),
             ),
             TextButton(
               onPressed: () async {
-                Navigator.of(context).pop(); // Cerrar diálogo
+                Navigator.of(context).pop();
                 try {
                   await _supplierService.deleteSupplier(supplier.nifCif);
                   if (mounted) {
@@ -61,7 +65,11 @@ class _DeleteSupplierScreenState extends State<DeleteSupplierScreen> {
                     });
                   }
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${supplier.nombre} eliminado.')),
+                    SnackBar(
+                      content: Text(
+                        '${supplier.nombre} ${SuppliersStrings.deletedSuccessfully}',
+                      ),
+                    ),
                   );
                   Navigator.pushReplacement(
                     context,
@@ -69,7 +77,7 @@ class _DeleteSupplierScreenState extends State<DeleteSupplierScreen> {
                   );
                 } catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error al eliminar el proveedor.')),
+                    SnackBar(content: Text(SuppliersStrings.deleteError)),
                   );
                   Navigator.pushReplacement(
                     context,
@@ -77,7 +85,7 @@ class _DeleteSupplierScreenState extends State<DeleteSupplierScreen> {
                   );
                 }
               },
-              child: const Text('Eliminar'),
+              child: Text(SuppliersStrings.delete),
             ),
           ],
         );
@@ -89,19 +97,19 @@ class _DeleteSupplierScreenState extends State<DeleteSupplierScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Eliminar proveedores'),
+        title: Text(SuppliersStrings.deleteSuppliers),
         backgroundColor: Colors.red.shade700,
       ),
       body:
           _suppliers.isEmpty
-              ? Center(child: Text('No hay proveedores para eliminar.'))
+              ? Center(child: Text(SuppliersStrings.noSuppliersToDelete))
               : ListView.builder(
                 itemCount: _suppliers.length,
                 itemBuilder: (context, index) {
                   final supplier = _suppliers[index];
                   return ListTile(
                     title: Text(supplier.nombre),
-                    subtitle: Text(supplier.nifCif ?? 'Sin NIF/CIF'),
+                    subtitle: Text(supplier.nifCif),
                     trailing: IconButton(
                       icon: Icon(Icons.delete, color: Colors.red),
                       onPressed: () => _deleteSupplier(supplier as Supplier),

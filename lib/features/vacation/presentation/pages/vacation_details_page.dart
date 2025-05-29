@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexuserp/features/vacation/domain/entities/vacation.dart';
+import '../../../../core/utils/vacation_details_strings.dart';
 
 import '../../data/datasources/vacation_service.dart';
-import '../../data/models/vacation_model.dart'; // Asegúrate de que esta ruta sea correcta
 
 class VacationDetailPage extends StatefulWidget {
   final Vacation vacation;
@@ -67,7 +67,7 @@ class _VacationDetailPageState extends State<VacationDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'La solicitud de ${_currentVacation.employeeName} ha sido ${newStatus.toLowerCase()}.',
+            'La solicitud de ${_currentVacation.employeeName} ${newStatus.toLowerCase() == 'aprobada' ? VacationDetailsStrings.approveSuccess : VacationDetailsStrings.rejectSuccess}',
           ),
           backgroundColor: _getStatusColor(newStatus),
         ),
@@ -75,7 +75,7 @@ class _VacationDetailPageState extends State<VacationDetailPage> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al actualizar el estado de la vacación: $e'),
+          content: Text('${VacationDetailsStrings.updateError} $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -86,9 +86,9 @@ class _VacationDetailPageState extends State<VacationDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalles de Vacación'),
+        title: const Text(VacationDetailsStrings.pageTitle),
         centerTitle: true,
-        backgroundColor: Colors.blue, // Consistente con el tema azul
+        backgroundColor: Colors.blue,
         elevation: 2,
       ),
       body: SingleChildScrollView(
@@ -173,7 +173,7 @@ class _VacationDetailPageState extends State<VacationDetailPage> {
                   children: [
                     _buildDetailRow(
                       icon: Icons.calendar_today,
-                      label: 'Fecha de inicio:',
+                      label: VacationDetailsStrings.startDate,
                       value:
                           _currentVacation.startDate.toLocal().toString().split(
                             ' ',
@@ -182,7 +182,7 @@ class _VacationDetailPageState extends State<VacationDetailPage> {
                     const SizedBox(height: 12),
                     _buildDetailRow(
                       icon: Icons.calendar_today,
-                      label: 'Fecha de fin:',
+                      label: VacationDetailsStrings.endDate,
                       value:
                           _currentVacation.endDate.toLocal().toString().split(
                             ' ',
@@ -191,7 +191,7 @@ class _VacationDetailPageState extends State<VacationDetailPage> {
                     const SizedBox(height: 12),
                     _buildDetailRow(
                       icon: Icons.access_time,
-                      label: 'Días solicitados:',
+                      label: VacationDetailsStrings.daysRequested,
                       value:
                           (_currentVacation.endDate
                                       .difference(_currentVacation.startDate)
@@ -218,17 +218,17 @@ class _VacationDetailPageState extends State<VacationDetailPage> {
                   children: [
                     _buildDetailRow(
                       icon: Icons.person_outline,
-                      label: 'DNI de Empleado:',
+                      label: VacationDetailsStrings.dni,
                       value: _currentVacation.employeeDni,
                     ),
                     const SizedBox(height: 12),
                     _buildDetailRow(
                       icon: Icons.info_outline,
-                      label: 'Nombre:',
+                      label: VacationDetailsStrings.name,
                       value:
                           _currentVacation.employeeName.isNotEmpty
                               ? _currentVacation.employeeName
-                              : 'No especificado',
+                              : VacationDetailsStrings.notSpecified,
                     ),
                   ],
                 ),
@@ -243,10 +243,13 @@ class _VacationDetailPageState extends State<VacationDetailPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () => _updateVacationStatus('Aprobada'),
+                      onPressed:
+                          () => _updateVacationStatus(
+                            VacationDetailsStrings.approved,
+                          ),
                       icon: const Icon(Icons.check_circle, color: Colors.white),
                       label: const Text(
-                        'Aprobar',
+                        VacationDetailsStrings.approve,
                         style: TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -261,10 +264,13 @@ class _VacationDetailPageState extends State<VacationDetailPage> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () => _updateVacationStatus('Rechazada'),
+                      onPressed:
+                          () => _updateVacationStatus(
+                            VacationDetailsStrings.rejected,
+                          ),
                       icon: const Icon(Icons.cancel, color: Colors.white),
                       label: const Text(
-                        'Rechazar',
+                        VacationDetailsStrings.reject,
                         style: TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(

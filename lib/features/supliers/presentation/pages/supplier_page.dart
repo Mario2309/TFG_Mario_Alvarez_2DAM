@@ -5,7 +5,9 @@ import 'package:nexuserp/features/supliers/data/repositories/supplier_repository
 import 'package:nexuserp/features/supliers/presentation/pages/add_supplier_screen_page.dart';
 import 'package:nexuserp/features/supliers/presentation/pages/delete_supplier_page.dart';
 import 'package:nexuserp/features/supliers/presentation/pages/edit_supplier_screen.dart';
+import 'package:nexuserp/core/utils/suppliers_strings.dart';
 
+/// Página principal para la gestión de proveedores.
 class SuppliersPage extends StatefulWidget {
   const SuppliersPage({Key? key}) : super(key: key);
 
@@ -27,6 +29,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
     _loadSuppliers();
   }
 
+  /// Carga la lista de proveedores desde el repositorio.
   Future<void> _loadSuppliers() async {
     setState(() => _isLoading = true);
     try {
@@ -34,13 +37,14 @@ class _SuppliersPageState extends State<SuppliersPage> {
       setState(() => _suppliers = suppliers);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cargar proveedores: $e')),
+        SnackBar(content: Text('${SuppliersStrings.loadError} $e')),
       );
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
+  /// Navega a la pantalla para agregar un nuevo proveedor.
   void _navigateToAddSupplierScreen() {
     Navigator.push(
       context,
@@ -54,12 +58,14 @@ class _SuppliersPageState extends State<SuppliersPage> {
           setState(() => _suppliers.add(newSupplier));
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${newSupplier.nombre} agregado correctamente.'),
+              content: Text(
+                '${newSupplier.nombre} ${SuppliersStrings.supplierAdded}',
+              ),
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error al agregar proveedor.')),
+            const SnackBar(content: Text(SuppliersStrings.addError)),
           );
         }
       }
@@ -85,7 +91,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
                 ).then((_) => _loadSuppliers());
               },
               backgroundColor: Colors.red.shade400,
-              tooltip: 'Eliminar proveedores',
+              tooltip: SuppliersStrings.deleteSuppliers,
               child: const Icon(Icons.delete),
               mini: true,
             ),
@@ -97,7 +103,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
               heroTag: 'addSupplier',
               onPressed: _navigateToAddSupplierScreen,
               backgroundColor: Colors.blue.shade700,
-              tooltip: 'Agregar proveedor',
+              tooltip: SuppliersStrings.addSupplier,
               child: const Icon(Icons.add, color: Colors.white),
             ),
           ),
@@ -108,7 +114,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
               heroTag: 'refreshSuppliers',
               onPressed: _loadSuppliers,
               backgroundColor: Colors.blue.shade700,
-              tooltip: 'Refrescar',
+              tooltip: SuppliersStrings.refresh,
               child: const Icon(Icons.refresh),
             ),
           ),
@@ -117,23 +123,26 @@ class _SuppliersPageState extends State<SuppliersPage> {
     );
   }
 
+  /// Construye la barra de la aplicación.
   AppBar _buildAppBar() {
     return AppBar(
-      title: const Text('Proveedores'),
+      title: Text(SuppliersStrings.title),
       backgroundColor: Colors.blue.shade700,
     );
   }
 
+  /// Muestra un indicador de carga mientras se obtienen los proveedores.
   Widget _buildLoading() {
     return const Center(child: CircularProgressIndicator());
   }
 
+  /// Construye el cuerpo principal de la página con la lista de proveedores.
   Widget _buildBody() {
     if (_suppliers.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'No hay proveedores registrados.',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          SuppliersStrings.noSuppliers,
+          style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );
     }
@@ -145,6 +154,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
     );
   }
 
+  /// Construye la tarjeta visual para un proveedor.
   Widget _buildSupplierCard(SupplierModel supplier) {
     return GestureDetector(
       onTap: () async {
@@ -186,16 +196,26 @@ class _SuppliersPageState extends State<SuppliersPage> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    if (supplier.nifCif?.isNotEmpty ?? false)
-                      _infoLine('NIF/CIF: ${supplier.nifCif}'),
-                    if (supplier.personaContacto?.isNotEmpty ?? false)
-                      _infoLine('Contacto: ${supplier.personaContacto}'),
-                    if (supplier.telefono?.isNotEmpty ?? false)
-                      _infoLine('Teléfono: ${supplier.telefono}'),
-                    if (supplier.correoElectronico?.isNotEmpty ?? false)
-                      _infoLine('Correo: ${supplier.correoElectronico}'),
+                    if (supplier.nifCif.isNotEmpty)
+                      _infoLine(
+                        '${SuppliersStrings.nifCif}: ${supplier.nifCif}',
+                      ),
+                    if (supplier.personaContacto.isNotEmpty)
+                      _infoLine(
+                        '${SuppliersStrings.contact}: ${supplier.personaContacto}',
+                      ),
+                    if (supplier.telefono.isNotEmpty)
+                      _infoLine(
+                        '${SuppliersStrings.phone}: ${supplier.telefono}',
+                      ),
+                    if (supplier.correoElectronico.isNotEmpty)
+                      _infoLine(
+                        '${SuppliersStrings.email}: ${supplier.correoElectronico}',
+                      ),
                     if (supplier.direccion?.isNotEmpty ?? false)
-                      _infoLine('Dirección: ${supplier.direccion}'),
+                      _infoLine(
+                        '${SuppliersStrings.address}: ${supplier.direccion}',
+                      ),
                   ],
                 ),
               ),
@@ -206,6 +226,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
     );
   }
 
+  /// Construye una línea de información para la tarjeta de proveedor.
   Widget _infoLine(String text) {
     return Text(
       text,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/vacation_request_strings.dart';
 
+/// Página para solicitar vacaciones de un empleado.
 class VacationRequestPage extends StatefulWidget {
   final String employeeDni;
   final String employeeName;
@@ -20,6 +22,7 @@ class _VacationRequestPageState extends State<VacationRequestPage> {
   final TextEditingController _observationsController = TextEditingController();
   bool _isSubmitting = false;
 
+  /// Permite seleccionar la fecha de inicio de las vacaciones.
   Future<void> _pickStartDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(
@@ -32,7 +35,6 @@ class _VacationRequestPageState extends State<VacationRequestPage> {
     if (picked != null) {
       setState(() {
         _startDate = picked;
-        // Si la fecha de fin es anterior, la reseteamos
         if (_endDate != null && _endDate!.isBefore(_startDate!)) {
           _endDate = null;
         }
@@ -40,13 +42,11 @@ class _VacationRequestPageState extends State<VacationRequestPage> {
     }
   }
 
+  /// Permite seleccionar la fecha de fin de las vacaciones.
   Future<void> _pickEndDate() async {
     if (_startDate == null) {
-      // Mostrar alerta para que el usuario elija primero la fecha de inicio
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, selecciona primero la fecha de inicio'),
-        ),
+        const SnackBar(content: Text(VacationRequestStrings.selectStartFirst)),
       );
       return;
     }
@@ -65,10 +65,11 @@ class _VacationRequestPageState extends State<VacationRequestPage> {
     }
   }
 
+  /// Envía la solicitud de vacaciones si los datos son válidos.
   void _submitRequest() async {
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, selecciona ambas fechas')),
+        const SnackBar(content: Text(VacationRequestStrings.selectBothDates)),
       );
       return;
     }
@@ -78,29 +79,15 @@ class _VacationRequestPageState extends State<VacationRequestPage> {
     });
 
     try {
-      // Aquí llamarías al repositorio o servicio para enviar la solicitud de vacaciones
-      // Por ejemplo:
-      // await vacationRepository.addVacation(Vacation(...));
-
-      // Simulamos una espera
       await Future.delayed(const Duration(seconds: 1));
-
-      // Mostrar mensaje éxito
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Solicitud de vacaciones enviada con éxito'),
-        ),
+        const SnackBar(content: Text(VacationRequestStrings.success)),
       );
-
-      Navigator.pop(
-        context,
-        true,
-      ); // Puedes devolver true para refrescar si quieres
+      Navigator.pop(context, true);
     } catch (e) {
-      // Manejo de error
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error al enviar solicitud: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${VacationRequestStrings.error} $e')),
+      );
     } finally {
       setState(() {
         _isSubmitting = false;
@@ -117,55 +104,46 @@ class _VacationRequestPageState extends State<VacationRequestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Solicitar Vacaciones')),
+      appBar: AppBar(title: const Text(VacationRequestStrings.pageTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Text(
-              'Empleado: ${widget.employeeName}',
+              '${VacationRequestStrings.employeeLabel}: ${widget.employeeName}',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 20),
-
-            // Fecha de inicio
             ListTile(
-              title: const Text('Fecha de inicio'),
+              title: const Text(VacationRequestStrings.startDate),
               subtitle: Text(
                 _startDate == null
-                    ? 'Selecciona la fecha de inicio'
+                    ? VacationRequestStrings.selectStartDate
                     : _startDate!.toLocal().toString().split(' ')[0],
               ),
-              trailing: Icon(Icons.calendar_today),
+              trailing: const Icon(Icons.calendar_today),
               onTap: _pickStartDate,
             ),
-
-            // Fecha fin
             ListTile(
-              title: const Text('Fecha de fin'),
+              title: const Text(VacationRequestStrings.endDate),
               subtitle: Text(
                 _endDate == null
-                    ? 'Selecciona la fecha de fin'
+                    ? VacationRequestStrings.selectEndDate
                     : _endDate!.toLocal().toString().split(' ')[0],
               ),
-              trailing: Icon(Icons.calendar_today),
+              trailing: const Icon(Icons.calendar_today),
               onTap: _pickEndDate,
             ),
-
             const SizedBox(height: 20),
-
-            // Observaciones
             TextField(
               controller: _observationsController,
               maxLines: 3,
               decoration: const InputDecoration(
-                labelText: 'Observaciones (opcional)',
+                labelText: VacationRequestStrings.observations,
                 border: OutlineInputBorder(),
               ),
             ),
-
             const Spacer(),
-
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -180,7 +158,7 @@ class _VacationRequestPageState extends State<VacationRequestPage> {
                           ),
                         )
                         : const Icon(Icons.send),
-                label: const Text('Enviar solicitud'),
+                label: const Text(VacationRequestStrings.sendRequest),
                 onPressed: _isSubmitting ? null : _submitRequest,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),

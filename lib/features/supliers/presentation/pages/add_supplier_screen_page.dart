@@ -4,7 +4,9 @@ import 'package:nexuserp/features/supliers/data/models/supplier_model.dart';
 import 'package:nexuserp/features/supliers/domain/entities/supplier.dart';
 
 import '../../data/datasources/suppliers_service.dart';
+import '../../../../core/utils/suppliers_strings.dart';
 
+/// Pantalla para agregar un nuevo proveedor.
 class AddSupplierScreen extends StatefulWidget {
   @override
   _AddSupplierScreenState createState() => _AddSupplierScreenState();
@@ -12,7 +14,6 @@ class AddSupplierScreen extends StatefulWidget {
 
 class _AddSupplierScreenState extends State<AddSupplierScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _taxIdController = TextEditingController();
   final TextEditingController _contactPersonController =
@@ -33,6 +34,7 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
     super.dispose();
   }
 
+  /// Envía el formulario y agrega el proveedor si es válido.
   void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       final newSupplier = SupplierModel(
@@ -47,21 +49,18 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
                 ? _addressController.text.trim()
                 : null,
       );
-
       try {
         await _supplierService.addSupplier(newSupplier);
-        Navigator.pop(context, true); // Puede indicar éxito con 'true'
+        Navigator.pop(context, true);
       } catch (e) {
-        // Manejar error (puedes mostrar un diálogo o snackbar)
-        print('Error al agregar supplier: $e');
-        // Opcional: mostrar mensaje al usuario
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al guardar el proveedor')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(SuppliersStrings.addError)));
       }
     }
   }
 
+  /// Construye un campo de texto reutilizable para el formulario.
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
@@ -77,7 +76,8 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
         keyboardType: keyboardType,
         maxLines: maxLines ?? 1,
         validator:
-            validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
+            validator ??
+            (value) => value!.isEmpty ? SuppliersStrings.requiredField : null,
         decoration: InputDecoration(
           prefixIcon:
               icon != null ? Icon(icon, color: Colors.blue.shade700) : null,
@@ -94,7 +94,7 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agregar Proveedor'),
+        title: Text(SuppliersStrings.addSupplier),
         backgroundColor: Colors.blue.shade700,
       ),
       body: SingleChildScrollView(
@@ -104,38 +104,38 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
           child: Column(
             children: [
               _buildTextField(
-                label: 'Nombre',
+                label: SuppliersStrings.name,
                 controller: _nameController,
                 icon: Icons.business,
               ),
               _buildTextField(
-                label: 'NIF/CIF (Opcional)',
+                label: SuppliersStrings.nifCifOptional,
                 controller: _taxIdController,
                 icon: Icons.badge,
                 validator: (value) => null,
               ),
               _buildTextField(
-                label: 'Persona de Contacto (Opcional)',
+                label: SuppliersStrings.contactPersonOptional,
                 controller: _contactPersonController,
                 icon: Icons.person_outline,
                 validator: (value) => null,
               ),
               _buildTextField(
-                label: 'Teléfono (Opcional)',
+                label: SuppliersStrings.phoneOptional,
                 controller: _phoneController,
                 icon: Icons.phone,
                 keyboardType: TextInputType.phone,
                 validator: (value) => null,
               ),
               _buildTextField(
-                label: 'Email (Opcional)',
+                label: SuppliersStrings.emailOptional,
                 controller: _emailController,
                 icon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) => null,
               ),
               _buildTextField(
-                label: 'Dirección (Opcional)',
+                label: SuppliersStrings.addressOptional,
                 controller: _addressController,
                 icon: Icons.location_on,
                 validator: (value) => null,
@@ -146,7 +146,7 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
+                    child: Text(SuppliersStrings.cancel),
                   ),
                   ElevatedButton(
                     onPressed: _submitForm,
@@ -161,9 +161,9 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
                       ),
                       textStyle: const TextStyle(fontSize: 18),
                     ),
-                    child: const Text(
-                      'Guardar',
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      SuppliersStrings.save,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],

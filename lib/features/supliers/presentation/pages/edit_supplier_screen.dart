@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:nexuserp/core/utils/suppliers_strings.dart';
 import '../../data/models/supplier_model.dart';
 import '../../data/datasources/suppliers_service.dart';
 
+/// Página para editar la información de un proveedor existente.
 class EditSupplierPage extends StatefulWidget {
+  /// Modelo del proveedor a editar.
   final SupplierModel supplier;
+
+  /// Servicio para operaciones de proveedor.
   final SupplierService supplierService;
 
+  /// Constructor de la página de edición de proveedor.
   const EditSupplierPage({
     Key? key,
     required this.supplier,
@@ -16,6 +22,7 @@ class EditSupplierPage extends StatefulWidget {
   _EditSupplierPageState createState() => _EditSupplierPageState();
 }
 
+/// Estado para la página de edición de proveedor.
 class _EditSupplierPageState extends State<EditSupplierPage> {
   final _formKey = GlobalKey<FormState>();
 
@@ -54,6 +61,7 @@ class _EditSupplierPageState extends State<EditSupplierPage> {
     super.dispose();
   }
 
+  /// Envía el formulario y actualiza el proveedor si es válido.
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final updatedSupplier = SupplierModel(
@@ -78,18 +86,17 @@ class _EditSupplierPageState extends State<EditSupplierPage> {
     }
   }
 
+  /// Muestra un diálogo de error si la actualización falla.
   void _showErrorDialog() {
     showDialog(
       context: context,
       builder:
           (BuildContext context) => AlertDialog(
-            title: const Text('Error'),
-            content: const Text(
-              'No se pudo actualizar el proveedor. Inténtalo nuevamente.',
-            ),
+            title: Text(SuppliersStrings.error),
+            content: Text(SuppliersStrings.updateError),
             actions: [
               TextButton(
-                child: const Text('Aceptar'),
+                child: Text(SuppliersStrings.accept),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -101,7 +108,7 @@ class _EditSupplierPageState extends State<EditSupplierPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar Proveedor'),
+        title: Text(SuppliersStrings.editSupplier),
         backgroundColor: Colors.blue.shade700,
       ),
       body: SingleChildScrollView(
@@ -111,34 +118,34 @@ class _EditSupplierPageState extends State<EditSupplierPage> {
           child: Column(
             children: [
               _buildTextField(
-                label: 'Nombre',
+                label: SuppliersStrings.name,
                 controller: _nombreController,
                 icon: Icons.business,
               ),
               _buildTextField(
-                label: 'NIF/CIF',
+                label: SuppliersStrings.nifCif,
                 controller: _nifCifController,
                 icon: Icons.badge,
               ),
               _buildTextField(
-                label: 'Persona de Contacto',
+                label: SuppliersStrings.contactPerson,
                 controller: _personaContactoController,
                 icon: Icons.person,
               ),
               _buildTextField(
-                label: 'Teléfono',
+                label: SuppliersStrings.phone,
                 controller: _telefonoController,
                 icon: Icons.phone,
                 keyboardType: TextInputType.phone,
               ),
               _buildTextField(
-                label: 'Correo Electrónico',
+                label: SuppliersStrings.email,
                 controller: _correoController,
                 icon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
               ),
               _buildTextField(
-                label: 'Dirección',
+                label: SuppliersStrings.address,
                 controller: _direccionController,
                 icon: Icons.location_on,
               ),
@@ -148,14 +155,14 @@ class _EditSupplierPageState extends State<EditSupplierPage> {
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
+                    child: Text(SuppliersStrings.cancel),
                   ),
                   ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade700,
                     ),
-                    child: const Text('Guardar'),
+                    child: Text(SuppliersStrings.save),
                   ),
                 ],
               ),
@@ -166,6 +173,7 @@ class _EditSupplierPageState extends State<EditSupplierPage> {
     );
   }
 
+  /// Construye un campo de texto con validación y estilo estándar.
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
@@ -179,7 +187,9 @@ class _EditSupplierPageState extends State<EditSupplierPage> {
         keyboardType: keyboardType,
         validator:
             (value) =>
-                value == null || value.isEmpty ? 'Campo requerido' : null,
+                value == null || value.isEmpty
+                    ? SuppliersStrings.requiredField
+                    : null,
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.blue.shade700),
           labelText: label,
