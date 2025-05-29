@@ -8,6 +8,7 @@ import 'package:nexuserp/features/employee/presentation/pages/select_vacation_pe
 import 'package:nexuserp/features/employee_files/presentation/pages/upload_employee_file_page.dart';
 import 'package:nexuserp/features/credentials_employees/presentation/pages/add_credential_for_employee_page.dart';
 import 'package:nexuserp/features/credentials_employees/data/repositories/vacation_repository_impl.dart';
+import '../../../../core/utils/employees_strings.dart';
 
 class EmployeeOptionsPage extends StatefulWidget {
   final Employee employee;
@@ -31,7 +32,9 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Opciones de ${employee.nombreCompleto}'),
+        title: Text(
+          '${EmployeesStrings.optionsTitle} ${employee.nombreCompleto}',
+        ),
         backgroundColor: Colors.blue.shade700,
       ),
       body: Padding(
@@ -40,7 +43,7 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
           children: [
             _buildOptionCard(
               icon: Icons.info,
-              label: 'Ver detalles',
+              label: EmployeesStrings.viewDetails,
               color: Colors.blue.shade100,
               iconColor: Colors.blue.shade700,
               onTap: () => _showDetailsDialog(context),
@@ -48,7 +51,7 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
             const SizedBox(height: 12),
             _buildOptionCard(
               icon: Icons.calendar_month,
-              label: 'Seleccionar vacaciones',
+              label: EmployeesStrings.selectVacation,
               color: Colors.green.shade100,
               iconColor: Colors.green.shade700,
               onTap: () => _navigateToVacationSelection(context),
@@ -56,7 +59,7 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
             const SizedBox(height: 12),
             _buildOptionCard(
               icon: Icons.edit,
-              label: 'Editar',
+              label: EmployeesStrings.edit,
               color: Colors.orange.shade100,
               iconColor: Colors.orange.shade700,
               onTap: () => _navigateToEdit(context),
@@ -64,7 +67,7 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
             const SizedBox(height: 12),
             _buildOptionCard(
               icon: Icons.upload_file,
-              label: 'Subir archivo',
+              label: EmployeesStrings.uploadDocument,
               color: Colors.purple.shade100,
               iconColor: Colors.purple.shade700,
               onTap: () => _navigateToUploadFile(context),
@@ -72,7 +75,7 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
             const SizedBox(height: 12),
             _buildOptionCard(
               icon: Icons.vpn_key,
-              label: 'Asignar credencial',
+              label: EmployeesStrings.assignCredential,
               color: Colors.teal.shade100,
               iconColor: Colors.teal.shade700,
               onTap: () => _navigateToAddCredential(context),
@@ -80,7 +83,7 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
             const SizedBox(height: 12),
             _buildOptionCard(
               icon: Icons.delete,
-              label: 'Eliminar',
+              label: EmployeesStrings.delete,
               color: Colors.red.shade100,
               iconColor: Colors.red.shade700,
               onTap: () => _confirmDelete(context),
@@ -88,7 +91,7 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
             const SizedBox(height: 12),
             _buildOptionCard(
               icon: Icons.cancel,
-              label: 'Cancelar',
+              label: EmployeesStrings.cancel,
               color: Colors.grey.shade300,
               iconColor: Colors.grey.shade700,
               onTap: () => Navigator.pop(context),
@@ -141,32 +144,38 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
       context: context,
       builder:
           (_) => AlertDialog(
-            title: Text('Detalles de ${e.nombreCompleto}'),
+            title: Text('${EmployeesStrings.detailsTitle} ${e.nombreCompleto}'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _detailLine('Correo', e.correoElectronico),
-                  _detailLine('Teléfono', e.numeroTelefono),
-                  _detailLine('DNI', e.dni),
+                  _detailLine(EmployeesStrings.email, e.correoElectronico),
+                  _detailLine(EmployeesStrings.phone, e.numeroTelefono),
+                  _detailLine(EmployeesStrings.dni, e.dni),
                   _detailLine(
-                    'Nacimiento',
+                    EmployeesStrings.birth,
                     '${e.nacimiento.day}/${e.nacimiento.month}/${e.nacimiento.year}',
                   ),
-                  _detailLine('Cargo', e.cargo),
-                  _detailLine('Sueldo', '\$${e.sueldo.toStringAsFixed(2)}'),
+                  _detailLine(EmployeesStrings.position, e.cargo),
                   _detailLine(
-                    'Contratación',
+                    EmployeesStrings.salary,
+                    '\$${e.sueldo.toStringAsFixed(2)}',
+                  ),
+                  _detailLine(
+                    EmployeesStrings.hireDate,
                     '${e.fechaContratacion.day}/${e.fechaContratacion.month}/${e.fechaContratacion.year}',
                   ),
-                  _detailLine('Activo', e.activo ? 'Sí' : 'No'),
+                  _detailLine(
+                    EmployeesStrings.activeLabel,
+                    e.activo ? EmployeesStrings.yes : EmployeesStrings.no,
+                  ),
                 ],
               ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cerrar'),
+                child: Text(EmployeesStrings.close),
               ),
             ],
           ),
@@ -177,7 +186,7 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
-        '$label: ${value ?? 'N/A'}',
+        '$label: [0m${value ?? EmployeesStrings.notAvailable}',
         style: const TextStyle(fontSize: 14),
       ),
     );
@@ -219,21 +228,21 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text('Confirmar eliminación'),
+            title: Text(EmployeesStrings.confirmDelete),
             content: Text(
-              '¿Seguro que quieres eliminar a ${employee.nombreCompleto}?',
+              '${EmployeesStrings.confirmDeleteMsg} ${employee.nombreCompleto}',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar'),
+                child: Text(EmployeesStrings.cancel),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red.shade700,
                 ),
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Eliminar'),
+                child: Text(EmployeesStrings.delete),
               ),
             ],
           ),
@@ -245,7 +254,9 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
         Navigator.pop(context, true); // Cierra y notifica eliminación
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${employee.nombreCompleto} eliminado con éxito'),
+            content: Text(
+              '${employee.nombreCompleto} ${EmployeesStrings.deletedSuccessfully}',
+            ),
             backgroundColor: Colors.red.shade400,
           ),
         );

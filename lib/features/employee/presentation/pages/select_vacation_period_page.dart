@@ -4,9 +4,9 @@ import 'package:nexuserp/features/vacation/data/datasources/vacation_service.dar
 import 'package:nexuserp/features/vacation/domain/entities/vacation.dart';
 import 'package:nexuserp/features/vacation/data/repositories/vacation_repository_impl.dart';
 import 'package:intl/intl.dart'; // Importar para formatear fechas
+import '../../../../core/utils/employees_strings.dart';
 
-// Esta página permite al empleado seleccionar un período de vacaciones
-// y enviarlo para su aprobación.
+/// Página para que el empleado seleccione un período de vacaciones y lo envíe para su aprobación.
 class SelectVacationPeriodPage extends StatefulWidget {
   final Employee employee;
 
@@ -21,7 +21,7 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
   DateTime? _startDate;
   DateTime? _endDate;
   late final VacationRepositoryImpl _vacationRepository;
-  bool _isLoading = false; // Estado para controlar el indicador de carga
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
     _vacationRepository = VacationRepositoryImpl(VacationService());
   }
 
-  // Función para seleccionar una fecha usando un DatePicker.
+  /// Selecciona una fecha usando un DatePicker y la asigna como inicio o fin.
   Future<void> _selectDate(BuildContext context, bool isStart) async {
     final picked = await showDatePicker(
       context: context,
@@ -40,15 +40,14 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.blue.shade700, // Color primario del DatePicker
-              onPrimary: Colors.white, // Color del texto en el primario
-              surface: Colors.white, // Color de fondo del DatePicker
-              onSurface: Colors.black87, // Color del texto en la superficie
+              primary: Colors.blue.shade700,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black87,
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor:
-                    Colors.blue.shade700, // Color de los botones de texto
+                foregroundColor: Colors.blue.shade700,
               ),
             ),
           ),
@@ -60,13 +59,11 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
       setState(() {
         if (isStart) {
           _startDate = picked;
-          // Si la fecha de inicio es posterior a la de fin, ajusta la de fin
           if (_endDate != null && _startDate!.isAfter(_endDate!)) {
             _endDate = null;
           }
         } else {
           _endDate = picked;
-          // Si la fecha de fin es anterior a la de inicio, ajusta la de inicio
           if (_startDate != null && _endDate!.isBefore(_startDate!)) {
             _startDate = null;
           }
@@ -75,53 +72,42 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
     }
   }
 
-  // Función para guardar la solicitud de vacaciones.
+  /// Guarda la solicitud de vacaciones validando fechas y mostrando feedback.
   Future<void> _save() async {
     if (_startDate == null || _endDate == null) {
-      _showSnackBar(
-        'Por favor, selecciona tanto la fecha de inicio como la de fin.',
-      );
+      _showSnackBar(EmployeesStrings.selectStartAndEnd);
       return;
     }
     if (_startDate!.isAfter(_endDate!)) {
-      _showSnackBar(
-        'La fecha de inicio no puede ser posterior a la fecha de fin.',
-      );
+      _showSnackBar(EmployeesStrings.startAfterEnd);
       return;
     }
-
     setState(() {
-      _isLoading = true; // Inicia el indicador de carga
+      _isLoading = true;
     });
-
     try {
       final vacation = Vacation(
         employeeName: widget.employee.nombreCompleto,
         employeeDni: widget.employee.dni,
         startDate: _startDate!,
         endDate: _endDate!,
-        status: 'Pendiente', // Estado inicial de la solicitud
+        status: 'Pendiente',
       );
-
       await _vacationRepository.addVacation(vacation);
-
       if (mounted) {
-        _showSnackBar(
-          'Solicitud de vacaciones enviada con éxito.',
-          isError: false,
-        );
-        Navigator.pop(context, vacation); // Vuelve a la página anterior
+        _showSnackBar(EmployeesStrings.requestSent, isError: false);
+        Navigator.pop(context, vacation);
       }
     } catch (e) {
-      _showSnackBar('Error al enviar la solicitud: $e');
+      _showSnackBar('${EmployeesStrings.requestError} $e');
     } finally {
       setState(() {
-        _isLoading = false; // Detiene el indicador de carga
+        _isLoading = false;
       });
     }
   }
 
-  // Muestra un SnackBar con un mensaje.
+  /// Muestra un SnackBar con el mensaje proporcionado.
   void _showSnackBar(String message, {bool isError = true}) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -129,7 +115,7 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
           content: Text(message),
           backgroundColor:
               isError ? Colors.red.shade600 : Colors.green.shade600,
-          behavior: SnackBarBehavior.floating, // Hace que el SnackBar flote
+          behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -144,7 +130,7 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Vacaciones - ${widget.employee.nombreCompleto.split(' ').first}',
+          '${EmployeesStrings.vacationTitle} ${widget.employee.nombreCompleto.split(' ').first}',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -163,13 +149,13 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
         elevation: 8,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24), // Padding uniforme.
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
             Text(
-              'Selecciona el período de las vacaciones de ${widget.employee.nombreCompleto.split(' ').first}',
+              '${EmployeesStrings.selectPeriod} ${widget.employee.nombreCompleto.split(' ').first}',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -178,35 +164,26 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
-
-            // Tarjeta para la selección de la fecha de inicio.
             _buildDateSelectionCard(
               context,
               icon: Icons.date_range,
-              label: 'Fecha de Inicio',
+              label: EmployeesStrings.startDate,
               date: _startDate,
               onTap: () => _selectDate(context, true),
               iconColor: Colors.green.shade600,
             ),
             const SizedBox(height: 20),
-
-            // Tarjeta para la selección de la fecha de fin.
             _buildDateSelectionCard(
               context,
               icon: Icons.date_range,
-              label: 'Fecha de Fin',
+              label: EmployeesStrings.endDate,
               date: _endDate,
               onTap: () => _selectDate(context, false),
               iconColor: Colors.orange.shade600,
             ),
             const SizedBox(height: 40),
-
-            // Botón para guardar la solicitud de vacaciones.
             ElevatedButton.icon(
-              onPressed:
-                  _isLoading
-                      ? null
-                      : _save, // Deshabilita el botón si está cargando
+              onPressed: _isLoading ? null : _save,
               icon:
                   _isLoading
                       ? const SizedBox(
@@ -217,29 +194,27 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
                           strokeWidth: 2,
                         ),
                       )
-                      : const Icon(
-                        Icons.send_rounded,
-                        size: 24,
-                      ), // Icono de envío
+                      : const Icon(Icons.send_rounded, size: 24),
               label: Text(
-                _isLoading ? 'Enviando...' : 'Enviar Solicitud',
+                _isLoading
+                    ? EmployeesStrings.sending
+                    : EmployeesStrings.sendRequest,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Colors.blue.shade700, // Color de fondo del botón
-                foregroundColor: Colors.white, // Color del texto/icono
+                backgroundColor: Colors.blue.shade700,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 20,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15), // Bordes redondeados
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                elevation: 8, // Sombra del botón
+                elevation: 8,
                 shadowColor: Colors.blue.shade900.withOpacity(0.4),
               ),
             ),
@@ -249,7 +224,7 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
     );
   }
 
-  // Widget auxiliar para construir una tarjeta de selección de fecha.
+  /// Construye una tarjeta para seleccionar una fecha (inicio o fin).
   Widget _buildDateSelectionCard(
     BuildContext context, {
     required IconData icon,
@@ -259,7 +234,7 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
     required Color iconColor,
   }) {
     return Card(
-      elevation: 5, // Sombra para la tarjeta
+      elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
@@ -285,10 +260,8 @@ class _SelectVacationPeriodPageState extends State<SelectVacationPeriodPage> {
                     const SizedBox(height: 4),
                     Text(
                       date != null
-                          ? DateFormat('dd/MM/yyyy').format(
-                            date,
-                          ) // Formato de fecha legible
-                          : 'Toca para seleccionar',
+                          ? DateFormat('dd/MM/yyyy').format(date)
+                          : EmployeesStrings.tapToSelect,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

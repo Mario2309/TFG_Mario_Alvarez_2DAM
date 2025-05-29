@@ -7,6 +7,7 @@ import 'package:nexuserp/features/employee/presentation/pages/employee_options_p
 import 'package:nexuserp/presentation/pages/main_page.dart';
 import 'package:nexuserp/presentation/pages/search_page.dart';
 import 'package:nexuserp/features/employee_files/presentation/pages/files_employee_page.dart';
+import '../../../../core/utils/employees_strings.dart';
 
 class EmployeesPage extends StatefulWidget {
   @override
@@ -20,20 +21,16 @@ class _EmployeesPageState extends State<EmployeesPage> {
   late final EmployeeService _employeeService;
 
   String _filtroEstado = 'Todos';
-  String _searchQuery =
-      ''; // Esta variable se vuelve a usar para la búsqueda en línea
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
 
-  final TextEditingController _searchController =
-      TextEditingController(); // Este controlador se vuelve a usar para la búsqueda en línea
-
+  /// Inicializa servicios y carga empleados al iniciar la página
   @override
   void initState() {
     super.initState();
     _employeeService = EmployeeService();
     _repository = EmployeeRepositoryImpl(_employeeService);
     _loadEmployees();
-
-    // Se vuelve a añadir el listener del _searchController
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text.trim().toLowerCase();
@@ -44,11 +41,11 @@ class _EmployeesPageState extends State<EmployeesPage> {
 
   @override
   void dispose() {
-    _searchController
-        .dispose(); // Es necesario disponer de este controlador aquí
+    _searchController.dispose();
     super.dispose();
   }
 
+  /// Obtiene la lista de empleados desde el repositorio y aplica el filtro actual
   Future<void> _loadEmployees() async {
     final employees = await _repository.getEmployees();
     setState(() {
@@ -57,17 +54,14 @@ class _EmployeesPageState extends State<EmployeesPage> {
     });
   }
 
+  /// Aplica los filtros de estado y búsqueda sobre la lista de empleados
   void _applyFilter() {
     List<Employee> temp = _employees;
-
-    // Filtrar por estado
     if (_filtroEstado == 'Activos') {
       temp = temp.where((e) => e.activo).toList();
     } else if (_filtroEstado == 'Inactivos') {
       temp = temp.where((e) => !e.activo).toList();
     }
-
-    // Se vuelve a añadir la lógica de filtrado por búsqueda
     if (_searchQuery.isNotEmpty) {
       temp =
           temp
@@ -76,10 +70,10 @@ class _EmployeesPageState extends State<EmployeesPage> {
               )
               .toList();
     }
-
     _filteredEmployees = temp;
   }
 
+  /// Navega a la pantalla para agregar un nuevo empleado y recarga la lista si se agrega uno
   void _navigateToAddEmployeeScreen() {
     Navigator.push<Employee>(
       context,
@@ -99,7 +93,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
     });
   }
 
-  // Se añadió un parámetro 'showBackButton' para controlar la visibilidad del botón de retroceso.
+  /// Construye el Drawer de filtros y acciones rápidas
   Widget _buildFilterOptions(bool showBackButton) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -110,18 +104,16 @@ class _EmployeesPageState extends State<EmployeesPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                // Contenedor para el título y el botón de retroceso
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Opciones",
+                    EmployeesStrings.options,
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-                  // Muestra el botón de retroceso solo si showBackButton es true
                   if (showBackButton)
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -135,11 +127,10 @@ class _EmployeesPageState extends State<EmployeesPage> {
                 ],
               ),
               const SizedBox(height: 10),
-              // Se ha vuelto a añadir el TextField de búsqueda aquí
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Buscar por nombre...',
+                  hintText: EmployeesStrings.searchHint,
                   hintStyle: TextStyle(color: Colors.white70),
                   prefixIcon: const Icon(Icons.search, color: Colors.white70),
                   filled: true,
@@ -157,14 +148,14 @@ class _EmployeesPageState extends State<EmployeesPage> {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'Filtrar por estado',
+            EmployeesStrings.filterByStatus,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
         RadioListTile<String>(
-          value: 'Todos',
+          value: EmployeesStrings.all,
           groupValue: _filtroEstado,
-          title: const Text("Todos"),
+          title: const Text(EmployeesStrings.all),
           onChanged: (value) {
             setState(() {
               _filtroEstado = value!;
@@ -173,9 +164,9 @@ class _EmployeesPageState extends State<EmployeesPage> {
           },
         ),
         RadioListTile<String>(
-          value: 'Activos',
+          value: EmployeesStrings.active,
           groupValue: _filtroEstado,
-          title: const Text("Activos"),
+          title: const Text(EmployeesStrings.active),
           onChanged: (value) {
             setState(() {
               _filtroEstado = value!;
@@ -184,9 +175,9 @@ class _EmployeesPageState extends State<EmployeesPage> {
           },
         ),
         RadioListTile<String>(
-          value: 'Inactivos',
+          value: EmployeesStrings.inactive,
           groupValue: _filtroEstado,
-          title: const Text("Inactivos"),
+          title: const Text(EmployeesStrings.inactive),
           onChanged: (value) {
             setState(() {
               _filtroEstado = value!;
@@ -198,7 +189,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'Acciones rápidas',
+            EmployeesStrings.quickActions,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -206,57 +197,46 @@ class _EmployeesPageState extends State<EmployeesPage> {
             ),
           ),
         ),
-        // Se ha eliminado el ListTile de "Buscar empleados" de aquí
         ListTile(
           leading: const Icon(Icons.sync),
-          title: const Text('Recargar empleados'),
+          title: const Text(EmployeesStrings.reloadEmployees),
           onTap: () {
             _loadEmployees();
-            if (showBackButton)
-              Navigator.pop(context); // Cierra el Drawer al recargar
+            if (showBackButton) Navigator.pop(context);
           },
         ),
         ListTile(
           leading: const Icon(Icons.add_circle_outline),
-          title: const Text('Agregar empleado'),
+          title: const Text(EmployeesStrings.addEmployee),
           onTap: () {
-            // Ya se cierra el Drawer aquí, pero se mantiene la lógica para claridad
             Navigator.pop(context);
             _navigateToAddEmployeeScreen();
           },
         ),
         ListTile(
           leading: const Icon(Icons.folder_shared),
-          title: const Text('Archivos de empleados'),
+          title: const Text(EmployeesStrings.employeeFiles),
           onTap: () {
             Navigator.pop(context);
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder:
-                    (_) => FilesEmployeePage(
-                      employeeId: 0,
-                    ), // 0 para mostrar todos
+                builder: (_) => FilesEmployeePage(employeeId: 0),
               ),
             );
           },
         ),
         ListTile(
           leading: const Icon(Icons.info_outline),
-          title: const Text('Acerca de'),
+          title: const Text(EmployeesStrings.about),
           onTap: () {
-            // Cierra el Drawer antes de mostrar el diálogo
             if (showBackButton) Navigator.pop(context);
             showAboutDialog(
               context: context,
-              applicationName: 'Gestión de Empleados',
-              applicationVersion: '1.0.0',
+              applicationName: EmployeesStrings.aboutAppName,
+              applicationVersion: EmployeesStrings.aboutAppVersion,
               applicationIcon: const Icon(Icons.people),
-              children: [
-                const Text(
-                  'Aplicación para gestionar empleados, con filtros y búsqueda.',
-                ),
-              ],
+              children: [const Text(EmployeesStrings.aboutAppDescription)],
             );
           },
         ),
@@ -264,17 +244,17 @@ class _EmployeesPageState extends State<EmployeesPage> {
     );
   }
 
+  /// Construye la interfaz principal de la página de empleados
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isLargeScreen = width >= 800;
-    final crossAxisCount = (width / 300).floor().clamp(1, 4); // adaptable
-
+    final crossAxisCount = (width / 300).floor().clamp(1, 4);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Gestión de Empleados',
-          style: TextStyle(
+        title: Text(
+          EmployeesStrings.title,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 26,
             color: Colors.white,
@@ -320,7 +300,6 @@ class _EmployeesPageState extends State<EmployeesPage> {
         elevation: 12,
         centerTitle: true,
       ),
-      // Pasa 'true' a _buildFilterOptions si es una pantalla pequeña para mostrar el botón de retroceso
       drawer: isLargeScreen ? null : Drawer(child: _buildFilterOptions(true)),
       body: Row(
         children: [
@@ -328,7 +307,6 @@ class _EmployeesPageState extends State<EmployeesPage> {
             Container(
               width: 280,
               color: Colors.grey.shade100,
-              // Pasa 'false' a _buildFilterOptions si es una pantalla grande (no necesita botón de retroceso)
               child: _buildFilterOptions(false),
             ),
           Expanded(
@@ -337,7 +315,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
                 _filteredEmployees.isEmpty
                     ? const Center(
                       child: Text(
-                        'No hay empleados registrados.',
+                        EmployeesStrings.noEmployees,
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     )
@@ -364,6 +342,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
     );
   }
 
+  /// Construye la tarjeta visual para cada empleado
   Widget _buildEmployeeCard(Employee employee) {
     return Card(
       elevation: 2,
@@ -403,7 +382,9 @@ class _EmployeesPageState extends State<EmployeesPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    employee.activo ? 'Activo' : 'Inactivo',
+                    employee.activo
+                        ? EmployeesStrings.activeLabel
+                        : EmployeesStrings.inactiveLabel,
                     style: TextStyle(
                       color:
                           employee.activo
@@ -450,7 +431,10 @@ class _EmployeesPageState extends State<EmployeesPage> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   icon: const Icon(Icons.more_vert, size: 18),
-                  label: const Text('Opciones', style: TextStyle(fontSize: 13)),
+                  label: const Text(
+                    EmployeesStrings.optionsButton,
+                    style: TextStyle(fontSize: 13),
+                  ),
                   onPressed: () {
                     Navigator.push(
                       context,

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:nexuserp/features/employee/data/repositories/employee_repository_impl.dart';
 import 'package:nexuserp/features/employee/presentation/pages/employees_page.dart';
 import '../../domain/entities/employee.dart';
+import '../../../../core/utils/employees_strings.dart';
 
 class AddEmployeePage extends StatefulWidget {
   final EmployeeRepositoryImpl employeeService;
@@ -39,6 +40,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     super.dispose();
   }
 
+  /// Selecciona la fecha de nacimiento usando un selector de fecha.
   Future<void> _pickNacimientoDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -53,6 +55,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     }
   }
 
+  /// Selecciona la fecha de contratación usando un selector de fecha.
   Future<void> _pickFechaContratacionDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -67,12 +70,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     }
   }
 
+  /// Cambia el estado de activo del empleado.
   void _toggleActivo(bool? value) {
     setState(() {
       _activo = value ?? false;
     });
   }
 
+  /// Envía el formulario para agregar un nuevo empleado.
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       double sueldoParsed = double.tryParse(_sueldoController.text) ?? 0.0;
@@ -104,19 +109,18 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     }
   }
 
+  /// Muestra un diálogo de error si la creación falla.
   void _showErrorDialog() {
     showDialog(
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: const Text('Error'),
-            content: const Text(
-              'No se pudo agregar al empleado. Inténtalo nuevamente.',
-            ),
+            title: const Text(EmployeesStrings.error),
+            content: const Text(EmployeesStrings.addEmployeeError),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Aceptar'),
+                child: const Text(EmployeesStrings.accept),
               ),
             ],
           ),
@@ -127,7 +131,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agregar Empleado'),
+        title: const Text(EmployeesStrings.addEmployeeTitle),
         backgroundColor: Colors.blue.shade700,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -146,57 +150,57 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           child: Column(
             children: [
               _buildTextField(
-                label: 'Nombre Completo',
+                label: EmployeesStrings.fullName,
                 controller: _nombreController,
                 icon: Icons.person,
               ),
               _buildTextField(
-                label: 'Correo Electrónico',
+                label: EmployeesStrings.emailLabel,
                 controller: _emailController,
                 icon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || !value.contains('@')) {
-                    return 'Correo inválido';
+                    return EmployeesStrings.invalidEmail;
                   }
                   return null;
                 },
               ),
               _buildTextField(
-                label: 'Número de Teléfono',
+                label: EmployeesStrings.phoneLabel,
                 controller: _telefonoController,
                 icon: Icons.phone,
                 keyboardType: TextInputType.phone,
               ),
               _buildTextField(
-                label: 'DNI',
+                label: EmployeesStrings.dniLabel,
                 controller: _dniController,
                 icon: Icons.badge,
               ),
               _buildTextField(
-                label: 'Sueldo',
+                label: EmployeesStrings.salaryLabel,
                 controller: _sueldoController,
                 icon: Icons.attach_money,
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || double.tryParse(value) == null) {
-                    return 'Ingrese un sueldo válido';
+                    return EmployeesStrings.validSalary;
                   }
                   return null;
                 },
               ),
               _buildTextField(
-                label: 'Cargo',
+                label: EmployeesStrings.positionLabel,
                 controller: _cargoController,
                 icon: Icons.work,
               ),
               _buildDateField(
-                label: 'Fecha de Nacimiento',
+                label: EmployeesStrings.birthDate,
                 date: _nacimiento,
                 onPressed: _pickNacimientoDate,
               ),
               _buildDateField(
-                label: 'Fecha de Contratación',
+                label: EmployeesStrings.hireDateLabel,
                 date: _fechaContratacion,
                 onPressed: _pickFechaContratacionDate,
               ),
@@ -210,6 +214,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     );
   }
 
+  /// Construye un campo de texto personalizado para el formulario.
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
@@ -223,7 +228,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         controller: controller,
         keyboardType: keyboardType,
         validator:
-            validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
+            validator ??
+            (value) => value!.isEmpty ? EmployeesStrings.requiredField : null,
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.blue.shade700),
           labelText: label,
@@ -235,6 +241,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     );
   }
 
+  /// Construye un campo de selección de fecha para el formulario.
   Widget _buildDateField({
     required String label,
     required DateTime date,
@@ -252,17 +259,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             ),
           ),
-          TextButton(onPressed: onPressed, child: const Text('Cambiar')),
+          TextButton(
+            onPressed: onPressed,
+            child: const Text(EmployeesStrings.change),
+          ),
         ],
       ),
     );
   }
 
+  /// Construye el checkbox para indicar si el empleado está activo.
   Widget _buildActivoCheckbox() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: CheckboxListTile(
-        title: const Text('Empleado Activo'),
+        title: const Text(EmployeesStrings.activeEmployee),
         value: _activo,
         onChanged: _toggleActivo,
         activeColor: Colors.blue.shade700,
@@ -271,6 +282,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     );
   }
 
+  /// Construye los botones de acción para guardar o cancelar.
   Widget _buildButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -282,14 +294,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               MaterialPageRoute(builder: (context) => EmployeesPage()),
             );
           },
-          child: const Text('Cancelar'),
+          child: const Text(EmployeesStrings.cancelButton),
         ),
         ElevatedButton(
           onPressed: _submitForm,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue.shade700,
           ),
-          child: const Text('Guardar'),
+          child: const Text(EmployeesStrings.saveButton),
         ),
       ],
     );
