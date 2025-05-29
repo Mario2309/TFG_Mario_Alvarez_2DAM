@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:nexuserp/core/utils/products_strings.dart';
 import '../../data/models/product_model.dart';
 import '../../data/datasources/product_service.dart';
 
+/// Pantalla para editar un producto existente.
 class EditProductPage extends StatefulWidget {
   final ProductModel product;
   final ProductService productService;
@@ -18,7 +20,6 @@ class EditProductPage extends StatefulWidget {
 
 class _EditProductPageState extends State<EditProductPage> {
   final _formKey = GlobalKey<FormState>();
-
   late TextEditingController _nombreController;
   late TextEditingController _tipoController;
   late TextEditingController _precioController;
@@ -30,9 +31,15 @@ class _EditProductPageState extends State<EditProductPage> {
     super.initState();
     _nombreController = TextEditingController(text: widget.product.nombre);
     _tipoController = TextEditingController(text: widget.product.tipo);
-    _precioController = TextEditingController(text: widget.product.precio.toString());
-    _cantidadController = TextEditingController(text: widget.product.cantidad.toString());
-    _descripcionController = TextEditingController(text: widget.product.descripcion);
+    _precioController = TextEditingController(
+      text: widget.product.precio.toString(),
+    );
+    _cantidadController = TextEditingController(
+      text: widget.product.cantidad.toString(),
+    );
+    _descripcionController = TextEditingController(
+      text: widget.product.descripcion,
+    );
   }
 
   @override
@@ -45,6 +52,7 @@ class _EditProductPageState extends State<EditProductPage> {
     super.dispose();
   }
 
+  /// Envía el formulario y actualiza el producto si es válido.
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final updatedProduct = ProductModel(
@@ -67,19 +75,21 @@ class _EditProductPageState extends State<EditProductPage> {
     }
   }
 
+  /// Muestra un diálogo de error si ocurre un fallo al actualizar el producto.
   void _showErrorDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text('Error'),
-        content: const Text('No se pudo actualizar el producto. Inténtalo nuevamente.'),
-        actions: [
-          TextButton(
-            child: const Text('Aceptar'),
-            onPressed: () => Navigator.of(context).pop(),
+      builder:
+          (BuildContext context) => AlertDialog(
+            title: Text(ProductsStrings.error),
+            content: Text(ProductsStrings.updateError),
+            actions: [
+              TextButton(
+                child: Text(ProductsStrings.accept),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -87,7 +97,7 @@ class _EditProductPageState extends State<EditProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar Producto'),
+        title: Text(ProductsStrings.editProduct),
         backgroundColor: Colors.blue.shade700,
       ),
       body: SingleChildScrollView(
@@ -97,29 +107,29 @@ class _EditProductPageState extends State<EditProductPage> {
           child: Column(
             children: [
               _buildTextField(
-                label: 'Nombre',
+                label: ProductsStrings.name,
                 controller: _nombreController,
                 icon: Icons.label,
               ),
               _buildTextField(
-                label: 'Tipo',
+                label: ProductsStrings.type,
                 controller: _tipoController,
                 icon: Icons.category,
               ),
               _buildTextField(
-                label: 'Precio',
+                label: ProductsStrings.price,
                 controller: _precioController,
                 icon: Icons.attach_money,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
               ),
               _buildTextField(
-                label: 'Cantidad',
+                label: ProductsStrings.stock,
                 controller: _cantidadController,
                 icon: Icons.format_list_numbered,
                 keyboardType: TextInputType.number,
               ),
               _buildTextField(
-                label: 'Descripción',
+                label: ProductsStrings.description,
                 controller: _descripcionController,
                 icon: Icons.description,
               ),
@@ -129,14 +139,14 @@ class _EditProductPageState extends State<EditProductPage> {
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
+                    child: Text(ProductsStrings.cancel),
                   ),
                   ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade700,
                     ),
-                    child: const Text('Guardar'),
+                    child: Text(ProductsStrings.save),
                   ),
                 ],
               ),
@@ -147,6 +157,7 @@ class _EditProductPageState extends State<EditProductPage> {
     );
   }
 
+  /// Construye un campo de texto reutilizable para el formulario.
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
@@ -158,7 +169,11 @@ class _EditProductPageState extends State<EditProductPage> {
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
-        validator: (value) => value == null || value.isEmpty ? 'Campo requerido' : null,
+        validator:
+            (value) =>
+                value == null || value.isEmpty
+                    ? ProductsStrings.requiredField
+                    : null,
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.blue.shade700),
           labelText: label,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nexuserp/features/product/domain/entities/product.dart';
+import 'package:nexuserp/core/utils/products_strings.dart';
 
+/// Pantalla para agregar un nuevo producto al inventario.
 class AddProductScreen extends StatefulWidget {
   @override
   _AddProductScreenState createState() => _AddProductScreenState();
@@ -8,7 +10,6 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
@@ -27,15 +28,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
     super.dispose();
   }
 
+  /// Envía el formulario y retorna el nuevo producto si es válido.
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final newProduct = Product(
         nombre: _nombreController.text,
         precio: double.tryParse(_precioController.text) ?? 0.0,
         cantidad: int.tryParse(_stockController.text) ?? 0,
-        descripcion: _descripcionController.text.isNotEmpty ? _descripcionController.text : null,
+        descripcion:
+            _descripcionController.text.isNotEmpty
+                ? _descripcionController.text
+                : null,
         tipo: _tipoController.text.isNotEmpty ? _tipoController.text : null,
-        proveedorId: _proveedorIdController.text.isNotEmpty ? int.tryParse(_proveedorIdController.text) : null,
+        proveedorId:
+            _proveedorIdController.text.isNotEmpty
+                ? int.tryParse(_proveedorIdController.text)
+                : null,
         id: null,
       );
 
@@ -43,22 +51,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
+  /// Muestra un diálogo de error si ocurre un fallo al agregar el producto.
   void _showErrorDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error'),
-        content: const Text('No se pudo agregar el producto. Inténtalo nuevamente.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Aceptar'),
+      builder:
+          (context) => AlertDialog(
+            title: Text(ProductsStrings.error),
+            content: Text(ProductsStrings.addProductError),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(ProductsStrings.accept),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
+  /// Construye un campo de texto reutilizable para el formulario.
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
@@ -73,9 +84,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
         controller: controller,
         keyboardType: keyboardType,
         maxLines: maxLines ?? 1,
-        validator: validator ?? (value) => value!.isEmpty ? 'Campo requerido' : null,
+        validator:
+            validator ??
+            (value) => value!.isEmpty ? ProductsStrings.requiredField : null,
         decoration: InputDecoration(
-          prefixIcon: icon != null ? Icon(icon, color: Colors.blue.shade700) : null,
+          prefixIcon:
+              icon != null ? Icon(icon, color: Colors.blue.shade700) : null,
           labelText: label,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           filled: true,
@@ -89,7 +103,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agregar Producto'),
+        title: Text(ProductsStrings.addProduct),
         backgroundColor: Colors.blue.shade700,
       ),
       body: SingleChildScrollView(
@@ -99,55 +113,57 @@ class _AddProductScreenState extends State<AddProductScreen> {
           child: Column(
             children: [
               _buildTextField(
-                label: 'Nombre',
+                label: ProductsStrings.name,
                 controller: _nombreController,
                 icon: Icons.shopping_bag_outlined,
               ),
               _buildTextField(
-                label: 'Tipo (Opcional)',
+                label: ProductsStrings.typeOptional,
                 controller: _tipoController,
                 icon: Icons.category,
                 validator: (value) => null,
               ),
               _buildTextField(
-                label: 'Precio',
+                label: ProductsStrings.price,
                 controller: _precioController,
                 icon: Icons.attach_money,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Campo requerido';
+                    return ProductsStrings.requiredField;
                   }
                   if (double.tryParse(value) == null) {
-                    return 'Precio inválido';
+                    return ProductsStrings.invalidPrice;
                   }
                   return null;
                 },
               ),
               _buildTextField(
-                label: 'Cantidad en stock',
+                label: ProductsStrings.stockLabel,
                 controller: _stockController,
                 icon: Icons.store,
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Campo requerido';
+                    return ProductsStrings.requiredField;
                   }
                   if (int.tryParse(value) == null) {
-                    return 'Cantidad inválida';
+                    return ProductsStrings.invalidStock;
                   }
                   return null;
                 },
               ),
               _buildTextField(
-                label: 'Descripción (Opcional)',
+                label: ProductsStrings.descriptionOptional,
                 controller: _descripcionController,
                 maxLines: 3,
                 icon: Icons.description,
                 validator: (value) => null,
               ),
               _buildTextField(
-                label: 'Proveedor ID (Opcional)',
+                label: ProductsStrings.providerIdOptional,
                 controller: _proveedorIdController,
                 icon: Icons.local_shipping,
                 keyboardType: TextInputType.number,
@@ -159,17 +175,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
+                    child: Text(ProductsStrings.cancel),
                   ),
                   ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade700,
-                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16.0,
+                        horizontal: 32,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       textStyle: const TextStyle(fontSize: 18),
                     ),
-                    child: const Text('Guardar', style: TextStyle(color: Colors.white)),
+                    child: Text(
+                      ProductsStrings.save,
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
                 ],
               ),

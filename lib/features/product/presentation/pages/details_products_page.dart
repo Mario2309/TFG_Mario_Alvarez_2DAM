@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nexuserp/features/product/domain/entities/product.dart';
+import 'package:nexuserp/core/utils/products_strings.dart';
 
+/// Pantalla de detalles de un producto.
 class ProductDetailScreen extends StatelessWidget {
   final Product product;
 
@@ -21,30 +23,33 @@ class ProductDetailScreen extends StatelessWidget {
           children: [
             _buildHeader(context, product.nombre),
             const SizedBox(height: 20),
-            _buildSectionTitle('Información del Producto'),
-            _buildDetailItem('Tipo', product.tipo as String),
+            _buildSectionTitle(ProductsStrings.productInfo),
+            _buildDetailItem(ProductsStrings.type, product.tipo as String),
             _buildDetailItem(
-              'Precio',
-              '\$${product.precio.toStringAsFixed(2)}',
+              ProductsStrings.price,
+              '\u0024${product.precio.toStringAsFixed(2)}',
             ),
-            _buildDetailItem('Stock', '${product.cantidad} unidades'),
+            _buildDetailItem(
+              ProductsStrings.stock,
+              '${product.cantidad} ${ProductsStrings.units}',
+            ),
             const SizedBox(height: 15),
-            _buildSectionTitle('Descripción'),
+            _buildSectionTitle(ProductsStrings.description),
             _buildDescription(product.descripcion),
             const SizedBox(height: 15),
-            _buildSectionTitle('Información Adicional'),
+            _buildSectionTitle(ProductsStrings.additionalInfo),
             _buildDetailItem(
-              'ID del Proveedor',
-              product.proveedorId?.toString() ?? 'No disponible',
+              ProductsStrings.providerId,
+              product.proveedorId?.toString() ?? ProductsStrings.notAvailable,
             ),
             const SizedBox(height: 30),
-            // Puedes añadir más secciones o botones aquí
           ],
         ),
       ),
     );
   }
 
+  /// Construye el encabezado con el nombre y el icono del producto.
   Widget _buildHeader(BuildContext context, String name) {
     return Row(
       children: [
@@ -66,6 +71,7 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
+  /// Construye el título de una sección.
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
@@ -76,6 +82,7 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
+  /// Construye un ítem de detalle con etiqueta y valor.
   Widget _buildDetailItem(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -96,6 +103,7 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
+  /// Construye la sección de descripción del producto.
   Widget _buildDescription(String? description) {
     return Container(
       width: double.infinity,
@@ -105,7 +113,7 @@ class ProductDetailScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Text(
-        description ?? 'No hay descripción disponible.',
+        description ?? ProductsStrings.noDescription,
         style: const TextStyle(fontSize: 16),
       ),
     );

@@ -5,9 +5,11 @@ import 'package:nexuserp/features/product/domain/entities/product.dart';
 import 'package:nexuserp/features/product/data/models/product_model.dart';
 import 'package:nexuserp/features/product/data/datasources/product_service.dart';
 import 'package:nexuserp/features/product/data/repositories/product_repository_impl.dart';
+import 'package:nexuserp/core/utils/products_strings.dart';
 
 import 'details_products_page.dart'; // Importa la pantalla de detalles
 
+/// Página principal para la gestión y visualización de productos.
 class ProductsPage extends StatefulWidget {
   @override
   _ProductsPageState createState() => _ProductsPageState();
@@ -42,6 +44,7 @@ class _ProductsPageState extends State<ProductsPage> {
     super.dispose();
   }
 
+  /// Carga la lista de productos desde el repositorio.
   Future<void> _loadProducts() async {
     setState(() => _isLoading = true);
     try {
@@ -51,14 +54,15 @@ class _ProductsPageState extends State<ProductsPage> {
         _applyFilter();
       });
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error loading products: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${ProductsStrings.errorLoading} $e')),
+      );
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
+  /// Aplica el filtro de búsqueda sobre la lista de productos.
   void _applyFilter() {
     List<Product> temp = _products;
     if (_searchQuery.isNotEmpty) {
@@ -70,6 +74,7 @@ class _ProductsPageState extends State<ProductsPage> {
     _filteredProducts = temp;
   }
 
+  /// Navega a la pantalla para agregar un nuevo producto.
   void _navigateToAddProductScreen() {
     Navigator.push(
       context,
@@ -81,19 +86,20 @@ class _ProductsPageState extends State<ProductsPage> {
         );
         if (success) {
           setState(() => _products.add(newProduct));
-          _applyFilter(); // Re-apply filter after adding
+          _applyFilter();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${newProduct.nombre} added successfully!')),
+            SnackBar(content: Text(ProductsStrings.addedSuccessfully)),
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to add product')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(ProductsStrings.failedToAdd)));
         }
       }
     });
   }
 
+  /// Navega a la pantalla de detalles de un producto.
   void _navigateToProductDetails(Product product) {
     Navigator.push(
       context,
@@ -103,6 +109,7 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
+  /// Navega a la pantalla de edición de un producto y recarga si hay cambios.
   void _navigateToEditProduct(Product product) async {
     final result = await Navigator.push(
       context,
@@ -127,6 +134,7 @@ class _ProductsPageState extends State<ProductsPage> {
     }
   }
 
+  /// Construye la tarjeta visual para un producto individual.
   Widget _buildProductCard(Product product) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -143,13 +151,10 @@ class _ProductsPageState extends State<ProductsPage> {
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Text(
-          'Stock: ${product.cantidad}\nPrecio: \$${product.precio.toStringAsFixed(2)}',
+          '${ProductsStrings.stock}: ￿{product.cantidad}\n${ProductsStrings.price}: \u0024${product.precio.toStringAsFixed(2)}',
           style: const TextStyle(fontSize: 14, color: Colors.grey),
         ),
-        onTap:
-            () => _navigateToProductDetails(
-              product,
-            ), // Acción al tocar la tarjeta
+        onTap: () => _navigateToProductDetails(product),
         trailing: PopupMenuButton<String>(
           onSelected: (value) {
             if (value == 'details') {
@@ -160,13 +165,13 @@ class _ProductsPageState extends State<ProductsPage> {
           },
           itemBuilder:
               (BuildContext context) => <PopupMenuEntry<String>>[
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'details',
-                  child: Text('Ver detalles'),
+                  child: Text(ProductsStrings.viewDetails),
                 ),
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'edit',
-                  child: Text('Editar'),
+                  child: Text(ProductsStrings.edit),
                 ),
               ],
         ),
@@ -174,6 +179,7 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
+  /// Construye el panel lateral de filtros y búsqueda.
   Widget _buildFilterOptions(bool isLargeScreen) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -184,8 +190,8 @@ class _ProductsPageState extends State<ProductsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Opciones",
-                style: TextStyle(
+                ProductsStrings.options,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -195,8 +201,8 @@ class _ProductsPageState extends State<ProductsPage> {
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Buscar por nombre...',
-                  hintStyle: TextStyle(color: Colors.white70),
+                  hintText: ProductsStrings.searchHint,
+                  hintStyle: const TextStyle(color: Colors.white70),
                   prefixIcon: const Icon(Icons.search, color: Colors.white70),
                   filled: true,
                   fillColor: Colors.blue.shade600,
@@ -212,7 +218,7 @@ class _ProductsPageState extends State<ProductsPage> {
         ),
         ListTile(
           leading: const Icon(Icons.refresh),
-          title: const Text('Recargar productos'),
+          title: Text(ProductsStrings.reloadProducts),
           onTap: () {
             _loadProducts();
             if (!isLargeScreen) Navigator.pop(context);
@@ -220,13 +226,12 @@ class _ProductsPageState extends State<ProductsPage> {
         ),
         ListTile(
           leading: const Icon(Icons.add_circle_outline),
-          title: const Text('Agregar producto'),
+          title: Text(ProductsStrings.addProduct),
           onTap: () {
             if (!isLargeScreen) Navigator.pop(context);
             _navigateToAddProductScreen();
           },
         ),
-        // Puedes añadir más opciones de filtrado aquí si lo necesitas
       ],
     );
   }
@@ -238,9 +243,9 @@ class _ProductsPageState extends State<ProductsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Productos',
-          style: TextStyle(
+        title: Text(
+          ProductsStrings.title,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 26,
             color: Colors.white,
@@ -291,10 +296,13 @@ class _ProductsPageState extends State<ProductsPage> {
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : _filteredProducts.isEmpty
-                    ? const Center(
+                    ? Center(
                       child: Text(
-                        'No hay productos disponibles.',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ProductsStrings.noProducts,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
                       ),
                     )
                     : ListView.builder(
