@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:nexuserp/features/employee_files/domain/entities/employee_file.dart';
 import 'package:nexuserp/features/employee_files/data/repositories/employee_file_repository_impl.dart';
 import 'package:nexuserp/features/employee_files/data/datasources/employee_file_service.dart';
-import 'package:nexuserp/features/employee/presentation/pages/employees_strings.dart';
+import 'package:nexuserp/core/utils/employees_strings.dart';
 
 // Esta página permite a los usuarios subir archivos relacionados con un empleado,
 // especificando el tipo de archivo y añadiendo observaciones.

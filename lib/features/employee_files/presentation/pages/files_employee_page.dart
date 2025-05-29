@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart'; // Para formatear fechas
 
 import '../../../employee/presentation/pages/employees_page.dart';
-import '../../../employee/presentation/pages/employees_strings.dart';
+import '../../../../core/utils/employees_strings.dart';
 
 // Definición del enum SortingOption
 enum SortingOption { name, type, date }

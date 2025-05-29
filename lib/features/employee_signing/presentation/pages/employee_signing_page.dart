@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexuserp/core/utils/employees_strings.dart';
 import 'package:nexuserp/features/employee_signing/data/datasources/employee_service.dart';
 import 'package:nexuserp/features/employee_signing/data/repositories/employee_repository_impl.dart';
 import 'package:nexuserp/features/employee_signing/domain/entities/employee_signing.dart';
@@ -105,15 +106,15 @@ class _FichajesPageState extends State<FichajesPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Opciones",
-                style: TextStyle(fontSize: 22, color: Colors.white),
+              Text(
+                EmployeesStrings.options,
+                style: const TextStyle(fontSize: 22, color: Colors.white),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Buscar por nombre...',
+                  hintText: EmployeesStrings.searchHint,
                   hintStyle: const TextStyle(color: Colors.white70),
                   prefixIcon: const Icon(Icons.search, color: Colors.white70),
                   filled: true,
@@ -129,9 +130,9 @@ class _FichajesPageState extends State<FichajesPage> {
           ),
         ),
         RadioListTile<String>(
-          value: 'Todos',
+          value: EmployeesStrings.all,
           groupValue: _filtroTipo,
-          title: const Text("Todos"),
+          title: Text(EmployeesStrings.all),
           onChanged:
               (value) => setState(() {
                 _filtroTipo = value!;
@@ -139,9 +140,9 @@ class _FichajesPageState extends State<FichajesPage> {
               }),
         ),
         RadioListTile<String>(
-          value: 'Entrada',
+          value: EmployeesStrings.signingTypeIn,
           groupValue: _filtroTipo,
-          title: const Text("Entradas"),
+          title: Text(EmployeesStrings.signingTypeInPlural),
           onChanged:
               (value) => setState(() {
                 _filtroTipo = value!;
@@ -149,9 +150,9 @@ class _FichajesPageState extends State<FichajesPage> {
               }),
         ),
         RadioListTile<String>(
-          value: 'Salida',
+          value: EmployeesStrings.signingTypeOut,
           groupValue: _filtroTipo,
-          title: const Text("Salidas"),
+          title: Text(EmployeesStrings.signingTypeOutPlural),
           onChanged:
               (value) => setState(() {
                 _filtroTipo = value!;
@@ -160,7 +161,7 @@ class _FichajesPageState extends State<FichajesPage> {
         ),
         ListTile(
           leading: const Icon(Icons.sync),
-          title: const Text('Recargar fichajes'),
+          title: Text(EmployeesStrings.reloadSignings),
           onTap: () {
             _loadFichajes();
             Navigator.pop(context);
@@ -179,7 +180,7 @@ class _FichajesPageState extends State<FichajesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fichajes'),
+        title: Text(EmployeesStrings.signingsTitle),
         backgroundColor: Colors.blue,
       ),
       drawer: isLargeScreen ? null : Drawer(child: _buildFilterOptions()),
@@ -194,7 +195,7 @@ class _FichajesPageState extends State<FichajesPage> {
           Expanded(
             child:
                 _filteredFichajes.isEmpty
-                    ? const Center(child: Text('No hay fichajes registrados.'))
+                    ? Center(child: Text(EmployeesStrings.noSignings))
                     : Padding(
                       padding: const EdgeInsets.all(12),
                       child: GridView.builder(
@@ -271,7 +272,7 @@ class _FichajesPageState extends State<FichajesPage> {
                 Text(
                   fichaje.fechaHora != null
                       ? '${fichaje.fechaHora.day.toString().padLeft(2, '0')}/${fichaje.fechaHora.month.toString().padLeft(2, '0')}/${fichaje.fechaHora.year}  ${fichaje.fechaHora.hour.toString().padLeft(2, '0')}:${fichaje.fechaHora.minute.toString().padLeft(2, '0')}'
-                      : 'Sin fecha',
+                      : EmployeesStrings.noDate,
                   style: const TextStyle(fontSize: 13, color: Colors.grey),
                 ),
               ],
@@ -282,7 +283,7 @@ class _FichajesPageState extends State<FichajesPage> {
                 const Icon(Icons.badge, size: 16, color: Colors.grey),
                 const SizedBox(width: 6),
                 Text(
-                  'ID Empleado: ${fichaje.empleadoId}',
+                  'ID Empleado:  {fichaje.empleadoId}',
                   style: const TextStyle(fontSize: 13, color: Colors.grey),
                 ),
               ],

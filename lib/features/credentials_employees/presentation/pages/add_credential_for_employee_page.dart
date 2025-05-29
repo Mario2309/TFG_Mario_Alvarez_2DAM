@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import '../../../employee/presentation/pages/employees_strings.dart';
+import '../../../../core/utils/employees_strings.dart';
 import '../../data/repositories/vacation_repository_impl.dart';
 import '../../data/models/credential_employee_model.dart';
 

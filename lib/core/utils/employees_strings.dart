@@ -111,4 +111,69 @@ abstract class EmployeesStrings {
   static const String addCredentialButton = 'Agregar Credencial';
   static const String credentialAdded = 'Credencial agregada correctamente.';
   static const String credentialError = 'Error al agregar credencial:';
+
+  // Textos para FilesEmployeePage
+  static const String filesTitle = 'Archivos almacenados';
+  static const String sortByName = 'Nombre';
+  static const String sortByType = 'Tipo';
+  static const String sortByDate = 'Fecha de subida';
+  static const String searchFilesHint = 'Buscar por nombre, tipo o ruta...';
+  static const String filterByType = 'Filtrar por tipo';
+  static const String filterByDate = 'Filtrar por fecha';
+  static const String selectRange = 'Seleccionar rango';
+  static const String noFilesMatch =
+      'No hay archivos que coincidan con los filtros.';
+  static const String noFiles = 'No hay archivos almacenados.';
+  static const String type = 'Tipo';
+  static const String uploaded = 'Subido';
+  static const String deleteFileTitle = 'Eliminar archivo';
+  static const String deleteFileMsg =
+      '¿Estás seguro de que deseas eliminar este archivo?';
+  static const String cancelFile = 'Cancelar';
+  static const String deleteFile = 'Eliminar';
+  static const String page = 'Página';
+  static const String of = 'de';
+  static const String reloadFiles = 'Recargar archivos';
+  static const String filePath = 'Ruta';
+
+  // Textos para UploadEmployeeFilePage
+  static const String uploadFileTitle = 'Subir Archivo';
+  static const String attachDocument = 'Adjunta un nuevo documento para';
+  static const String selectFile = 'Seleccionar Archivo';
+  static const String fileSelected = 'Archivo Seleccionado';
+  static const String file = 'Archivo';
+  static const String fileType = 'Tipo de Archivo';
+  static const String selectType = 'Selecciona el tipo';
+  static const String contract = 'Contrato';
+  static const String payroll = 'Nómina';
+  static const String dniFile = 'DNI';
+  static const String certificate = 'Certificado';
+  static const String other = 'Otro';
+  static const String selectFileTypeError =
+      'Por favor, selecciona un tipo de archivo.';
+  static const String notes = 'Observaciones (opcional)';
+  static const String notesHint = 'Añade cualquier nota relevante aquí';
+  static const String uploading = 'Subiendo...';
+  static const String uploadFileButton = 'Subir Archivo';
+  static const String fileUploaded = 'Archivo subido correctamente.';
+  static const String uploadError = 'Error al subir o registrar archivo:';
+  static const String selectFileAndType =
+      'Por favor, selecciona un archivo y un tipo de archivo.';
+
+  // Textos para AddEmployeeSigningPage (Fichaje)
+  static const String newSigningTitle = 'Nuevo Fichaje';
+  static const String registerSigningFor = 'Registrar fichaje para';
+  static const String signingTypeIn = 'Entrada';
+  static const String signingTypeOut = 'Salida';
+  static const String signingTypeLabel = 'Tipo de fichaje';
+  static const String registerSigningButton = 'Registrar Fichaje';
+  static const String saving = 'Guardando...';
+  static const String signingRegistered = 'Fichaje registrado correctamente.';
+  static const String signingError = 'Error al registrar el fichaje:';
+  static const String signingsTitle = 'Fichajes';
+  static const String signingTypeInPlural = 'Entradas';
+  static const String signingTypeOutPlural = 'Salidas';
+  static const String reloadSignings = 'Recargar fichajes';
+  static const String noSignings = 'No hay fichajes registrados.';
+  static const String noDate = 'Sin fecha';
 }

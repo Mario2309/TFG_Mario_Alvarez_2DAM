@@ -4,6 +4,7 @@ import 'package:nexuserp/features/employee/domain/entities/employee.dart';
 import 'package:nexuserp/features/employee_signing/data/datasources/employee_service.dart';
 import 'package:nexuserp/features/employee_signing/data/models/employee_signing_model.dart';
 import 'package:nexuserp/features/employee_signing/data/repositories/employee_repository_impl.dart';
+import 'package:nexuserp/core/utils/employees_strings.dart';
 
 import '../../domain/entities/employee_signing.dart';
 import '../../domain/repositories/employee_signing_repository.dart';
@@ -51,8 +52,6 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
   Future<void> _submit() async {
     setState(() => _isLoading = true);
     try {
-      // Llama al método real para guardar el fichaje
-      // Por ejemplo, si tienes un repositorio o servicio:
       await EmployeeSingingService().addAttendance(
         EmployeeSigningModel(
           empleadoId: widget.employee.id!,
@@ -61,11 +60,10 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
           empleadoNombre: widget.employee.nombreCompleto,
         ),
       );
-      // Simulación temporal:
       await Future.delayed(const Duration(seconds: 1));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Fichaje registrado correctamente.'),
+          content: Text(EmployeesStrings.signingRegistered),
           backgroundColor: Colors.green.shade600,
         ),
       );
@@ -73,7 +71,7 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al registrar el fichaje: $e'),
+          content: Text('${EmployeesStrings.signingError} $e'),
           backgroundColor: Colors.red.shade600,
         ),
       );
@@ -87,7 +85,7 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
     final name = widget.employee.nombreCompleto.split(' ').first;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Nuevo Fichaje - $name'),
+        title: Text('${EmployeesStrings.newSigningTitle} - $name'),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -107,7 +105,7 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
             Icon(Icons.fingerprint, size: 60, color: Colors.blue.shade700),
             const SizedBox(height: 20),
             Text(
-              'Registrar fichaje para $name',
+              '${EmployeesStrings.registerSigningFor} $name',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 22,
@@ -131,7 +129,7 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
                 ),
                 TextButton(
                   onPressed: _pickDateTime,
-                  child: const Text('Cambiar'),
+                  child: Text(EmployeesStrings.change),
                 ),
               ],
             ),
@@ -143,19 +141,22 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: _selectedType,
-                    items: const [
+                    items: [
                       DropdownMenuItem(
                         value: 'entrada',
-                        child: Text('Entrada'),
+                        child: Text(EmployeesStrings.signingTypeIn),
                       ),
-                      DropdownMenuItem(value: 'salida', child: Text('Salida')),
+                      DropdownMenuItem(
+                        value: 'salida',
+                        child: Text(EmployeesStrings.signingTypeOut),
+                      ),
                     ],
                     onChanged: (val) {
                       if (val != null) setState(() => _selectedType = val);
                     },
-                    decoration: const InputDecoration(
-                      labelText: 'Tipo de fichaje',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: EmployeesStrings.signingTypeLabel,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -176,7 +177,9 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
                       )
                       : const Icon(Icons.check_circle),
               label: Text(
-                _isLoading ? 'Guardando...' : 'Registrar Fichaje',
+                _isLoading
+                    ? EmployeesStrings.saving
+                    : EmployeesStrings.registerSigningButton,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
