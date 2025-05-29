@@ -5,6 +5,7 @@ import 'package:nexuserp/features/product/presentation/pages/products_page.dart'
 import 'package:nexuserp/features/supliers/presentation/pages/supplier_page.dart';
 import 'package:nexuserp/features/inventory/presentation/pages/inventory_details_page.dart';
 import 'package:nexuserp/features/vacation/presentation/pages/vacations_page.dart';
+import '../../core/utils/search_page_strings.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -20,23 +21,35 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _allOptions = [
-      _SearchOption("Productos", Icons.shopping_bag_outlined, ProductsPage()),
-      _SearchOption("Empleados", Icons.people_alt_outlined, EmployeesPage()),
       _SearchOption(
-        "Proveedores",
+        SearchPageStrings.products,
+        Icons.shopping_bag_outlined,
+        ProductsPage(),
+      ),
+      _SearchOption(
+        SearchPageStrings.employees,
+        Icons.people_alt_outlined,
+        EmployeesPage(),
+      ),
+      _SearchOption(
+        SearchPageStrings.suppliers,
         Icons.local_shipping_outlined,
         SuppliersPage(),
       ),
       _SearchOption(
-        "Inventario",
+        SearchPageStrings.inventory,
         Icons.inventory_2_outlined,
         InventoryDetailsPage(),
       ),
-      _SearchOption("Vacaciones", Icons.beach_access_outlined, VacationsPage()),
       _SearchOption(
-        "Horario",
+        SearchPageStrings.vacations,
+        Icons.beach_access_outlined,
+        VacationsPage(),
+      ),
+      _SearchOption(
+        SearchPageStrings.schedule,
         Icons.access_time,
-        FichajesPage(), // Cambia el nombre si tu página de fichajes tiene otro nombre
+        FichajesPage(),
       ),
     ];
     _filteredOptions = List.from(_allOptions);
@@ -76,7 +89,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                           _filteredOptions.isEmpty
                               ? Center(
                                 child: Text(
-                                  'No se encontraron resultados.',
+                                  SearchPageStrings.noResults,
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.grey[600],
@@ -116,7 +129,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     return TextField(
       controller: _searchController,
       decoration: InputDecoration(
-        hintText: 'Buscar...',
+        hintText: SearchPageStrings.searchHint,
         prefixIcon: Icon(Icons.search),
         filled: true,
         fillColor: Colors.white,

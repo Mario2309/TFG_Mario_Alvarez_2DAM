@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nexuserp/presentation/pages/login.dart';
 import 'edit_profile_page.dart';
+import '../../core/utils/profile_page_strings.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -19,12 +20,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (user == null) {
       return const Scaffold(
-        body: Center(child: Text('No hay usuario conectado.')),
+        body: Center(child: Text(ProfilePageStrings.noUser)),
       );
     }
 
-    final email = user.email ?? 'No email';
-    final name = user.userMetadata?['name'] ?? 'No name';
+    final email = user.email ?? ProfilePageStrings.noEmail;
+    final name = user.userMetadata?['name'] ?? ProfilePageStrings.noName;
     final imageUrl =
         user.userMetadata?['avatar_url'] ?? 'https://via.placeholder.com/150';
 
@@ -37,21 +38,21 @@ class _ProfilePageState extends State<ProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Perfil',
+                ProfilePageStrings.profile,
                 style: TextStyle(
-                  fontSize: 32, // Increased font size for title
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A202C), // Darker title color
+                  color: Color(0xFF1A202C),
                 ),
               ),
               const SizedBox(height: 24),
               Row(
                 children: [
                   CircleAvatar(
-                    radius: 40, // Increased avatar size
+                    radius: 40,
                     backgroundImage: NetworkImage(imageUrl),
                   ),
-                  const SizedBox(width: 20), // Increased spacing
+                  const SizedBox(width: 20),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,16 +60,16 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text(
                           name,
                           style: const TextStyle(
-                            fontSize: 20, // Increased name size
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2D3748), // Darker name color
+                            color: Color(0xFF2D3748),
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           email,
                           style: const TextStyle(
-                            fontSize: 16, // Increased email size
+                            fontSize: 16,
                             color: Colors.blue,
                             decoration: TextDecoration.underline,
                           ),
@@ -78,36 +79,33 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 32), // Increased spacing
+              const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Switch to Dark Mode',
-                    style: TextStyle(fontSize: 16), // Increased font size
+                    ProfilePageStrings.switchDarkMode,
+                    style: TextStyle(fontSize: 16),
                   ),
                   Switch(
                     value: isDarkMode,
                     onChanged: (val) {
                       setState(() => isDarkMode = val);
                     },
-                    activeColor: Colors.blue, // Changed active color
+                    activeColor: Colors.blue,
                   ),
                 ],
               ),
-              const SizedBox(height: 24), // Increased spacing
-              const Divider(
-                color: Color(0xFFE2E8F0), // Lighter divider color
-                thickness: 1.5, // Increased thickness
-              ),
-              const SizedBox(height: 16), // Increased spacing
+              const SizedBox(height: 24),
+              const Divider(color: Color(0xFFE2E8F0), thickness: 1.5),
+              const SizedBox(height: 16),
               const Text(
-                'Configuración de la Cuenta',
+                ProfilePageStrings.accountSettings,
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
-              const SizedBox(height: 20), // Increased spacing
+              const SizedBox(height: 20),
               SettingTile(
-                title: 'Cambiar Contraseña',
+                title: ProfilePageStrings.changePassword,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -117,9 +115,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 },
               ),
-              const SizedBox(height: 16), // Increased spacing
+              const SizedBox(height: 16),
               SettingTile(
-                title: 'Editar Perfil',
+                title: ProfilePageStrings.editProfile,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -139,25 +137,21 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // Changed button color
-                    foregroundColor: Colors.white, // Changed text color
-                    elevation: 2, // Added elevation
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    elevation: 2,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 36, // Increased horizontal padding
-                      vertical: 14, // Increased vertical padding
+                      horizontal: 36,
+                      vertical: 14,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        16,
-                      ), // More rounded corners
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    shadowColor: Colors.blue.withOpacity(
-                      0.2,
-                    ), // Add shadow color
+                    shadowColor: Colors.blue.withOpacity(0.2),
                   ),
                   child: const Text(
-                    'Cerrar Sesión',
-                    style: TextStyle(fontSize: 18), // Increased font size
+                    ProfilePageStrings.logout,
+                    style: TextStyle(fontSize: 18),
                   ),
                 ),
               ),

@@ -5,6 +5,7 @@ import 'package:nexuserp/features/employee/domain/entities/employee.dart';
 import 'package:nexuserp/features/product/domain/entities/product.dart';
 import 'package:nexuserp/features/product/data/datasources/product_service.dart';
 import '../../features/employee/data/datasources/employee_service.dart';
+import '../../core/utils/home_page_strings.dart';
 
 // Enum para los tipos de gráfico
 enum ChartType { line, pie }
@@ -58,7 +59,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 )
                 .toList();
-
         _products =
             productModels
                 .map(
@@ -79,9 +79,7 @@ class _HomePageState extends State<HomePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'Error al cargar los datos. Por favor, verifica tu conexión.',
-            ),
+            content: Text(HomePageStrings.loadingError),
             duration: Duration(seconds: 5),
           ),
         );
@@ -99,7 +97,6 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.only(top: 24),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              // Determina si la pantalla es lo suficientemente grande para un diseño de dos columnas
               final bool isLargeScreen = constraints.maxWidth > 600;
 
               return Column(
@@ -112,10 +109,9 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Expanded(
                             child: _buildChartSection(
-                              title: 'Gráfico de Empleados',
+                              title: HomePageStrings.employeeChart,
                               isEmpty: _employees.isEmpty,
-                              emptyMessage:
-                                  'No hay datos de empleados disponibles.',
+                              emptyMessage: HomePageStrings.employeeEmpty,
                               chartType: _employeeChartType,
                               onChartTypeChanged: (type) {
                                 setState(() {
@@ -146,10 +142,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Expanded(
                             child: _buildChartSection(
-                              title: 'Gráfico de Productos',
+                              title: HomePageStrings.productChart,
                               isEmpty: _products.isEmpty,
-                              emptyMessage:
-                                  'No hay datos de productos disponibles.',
+                              emptyMessage: HomePageStrings.productEmpty,
                               chartType: _productChartType,
                               onChartTypeChanged: (type) {
                                 setState(() {
@@ -183,10 +178,9 @@ class _HomePageState extends State<HomePage> {
                       : Column(
                         children: [
                           _buildChartSection(
-                            title: 'Gráfico de Empleados',
+                            title: HomePageStrings.employeeChart,
                             isEmpty: _employees.isEmpty,
-                            emptyMessage:
-                                'No hay datos de empleados disponibles.',
+                            emptyMessage: HomePageStrings.employeeEmpty,
                             chartType: _employeeChartType,
                             onChartTypeChanged: (type) {
                               setState(() {
@@ -214,10 +208,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 24.0),
                           _buildChartSection(
-                            title: 'Gráfico de Productos',
+                            title: HomePageStrings.productChart,
                             isEmpty: _products.isEmpty,
-                            emptyMessage:
-                                'No hay datos de productos disponibles.',
+                            emptyMessage: HomePageStrings.productEmpty,
                             chartType: _productChartType,
                             onChartTypeChanged: (type) {
                               setState(() {
@@ -252,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                   const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
-                      'Este es un espacio para añadir más contenido debajo de los gráficos.',
+                      HomePageStrings.addContent,
                       style: TextStyle(fontSize: 16, color: Colors.black54),
                       textAlign: TextAlign.center,
                     ),
@@ -276,22 +269,20 @@ class _HomePageState extends State<HomePage> {
     required Widget Function(BoxConstraints) lineChartBuilder,
     required Widget Function(BoxConstraints) pieChartBuilder,
   }) {
-    // Determine the specific chart title based on the selected type
     String currentChartTitle;
-    if (title.contains('Empleados')) {
+    if (title == HomePageStrings.employeeChart) {
       currentChartTitle =
           chartType == ChartType.line
-              ? 'Salarios de Empleados'
-              : 'Empleados (Activos vs Inactivos)';
-    } else if (title.contains('Productos')) {
+              ? HomePageStrings.employeeChartLine
+              : HomePageStrings.employeeChartPie;
+    } else if (title == HomePageStrings.productChart) {
       currentChartTitle =
           chartType == ChartType.line
-              ? 'Cantidad de Productos'
-              : 'Productos por Tipo';
+              ? HomePageStrings.productChartLine
+              : HomePageStrings.productChartPie;
     } else {
-      currentChartTitle = title; // Fallback for other sections
+      currentChartTitle = title;
     }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -309,8 +300,7 @@ class _HomePageState extends State<HomePage> {
         Padding(
           padding: const EdgeInsets.all(16),
           child: AspectRatio(
-            // Added AspectRatio for consistent scaling
-            aspectRatio: 16 / 9, // Common aspect ratio for charts
+            aspectRatio: 16 / 9,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -333,7 +323,7 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              currentChartTitle, // Display the specific chart title
+                              currentChartTitle,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
@@ -355,13 +345,8 @@ class _HomePageState extends State<HomePage> {
                             LayoutBuilder(
                               builder: (context, constraints) {
                                 final bool showTextLabels =
-                                    constraints.maxWidth >
-                                    400; // Define breakpoint for showing text labels
-                                final double fontSize =
-                                    showTextLabels
-                                        ? 14
-                                        : 0; // Set font size to 0 if not showing text
-
+                                    constraints.maxWidth > 400;
+                                final double fontSize = showTextLabels ? 14 : 0;
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -372,12 +357,12 @@ class _HomePageState extends State<HomePage> {
                                           label:
                                               showTextLabels
                                                   ? Text(
-                                                    'Línea',
+                                                    HomePageStrings.line,
                                                     style: TextStyle(
                                                       fontSize: fontSize,
                                                     ),
                                                   )
-                                                  : null, // Conditionally set label to null
+                                                  : null,
                                           icon: const Icon(Icons.show_chart),
                                         ),
                                         ButtonSegment<ChartType>(
@@ -385,12 +370,12 @@ class _HomePageState extends State<HomePage> {
                                           label:
                                               showTextLabels
                                                   ? Text(
-                                                    'Circular',
+                                                    HomePageStrings.pie,
                                                     style: TextStyle(
                                                       fontSize: fontSize,
                                                     ),
                                                   )
-                                                  : null, // Conditionally set label to null
+                                                  : null,
                                           icon: const Icon(Icons.pie_chart),
                                         ),
                                       ],

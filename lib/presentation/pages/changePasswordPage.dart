@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nexuserp/core/utils/password_visibility_controller.dart';
+import '../../core/utils/change_password_page_strings.dart';
 
 class ChangePasswordPage extends StatelessWidget {
   @override
@@ -43,20 +44,20 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Contraseña actualizada correctamente'),
+            content: Text(ChangePasswordPageStrings.passwordUpdated),
             duration: Duration(seconds: 3),
-            backgroundColor: Colors.green, // Color de éxito
+            backgroundColor: Colors.green,
           ),
         );
         Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al actualizar la contraseña: ${e.toString()}'),
-            duration: const Duration(
-              seconds: 5,
-            ), // Duración más larga para errores
-            backgroundColor: Colors.red, // Color de error
+            content: Text(
+              '${ChangePasswordPageStrings.updateError} ${e.toString()}',
+            ),
+            duration: const Duration(seconds: 5),
+            backgroundColor: Colors.red,
           ),
         );
       } finally {
@@ -124,24 +125,17 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
     final visibilityController = Provider.of<PasswordVisibilityController>(
       context,
     );
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA), // Fondo claro
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         title: const Text(
-          'Cambiar Contraseña',
-          style: TextStyle(
-            color: Colors.white, // Color de título blanco
-            fontWeight: FontWeight.w600, // Título ligeramente más negrita
-          ),
+          ChangePasswordPageStrings.title,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
-        backgroundColor: Colors.blue.shade700, // Barra de aplicación azul
-        iconTheme: const IconThemeData(
-          color: Colors.white, // Color de icono blanco
-        ),
-        elevation:
-            0, // Sombra de la barra de aplicación eliminada para un aspecto limpio
-        centerTitle: true, // Centrar el título
+        backgroundColor: Colors.blue.shade700,
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -152,7 +146,7 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Asegura tu cuenta',
+                  ChangePasswordPageStrings.secureAccount,
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -161,7 +155,7 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Introduce tu nueva contraseña a continuación para actualizarla.',
+                  ChangePasswordPageStrings.instructions,
                   style: TextStyle(fontSize: 16, color: Color(0xFF4A5568)),
                 ),
                 const SizedBox(height: 40),
@@ -169,12 +163,12 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
                   controller: _passwordController,
                   obscureText: visibilityController.isObscured,
                   decoration: _inputDecoration(
-                    'Nueva Contraseña',
+                    ChangePasswordPageStrings.newPassword,
                     visibilityController,
                   ),
                   validator: (value) {
                     if (value == null || value.length < 8) {
-                      return 'La contraseña debe tener al menos 8 caracteres';
+                      return ChangePasswordPageStrings.passwordMinLength;
                     }
                     return null;
                   },
@@ -185,12 +179,12 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
                   controller: _confirmPasswordController,
                   obscureText: visibilityController.isObscured,
                   decoration: _inputDecoration(
-                    'Confirmar Contraseña',
+                    ChangePasswordPageStrings.confirmPassword,
                     visibilityController,
                   ),
                   validator: (value) {
                     if (value != _passwordController.text) {
-                      return 'Las contraseñas no coinciden';
+                      return ChangePasswordPageStrings.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -203,17 +197,13 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
                     onPressed: _isLoading ? null : _changePassword,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade600,
-                      foregroundColor:
-                          Colors.white, // Color del texto del botón
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      elevation:
-                          4, // Elevación aumentada para un botón más prominente
-                      shadowColor: Colors.blue.withOpacity(
-                        0.3,
-                      ), // Sombra más pronunciada
+                      elevation: 4,
+                      shadowColor: Colors.blue.withOpacity(0.3),
                     ),
                     child:
                         _isLoading
@@ -222,7 +212,7 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
                               strokeWidth: 3,
                             )
                             : const Text(
-                              'Actualizar Contraseña',
+                              ChangePasswordPageStrings.updatePassword,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,

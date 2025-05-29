@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:nexuserp/presentation/pages/login.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nexuserp/core/utils/password_visibility_controller.dart';
-import 'package:animated_text_kit/animated_text_kit.dart'; // Importa para el texto animado
-import 'package:another_flushbar/flushbar.dart'; // Importa para las notificaciones
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:another_flushbar/flushbar.dart';
+import '../../core/utils/register_screen_strings.dart';
 
 class RegisterScreen extends StatelessWidget {
   @override
@@ -67,23 +68,14 @@ class _RegisterFormState extends State<RegisterForm> {
       );
 
       if (response.user != null) {
-        _showSuccessDialog(context); // Muestra el diálogo de éxito
+        _showSuccessDialog(context);
       } else {
-        _showErrorSnackbar(
-          context,
-          "El registro falló. Inténtalo de nuevo.",
-        ); // Muestra la notificación de error
+        _showErrorSnackbar(context, RegisterScreenStrings.registrationFailed);
       }
     } on AuthException catch (e) {
-      _showErrorSnackbar(
-        context,
-        e.message,
-      ); // Muestra la notificación de error
+      _showErrorSnackbar(context, e.message);
     } catch (e) {
-      _showErrorSnackbar(
-        context,
-        'Ocurrió un error inesperado. Inténtalo de nuevo.',
-      ); // Muestra la notificación de error
+      _showErrorSnackbar(context, RegisterScreenStrings.unexpectedError);
     } finally {
       setState(() {
         _isLoading = false;
@@ -91,16 +83,13 @@ class _RegisterFormState extends State<RegisterForm> {
     }
   }
 
-  // Función para mostrar el diálogo de éxito
   void _showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Registro exitoso'),
-            content: const Text(
-              'Tu cuenta ha sido creada. Revisa tu correo para verificar tu cuenta.',
-            ),
+            title: const Text(RegisterScreenStrings.registrationSuccess),
+            content: const Text(RegisterScreenStrings.registrationSuccessMsg),
             actions: [
               TextButton(
                 onPressed: () {
@@ -110,14 +99,13 @@ class _RegisterFormState extends State<RegisterForm> {
                     MaterialPageRoute(builder: (context) => LoginScreen()),
                   );
                 },
-                child: const Text('OK'),
+                child: const Text(RegisterScreenStrings.ok),
               ),
             ],
           ),
     );
   }
 
-  // Función para mostrar la notificación de error
   void _showErrorSnackbar(BuildContext context, String message) {
     Flushbar(
       message: message,
@@ -130,10 +118,6 @@ class _RegisterFormState extends State<RegisterForm> {
 
   @override
   Widget build(BuildContext context) {
-    final passwordVisibility = Provider.of<PasswordVisibilityController>(
-      context,
-      listen: true,
-    );
     final confirmVisibility = Provider.of<PasswordVisibilityController>(
       context,
       listen: false,
@@ -165,27 +149,24 @@ class _RegisterFormState extends State<RegisterForm> {
                   children: [
                     const SizedBox(height: 20.0),
                     AnimatedTextKit(
-                      // Widget de texto animado
                       animatedTexts: [
                         TyperAnimatedText(
-                          'Crea tu cuenta en NexusERP',
+                          RegisterScreenStrings.createAccount,
                           textStyle: TextStyle(
                             fontSize: 24.0,
                             fontWeight: FontWeight.w600,
                             color: Colors.blue.shade700,
                           ),
                           textAlign: TextAlign.center,
-                          speed: const Duration(
-                            milliseconds: 50,
-                          ), // Velocidad de la animación
+                          speed: const Duration(milliseconds: 50),
                         ),
                       ],
-                      isRepeatingAnimation: false, // No se repite la animación
+                      isRepeatingAnimation: false,
                       displayFullTextOnTap: true,
                     ),
                     const SizedBox(height: 8.0),
                     Text(
-                      'Completa los campos para registrarte',
+                      RegisterScreenStrings.fillFields,
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   ],
@@ -207,7 +188,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         controller: _nameController,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.person_outline),
-                          labelText: 'Nombre completo',
+                          labelText: RegisterScreenStrings.fullName,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
@@ -216,7 +197,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         validator:
                             (value) =>
                                 value == null || value.isEmpty
-                                    ? 'Por favor ingresa tu nombre'
+                                    ? RegisterScreenStrings.enterName
                                     : null,
                       ),
                       const SizedBox(height: 16.0),
@@ -224,7 +205,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         controller: _phoneController,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.phone),
-                          labelText: 'Número de teléfono',
+                          labelText: RegisterScreenStrings.phone,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
@@ -234,7 +215,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         validator:
                             (value) =>
                                 value == null || value.isEmpty
-                                    ? 'Por favor ingresa tu teléfono'
+                                    ? RegisterScreenStrings.enterPhone
                                     : null,
                       ),
                       const SizedBox(height: 16.0),
@@ -242,7 +223,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         controller: _emailController,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.email_outlined),
-                          labelText: 'Correo electrónico',
+                          labelText: RegisterScreenStrings.email,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
@@ -251,8 +232,9 @@ class _RegisterFormState extends State<RegisterForm> {
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty)
-                            return 'Por favor ingresa tu correo';
-                          if (!value.contains('@')) return 'Correo inválido';
+                            return RegisterScreenStrings.enterEmail;
+                          if (!value.contains('@'))
+                            return RegisterScreenStrings.invalidEmail;
                           return null;
                         },
                       ),
@@ -264,7 +246,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               obscureText: visibility.isObscured,
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(Icons.lock_outline),
-                                labelText: 'Contraseña',
+                                labelText: RegisterScreenStrings.password,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
@@ -280,9 +262,10 @@ class _RegisterFormState extends State<RegisterForm> {
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty)
-                                  return 'Por favor ingresa tu contraseña';
+                                  return RegisterScreenStrings.enterPassword;
                                 if (value.length < 6)
-                                  return 'Debe tener al menos 6 caracteres';
+                                  return RegisterScreenStrings
+                                      .passwordMinLength;
                                 return null;
                               },
                             ),
@@ -295,7 +278,8 @@ class _RegisterFormState extends State<RegisterForm> {
                               obscureText: confirmVisibility.isObscured,
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(Icons.lock_outline),
-                                labelText: 'Confirmar contraseña',
+                                labelText:
+                                    RegisterScreenStrings.confirmPassword,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
@@ -311,9 +295,11 @@ class _RegisterFormState extends State<RegisterForm> {
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty)
-                                  return 'Confirma tu contraseña';
+                                  return RegisterScreenStrings
+                                      .confirmYourPassword;
                                 if (value != _passwordController.text)
-                                  return 'Las contraseñas no coinciden';
+                                  return RegisterScreenStrings
+                                      .passwordsDoNotMatch;
                                 return null;
                               },
                             ),
@@ -330,7 +316,7 @@ class _RegisterFormState extends State<RegisterForm> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.0),
                           ),
-                          elevation: 8, // Añade sombra al botón
+                          elevation: 8,
                           shadowColor: Colors.blue.shade900,
                         ),
                         child:
@@ -339,7 +325,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                   color: Colors.white,
                                 )
                                 : const Text(
-                                  'Registrar',
+                                  RegisterScreenStrings.register,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16.0,
@@ -354,7 +340,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "¿Ya tienes cuenta?",
+                      RegisterScreenStrings.alreadyHaveAccount,
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                     TextButton(
@@ -367,13 +353,11 @@ class _RegisterFormState extends State<RegisterForm> {
                         );
                       },
                       child: Text(
-                        'Inicia sesión',
+                        RegisterScreenStrings.login,
                         style: TextStyle(
                           color: Colors.blue.shade700,
                           fontWeight: FontWeight.bold,
-                          decoration:
-                              TextDecoration
-                                  .underline, // Añade subrayado al texto del botón
+                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),

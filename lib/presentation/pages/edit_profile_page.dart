@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../core/utils/edit_profile_page_strings.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -29,6 +30,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
+    _loadInitialData();
+  }
+
+  Future<void> _loadInitialData() async {
     final user = supabase.auth.currentUser;
     final metadata = user?.userMetadata ?? {};
 
@@ -132,20 +137,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Perfil actualizado correctamente.'),
-            duration: Duration(seconds: 3), // Added duration
-            backgroundColor: Colors.green, // Color de éxito
+            content: Text(EditProfilePageStrings.profileUpdated),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al actualizar perfil: $e'),
-          duration: const Duration(
-            seconds: 5,
-          ), // Duración más larga para errores
-          backgroundColor: Colors.red, // Color de error
+          content: Text('${EditProfilePageStrings.updateError} $e'),
+          duration: const Duration(seconds: 5),
+          backgroundColor: Colors.red,
         ),
       );
     } finally {
@@ -221,28 +224,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     : const Icon(Icons.person, size: 60, color: Colors.grey)));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA), // Fondo claro
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         title: const Text(
-          'Editar Perfil',
-          style: TextStyle(
-            fontWeight: FontWeight.w600, // Título ligeramente más negrita
-            color: Colors.white, // Color de título blanco
-          ),
+          EditProfilePageStrings.title,
+          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
         ),
-        backgroundColor: Colors.blue.shade700, // Barra de aplicación azul
-        iconTheme: const IconThemeData(
-          color: Colors.white, // Color de icono blanco
-        ),
-        elevation: 0, // Sombra de la barra de aplicación eliminada
-        centerTitle: true, // Centrar título
+        backgroundColor: Colors.blue.shade700,
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center, // Alineación central
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: _pickImage,
@@ -251,16 +249,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     CircleAvatar(
                       radius: 60,
                       backgroundColor: Colors.grey.shade300,
-                      child: ClipOval(
-                        child: avatarPreview,
-                      ), // Asegura que la imagen sea circular
+                      child: ClipOval(child: avatarPreview),
                     ),
                     Positioned(
                       bottom: 0,
                       right: 0,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade600, // Color azul
+                          color: Colors.blue.shade600,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         padding: const EdgeInsets.all(4),
@@ -277,68 +273,68 @@ class _EditProfilePageState extends State<EditProfilePage> {
               const SizedBox(height: 24),
               TextFormField(
                 controller: _nameController,
-                decoration: _buildInputDecoration('Nombre'),
+                decoration: _buildInputDecoration(EditProfilePageStrings.name),
                 validator:
                     (value) =>
                         value == null || value.isEmpty
-                            ? 'Introduce tu nombre'
+                            ? EditProfilePageStrings.enterName
                             : null,
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: _buildInputDecoration('Descripción'),
+                decoration: _buildInputDecoration(
+                  EditProfilePageStrings.description,
+                ),
                 maxLines: 3,
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _phoneController,
-                decoration: _buildInputDecoration('Teléfono'),
+                decoration: _buildInputDecoration(EditProfilePageStrings.phone),
                 validator:
                     (value) =>
                         value == null || value.isEmpty
-                            ? 'Introduce tu teléfono'
+                            ? EditProfilePageStrings.enterPhone
                             : null,
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _avatarUrlController,
-                decoration: _buildInputDecoration('Avatar URL (opcional)'),
+                decoration: _buildInputDecoration(
+                  EditProfilePageStrings.avatarUrl,
+                ),
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 32),
               SizedBox(
-                width:
-                    double.infinity, // Asegura que el botón ocupe todo el ancho
+                width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.save, color: Colors.white),
                   label: const Text(
-                    'Guardar Cambios',
+                    EditProfilePageStrings.saveChanges,
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   onPressed: _isLoading ? null : _updateProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.blue.shade600, // Color azul del botón
-                    foregroundColor: Colors.white, // Color del texto del botón
+                    backgroundColor: Colors.blue.shade600,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 18.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14.0),
                     ),
-                    elevation: 4, // Elevación aumentada
-                    shadowColor: Colors.blue.withOpacity(0.3), // Sombra
+                    elevation: 4,
+                    shadowColor: Colors.blue.withOpacity(0.3),
                   ),
                 ),
               ),
               if (_isLoading)
                 const Padding(
                   padding: EdgeInsets.only(top: 24),
-                  child: CircularProgressIndicator(
-                    color: Colors.blue, // Color azul del indicador de carga
-                  ),
+                  child: CircularProgressIndicator(color: Colors.blue),
                 ),
             ],
           ),

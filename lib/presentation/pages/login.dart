@@ -4,14 +4,15 @@ import 'package:nexuserp/presentation/pages/register_screen.dart';
 import 'package:nexuserp/presentation/pages/main_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nexuserp/core/utils/password_visibility_controller.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:animated_text_kit/animated_text_kit.dart'; // Importa para el texto animado
-import 'package:another_flushbar/flushbar.dart'; // Import para las notificaciones
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:nexuserp/features/employee/domain/entities/employee.dart';
 import 'package:nexuserp/features/employee/presentation/pages/employee_simple_options_page.dart';
+import '../../core/utils/login_screen_strings.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -193,12 +194,9 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void> _signInWithGoogle() async {
     try {
-      _showErrorSnackbar(
-        context,
-        'Inicio de sesión con Google sin implementar',
-      );
+      _showErrorSnackbar(context, LoginScreenStrings.googleNotImplemented);
     } catch (e) {
-      _showErrorSnackbar(context, 'Inicio de sesión con Google fallido');
+      _showErrorSnackbar(context, LoginScreenStrings.googleFailed);
     }
   }
 
@@ -251,7 +249,7 @@ class _LoginFormState extends State<LoginForm> {
         AnimatedTextKit(
           animatedTexts: [
             TyperAnimatedText(
-              'Bienvenido a NexusERP',
+              LoginScreenStrings.welcome,
               textStyle: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.w600,
@@ -266,7 +264,7 @@ class _LoginFormState extends State<LoginForm> {
         ),
         const SizedBox(height: 8.0),
         const Text(
-          'Inicia sesión para continuar',
+          LoginScreenStrings.loginToContinue,
           style: TextStyle(color: Colors.grey),
         ),
       ],
@@ -287,6 +285,116 @@ class _LoginFormState extends State<LoginForm> {
         ),
         const SizedBox(height: 12.0),
       ],
+    );
+  }
+
+  Widget _buildEmailField() {
+    return TextFormField(
+      controller: _emailController,
+      decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.email_outlined),
+        labelText: LoginScreenStrings.email,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+        contentPadding: const EdgeInsets.all(16.0),
+      ),
+      keyboardType: TextInputType.emailAddress,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) {
+        if (value == null) return null;
+        if (value.isNotEmpty && !value.contains('@')) {
+          return LoginScreenStrings.invalidEmail;
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildPasswordField(
+    PasswordVisibilityController visibilityController,
+  ) {
+    return TextFormField(
+      controller: _passwordController,
+      obscureText: visibilityController.isObscured,
+      decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.lock_outline),
+        labelText: LoginScreenStrings.password,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+        contentPadding: const EdgeInsets.all(16.0),
+        suffixIcon: IconButton(
+          icon: Icon(
+            visibilityController.isObscured
+                ? Icons.visibility_off
+                : Icons.visibility,
+          ),
+          onPressed: visibilityController.toggleVisibility,
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return LoginScreenStrings.enterPassword;
+        }
+        if (value.length < 6) {
+          return LoginScreenStrings.passwordMinLength;
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildRememberMeCheckbox() {
+    return Row(
+      children: [
+        Checkbox(
+          value: _rememberMe,
+          onChanged: (value) {
+            setState(() {
+              _rememberMe = value!;
+            });
+          },
+          checkColor: Colors.white,
+          activeColor: const Color(0xFF2196F3),
+        ),
+        const Text(
+          LoginScreenStrings.rememberMe,
+          style: TextStyle(color: Colors.black87),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginButton() {
+    return ElevatedButton(
+      onPressed: _isLoading ? null : _submit,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF2196F3),
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        elevation: 8,
+        shadowColor: Colors.blue.shade900,
+      ),
+      child:
+          _isLoading
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const Text(
+                LoginScreenStrings.login,
+                style: TextStyle(color: Colors.white, fontSize: 16.0),
+              ),
+    );
+  }
+
+  Widget _buildGoogleSignInButton() {
+    return OutlinedButton.icon(
+      onPressed: _signInWithGoogle,
+      icon: Image.asset('assets/icons/google_icon.png', height: 24.0),
+      label: const Text(LoginScreenStrings.continueWithGoogle),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.black87,
+        side: const BorderSide(color: Colors.grey),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+      ),
     );
   }
 
@@ -313,7 +421,11 @@ class _LoginFormState extends State<LoginForm> {
                       });
                     },
             icon: Icon(_isEmployeeLogin ? Icons.person : Icons.verified_user),
-            label: Text(_isEmployeeLogin ? 'Empleado' : 'Administrador'),
+            label: Text(
+              _isEmployeeLogin
+                  ? LoginScreenStrings.employee
+                  : LoginScreenStrings.admin,
+            ),
             style: OutlinedButton.styleFrom(
               foregroundColor:
                   _isEmployeeLogin
@@ -334,127 +446,13 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget _buildEmailField() {
-    return TextFormField(
-      controller: _emailController,
-      decoration: InputDecoration(
-        prefixIcon: const Icon(Icons.email_outlined),
-        labelText: 'Correo electrónico',
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
-        contentPadding: const EdgeInsets.all(16.0),
-      ),
-      keyboardType: TextInputType.emailAddress,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) {
-        if (value == null) return null;
-        if (value.isNotEmpty && !value.contains('@')) {
-          return 'Correo inválido';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget _buildPasswordField(
-    PasswordVisibilityController visibilityController,
-  ) {
-    return TextFormField(
-      controller: _passwordController,
-      obscureText: visibilityController.isObscured,
-      decoration: InputDecoration(
-        prefixIcon: const Icon(Icons.lock_outline),
-        labelText: 'Contraseña',
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
-        contentPadding: const EdgeInsets.all(16.0),
-        suffixIcon: IconButton(
-          icon: Icon(
-            visibilityController.isObscured
-                ? Icons.visibility_off
-                : Icons.visibility,
-          ),
-          onPressed: visibilityController.toggleVisibility,
-        ),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Introduce tu contraseña';
-        }
-        if (value.length < 6) {
-          return 'Debe tener al menos 6 caracteres';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget _buildRememberMeCheckbox() {
-    return Row(
-      children: [
-        Checkbox(
-          value: _rememberMe,
-          onChanged: (value) {
-            setState(() {
-              _rememberMe = value!;
-            });
-          },
-          checkColor: Colors.white,
-          activeColor: const Color(0xFF2196F3),
-        ),
-        const Text('Recordarme', style: TextStyle(color: Colors.black87)),
-      ],
-    );
-  }
-
-  Widget _buildLoginButton() {
-    return ElevatedButton(
-      onPressed: _isLoading ? null : _submit,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(
-          0xFF2196F3,
-        ), // Changed to use constant color
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        elevation: 8, // Añade sombra al botón
-        shadowColor: Colors.blue.shade900,
-      ),
-      child:
-          _isLoading
-              ? const CircularProgressIndicator(color: Colors.white)
-              : const Text(
-                'Iniciar sesión',
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
-              ),
-    );
-  }
-
-  Widget _buildGoogleSignInButton() {
-    return OutlinedButton.icon(
-      onPressed: _signInWithGoogle,
-      icon: Image.asset(
-        'assets/icons/google_icon.png', // Make sure this path is correct
-        height: 24.0,
-      ),
-      label: const Text('Continuar con Google'),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.black87,
-        side: const BorderSide(
-          color: Colors.grey,
-        ), // Changed to use default Colors
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
-      ),
-    );
-  }
-
   Widget _buildRegisterLink() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          "¿No tienes cuenta?",
-          style: TextStyle(color: Colors.grey), // Changed to use default Colors
+          LoginScreenStrings.noAccount,
+          style: TextStyle(color: Colors.grey),
         ),
         TextButton(
           onPressed: () {
@@ -464,13 +462,11 @@ class _LoginFormState extends State<LoginForm> {
             );
           },
           child: const Text(
-            'Regístrate',
+            LoginScreenStrings.register,
             style: TextStyle(
-              color: Color(0xFF2196F3), // Changed to use constant color
+              color: Color(0xFF2196F3),
               fontWeight: FontWeight.bold,
-              decoration:
-                  TextDecoration
-                      .underline, // Añade subrayado al texto del botón
+              decoration: TextDecoration.underline,
             ),
           ),
         ),
