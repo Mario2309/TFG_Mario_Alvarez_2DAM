@@ -12,50 +12,25 @@ import '../../domain/repositories/employee_signing_repository.dart';
 class AddEmployeeSigningPage extends StatefulWidget {
   final Employee employee;
   const AddEmployeeSigningPage({Key? key, required this.employee})
-    : super(key: key);
+      : super(key: key);
 
   @override
-  State<AddEmployeeSigningPage> createState() => _AddEmployeeSigningPageState();
+  State<AddEmployeeSigningPage> createState() =>
+      _AddEmployeeSigningPageState();
 }
 
 class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
-  DateTime _selectedDateTime = DateTime.now();
   String _selectedType = 'entrada';
   bool _isLoading = false;
-
-  Future<void> _pickDateTime() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _selectedDateTime,
-      firstDate: DateTime.now().subtract(const Duration(days: 7)),
-      lastDate: DateTime.now().add(const Duration(days: 1)),
-    );
-    if (date != null) {
-      final time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
-      );
-      if (time != null) {
-        setState(() {
-          _selectedDateTime = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            time.hour,
-            time.minute,
-          );
-        });
-      }
-    }
-  }
 
   Future<void> _submit() async {
     setState(() => _isLoading = true);
     try {
+      final now = DateTime.now();
       await EmployeeSingingService().addAttendance(
         EmployeeSigningModel(
           empleadoId: widget.employee.id!,
-          fechaHora: _selectedDateTime,
+          fechaHora: now,
           tipo: _selectedType,
           empleadoNombre: widget.employee.nombreCompleto,
         ),
@@ -83,6 +58,7 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
   @override
   Widget build(BuildContext context) {
     final name = widget.employee.nombreCompleto.split(' ').first;
+    final now = DateTime.now();
     return Scaffold(
       appBar: AppBar(
         title: Text('${EmployeesStrings.newSigningTitle} - $name'),
@@ -120,16 +96,12 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    DateFormat('dd/MM/yyyy HH:mm').format(_selectedDateTime),
+                    DateFormat('dd/MM/yyyy HH:mm').format(now),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
-                TextButton(
-                  onPressed: _pickDateTime,
-                  child: Text(EmployeesStrings.change),
                 ),
               ],
             ),
@@ -165,17 +137,16 @@ class _AddEmployeeSigningPageState extends State<AddEmployeeSigningPage> {
             const SizedBox(height: 40),
             ElevatedButton.icon(
               onPressed: _isLoading ? null : _submit,
-              icon:
-                  _isLoading
-                      ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                      : const Icon(Icons.check_circle),
+              icon: _isLoading
+                  ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+                  : const Icon(Icons.check_circle),
               label: Text(
                 _isLoading
                     ? EmployeesStrings.saving
