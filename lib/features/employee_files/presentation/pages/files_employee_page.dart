@@ -4,6 +4,10 @@ import 'package:nexuserp/features/employee_files/data/repositories/employee_file
 import 'package:nexuserp/features/employee_files/data/datasources/employee_file_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart'; // Para formatear fechas
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 import '../../../employee/presentation/pages/employees_page.dart';
 import '../../../../core/utils/employees_strings.dart';
@@ -180,6 +184,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
     'jpg': Icons.image,
     'jpeg': Icons.image,
     'txt': Icons.text_snippet,
+    'mp3': Icons.audiotrack,
   };
 
   /// Devuelve el icono correspondiente según el tipo de archivo.
@@ -199,6 +204,172 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
 
   /// Calcula el número total de páginas para la paginación.
   int get _totalPages => (_filteredFiles.length / _itemsPerPage).ceil();
+
+  /// Muestra una previsualización del archivo en un diálogo según su tipo.
+  Future<void> _previewFile(BuildContext context, EmployeeFile file) async {
+    final fileType = file.fileType.toLowerCase();
+    Widget content;
+    // Botón de descarga directa para todos los tipos
+    Future<void> _descargarArchivo() async {
+      try {
+        final tempDir = await getApplicationDocumentsDirectory();
+        final savePath = "${tempDir.path}/${file.fileName}";
+        await Dio().download(file.filePath, savePath);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Archivo descargado en: $savePath')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al descargar el archivo.')),
+        );
+      }
+    }
+
+    if (fileType == 'pdf') {
+      content = Column(
+        children: [
+          Expanded(child: SfPdfViewer.network(file.filePath)),
+          ElevatedButton.icon(
+            onPressed: _descargarArchivo,
+            icon: const Icon(Icons.download),
+            label: const Text('Descargar'),
+          ),
+        ],
+      );
+    } else if ({
+      'png',
+      'jpg',
+      'jpeg',
+      'gif',
+      'bmp',
+      'webp',
+    }.contains(fileType)) {
+      content = Column(
+        children: [
+          Expanded(
+            child: Image.network(
+              file.filePath,
+              fit: BoxFit.contain,
+              errorBuilder:
+                  (context, error, stackTrace) =>
+                      const Icon(Icons.broken_image, size: 80),
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: _descargarArchivo,
+            icon: const Icon(Icons.download),
+            label: const Text('Descargar'),
+          ),
+        ],
+      );
+    } else if (fileType == 'mp3') {
+      content = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Icon(Icons.audiotrack, size: 60, color: Colors.blue),
+          const SizedBox(height: 16),
+          Text(
+            file.fileName,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () async {
+                  final url = Uri.parse(file.filePath);
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'No se pudo abrir el archivo .mp3 en el navegador.',
+                        ),
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('Reproducir'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  backgroundColor: Colors.blue,
+                ),
+              ),
+              const SizedBox(width: 20),
+              ElevatedButton.icon(
+                onPressed: _descargarArchivo,
+                icon: const Icon(Icons.download),
+                label: const Text('Descargar'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  backgroundColor: Colors.green,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    } else {
+      content = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              'Vista previa no soportada para este tipo de archivo.',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: _descargarArchivo,
+            icon: const Icon(Icons.download),
+            label: const Text('Descargar'),
+          ),
+        ],
+      );
+    }
+    await showDialog(
+      context: context,
+      builder:
+          (context) => Dialog(
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.8,
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        file.fileName,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  Expanded(child: content),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -489,17 +660,7 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
                                 },
                               ),
                               onTap: () async {
-                                if (file.filePath.startsWith('http')) {
-                                  await launchUrl(Uri.parse(file.filePath));
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        '${EmployeesStrings.filePath}: ${file.filePath}',
-                                      ),
-                                    ),
-                                  );
-                                }
+                                await _previewFile(context, file);
                               },
                             ),
                           );
