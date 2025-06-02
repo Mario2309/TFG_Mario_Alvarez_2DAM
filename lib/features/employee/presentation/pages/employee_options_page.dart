@@ -186,7 +186,7 @@ class _EmployeeOptionsPageState extends State<EmployeeOptionsPage> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
-        '$label: [0m${value ?? EmployeesStrings.notAvailable}',
+        '$label: ${value ?? EmployeesStrings.notAvailable}',
         style: const TextStyle(fontSize: 14),
       ),
     );
