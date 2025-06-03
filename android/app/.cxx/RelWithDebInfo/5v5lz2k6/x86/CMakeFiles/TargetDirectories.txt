@@ -1,0 +1,2 @@
+C:/Users/alvar/OneDrive/Escritorio/TFG-1/android/app/.cxx/RelWithDebInfo/5v5lz2k6/x86/CMakeFiles/edit_cache.dir
+C:/Users/alvar/OneDrive/Escritorio/TFG-1/android/app/.cxx/RelWithDebInfo/5v5lz2k6/x86/CMakeFiles/rebuild_cache.dir
