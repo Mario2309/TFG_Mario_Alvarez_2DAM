@@ -348,116 +348,456 @@ class _VacationsPageState extends State<VacationsPage> {
 
   // Tarjeta de vacación con estilo similar a la tarjeta de empleado
   Widget _buildVacationCard(Vacation vacation) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          // Navega a la página de detalles de la vacación
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VacationDetailPage(vacation: vacation),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double width = constraints.maxWidth;
+        if (width < 320) {
+          // Muy pequeño: columna, fuentes mínimas
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: _getStatusColor(
-                      vacation.status,
-                    ).withOpacity(0.2),
-                    child: Icon(
-                      _getStatusIcon(vacation.status),
-                      color: _getStatusColor(vacation.status),
-                      size: 20,
-                    ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => VacationDetailPage(vacation: vacation),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      vacation.employeeName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 14,
+                          backgroundColor: _getStatusColor(
+                            vacation.status,
+                          ).withOpacity(0.2),
+                          child: Icon(
+                            _getStatusIcon(vacation.status),
+                            color: _getStatusColor(vacation.status),
+                            size: 15,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            vacation.employeeName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(vacation.status).withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
+                    const SizedBox(height: 2),
+                    Text(
                       vacation.status.toUpperCase(),
                       style: TextStyle(
                         color: _getStatusColor(vacation.status),
-                        fontSize: 11,
+                        fontSize: 9,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // Detalles de la vacación
-              _buildInfoRow(
-                icon: Icons.calendar_today,
-                label: VacationsStrings.from,
-                value: vacation.startDate.toLocal().toString().split(' ')[0],
-              ),
-              const SizedBox(height: 4),
-              _buildInfoRow(
-                icon: Icons.calendar_today,
-                label: VacationsStrings.to,
-                value: vacation.endDate.toLocal().toString().split(' ')[0],
-              ),
-              const Spacer(),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton.icon(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
+                    const SizedBox(height: 2),
+                    _buildInfoRow(
+                      icon: Icons.calendar_today,
+                      label: VacationsStrings.from,
+                      value:
+                          vacation.startDate.toLocal().toString().split(' ')[0],
                     ),
-                    minimumSize: const Size(60, 28),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  icon: const Icon(Icons.info_outline, size: 18),
-                  label: const Text(
-                    VacationsStrings.viewDetails,
-                    style: TextStyle(fontSize: 13),
-                  ),
-                  onPressed: () {
-                    // Navega a la página de detalles de la vacación
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => VacationDetailPage(vacation: vacation),
+                    _buildInfoRow(
+                      icon: Icons.calendar_today,
+                      label: VacationsStrings.to,
+                      value:
+                          vacation.endDate.toLocal().toString().split(' ')[0],
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: TextButton.icon(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 2,
+                            vertical: 1,
+                          ),
+                          minimumSize: const Size(40, 20),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        icon: const Icon(Icons.info_outline, size: 13),
+                        label: const Text(
+                          VacationsStrings.viewDetails,
+                          style: TextStyle(fontSize: 9),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      VacationDetailPage(vacation: vacation),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        } else if (width < 500) {
+          // Móvil pequeño: columna, fuentes compactas
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => VacationDetailPage(vacation: vacation),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(7.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: _getStatusColor(
+                            vacation.status,
+                          ).withOpacity(0.2),
+                          child: Icon(
+                            _getStatusIcon(vacation.status),
+                            color: _getStatusColor(vacation.status),
+                            size: 17,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            vacation.employeeName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      vacation.status.toUpperCase(),
+                      style: TextStyle(
+                        color: _getStatusColor(vacation.status),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    _buildInfoRow(
+                      icon: Icons.calendar_today,
+                      label: VacationsStrings.from,
+                      value:
+                          vacation.startDate.toLocal().toString().split(' ')[0],
+                    ),
+                    _buildInfoRow(
+                      icon: Icons.calendar_today,
+                      label: VacationsStrings.to,
+                      value:
+                          vacation.endDate.toLocal().toString().split(' ')[0],
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: TextButton.icon(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          minimumSize: const Size(50, 22),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        icon: const Icon(Icons.info_outline, size: 15),
+                        label: const Text(
+                          VacationsStrings.viewDetails,
+                          style: TextStyle(fontSize: 10),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      VacationDetailPage(vacation: vacation),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        } else if (width < 900) {
+          // Tablet/móvil grande: dos bloques horizontales, usando Wrap
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => VacationDetailPage(vacation: vacation),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 10,
+                      runSpacing: 6,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: _getStatusColor(
+                            vacation.status,
+                          ).withOpacity(0.2),
+                          child: Icon(
+                            _getStatusIcon(vacation.status),
+                            color: _getStatusColor(vacation.status),
+                          ),
+                        ),
+                        Text(
+                          vacation.employeeName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(
+                              vacation.status,
+                            ).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            vacation.status.toUpperCase(),
+                            style: TextStyle(
+                              color: _getStatusColor(vacation.status),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 10,
+                      runSpacing: 6,
+                      children: [
+                        _buildInfoRow(
+                          icon: Icons.calendar_today,
+                          label: VacationsStrings.from,
+                          value:
+                              vacation.startDate.toLocal().toString().split(
+                                ' ',
+                              )[0],
+                        ),
+                        _buildInfoRow(
+                          icon: Icons.calendar_today,
+                          label: VacationsStrings.to,
+                          value:
+                              vacation.endDate.toLocal().toString().split(
+                                ' ',
+                              )[0],
+                        ),
+                        TextButton.icon(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            minimumSize: const Size(60, 28),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          icon: const Icon(Icons.info_outline, size: 18),
+                          label: const Text(
+                            VacationsStrings.viewDetails,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        VacationDetailPage(vacation: vacation),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        } else {
+          // Escritorio ancho: todo en fila, mayor separación y alineación central
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => VacationDetailPage(vacation: vacation),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 16.0,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: _getStatusColor(
+                        vacation.status,
+                      ).withOpacity(0.2),
+                      child: Icon(
+                        _getStatusIcon(vacation.status),
+                        color: _getStatusColor(vacation.status),
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 28),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        vacation.employeeName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(
+                          vacation.status,
+                        ).withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        vacation.status.toUpperCase(),
+                        style: TextStyle(
+                          color: _getStatusColor(vacation.status),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 32),
+                    _buildInfoRow(
+                      icon: Icons.calendar_today,
+                      label: VacationsStrings.from,
+                      value:
+                          vacation.startDate.toLocal().toString().split(' ')[0],
+                    ),
+                    const SizedBox(width: 32),
+                    _buildInfoRow(
+                      icon: Icons.calendar_today,
+                      label: VacationsStrings.to,
+                      value:
+                          vacation.endDate.toLocal().toString().split(' ')[0],
+                    ),
+                    const SizedBox(width: 32),
+                    Flexible(
+                      child: TextButton.icon(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          minimumSize: const Size(80, 36),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        icon: const Icon(Icons.info_outline, size: 22),
+                        label: const Text(
+                          VacationsStrings.viewDetails,
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      VacationDetailPage(vacation: vacation),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 
