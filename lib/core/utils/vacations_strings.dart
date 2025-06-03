@@ -19,5 +19,9 @@ abstract class VacationsStrings {
   static const String from = 'Desde:';
   static const String to = 'Hasta:';
   static const String viewDetails = 'Ver Detalles';
-  
+  static const String requestsTitle = 'Solicitudes de Vacaciones';
+  static const String status = 'Estado';
+  static const String employee = 'Empleado';
+  static const String startDate = 'Fecha inicio';
+  static const String endDate = 'Fecha fin';
 }
