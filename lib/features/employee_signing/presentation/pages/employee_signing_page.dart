@@ -165,7 +165,7 @@ class _FichajesPageState extends State<FichajesPage> {
           title: Text(EmployeesStrings.reloadSignings),
           onTap: () {
             _loadFichajes();
-            Navigator.pop(context);
+            // Solo recarga, no navega ni cierra el Drawer
           },
         ),
       ],
