@@ -44,6 +44,7 @@ class _FichajesPageState extends State<FichajesPage> {
   /// Carga los fichajes desde el repositorio y actualiza el estado.
   Future<void> _loadFichajes() async {
     final fichajes = await _repository.getAllAttendances();
+    if (!mounted) return;
     setState(() {
       _fichajes = fichajes;
       _applyFilter();
@@ -234,17 +235,21 @@ class _FichajesPageState extends State<FichajesPage> {
                     ? Center(child: Text(EmployeesStrings.noSignings))
                     : Padding(
                       padding: const EdgeInsets.all(12),
-                      child: GridView.builder(
-                        itemCount: _filteredFichajes.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          childAspectRatio: fixedCardAspectRatio,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
+                      child: RefreshIndicator(
+                        onRefresh: _loadFichajes,
+                        child: GridView.builder(
+                          itemCount: _filteredFichajes.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: crossAxisCount,
+                                childAspectRatio: fixedCardAspectRatio,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                              ),
+                          itemBuilder: (context, index) {
+                            return _buildFichajeCard(_filteredFichajes[index]);
+                          },
                         ),
-                        itemBuilder: (context, index) {
-                          return _buildFichajeCard(_filteredFichajes[index]);
-                        },
                       ),
                     ),
           ),
