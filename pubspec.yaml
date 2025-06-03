@@ -55,7 +55,6 @@ dependencies:
   crypto: ^3.0.6
   flutter_launcher_icons: 0.14.3
   syncfusion_flutter_pdfviewer: ^29.2.7
-  audioplayers: ^5.2.1
   dio: ^5.4.3
   path_provider: ^2.1.2
   
