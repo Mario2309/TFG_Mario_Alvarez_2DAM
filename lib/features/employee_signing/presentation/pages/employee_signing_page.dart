@@ -255,41 +255,132 @@ class _FichajesPageState extends State<FichajesPage> {
 
   /// Construye la tarjeta visual para un fichaje individual.
   Widget _buildFichajeCard(EmployeeSigning fichaje) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: _getTipoColor(fichaje.tipo).withOpacity(0.2),
-                  child: Icon(
-                    _getTipoIcon(fichaje.tipo),
-                    color: _getTipoColor(fichaje.tipo),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double width = constraints.maxWidth;
+        if (width < 320) {
+          // Pantalla muy pequeña: todo en columna, fuentes pequeñas
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(6.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 16,
+                        backgroundColor: _getTipoColor(
+                          fichaje.tipo,
+                        ).withOpacity(0.2),
+                        child: Icon(
+                          _getTipoIcon(fichaje.tipo),
+                          color: _getTipoColor(fichaje.tipo),
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          fichaje.empleadoNombre,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    fichaje.empleadoNombre,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 4),
+                  Text(
+                    fichaje.tipo.toUpperCase(),
+                    style: TextStyle(
+                      color: _getTipoColor(fichaje.tipo),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today,
+                        size: 12,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        '${fichaje.fechaHora.day.toString().padLeft(2, '0')}/${fichaje.fechaHora.month.toString().padLeft(2, '0')}/${fichaje.fechaHora.year}  ${fichaje.fechaHora.hour.toString().padLeft(2, '0')}:${fichaje.fechaHora.minute.toString().padLeft(2, '0')}',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
-                  decoration: BoxDecoration(
-                    color: _getTipoColor(fichaje.tipo).withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(10),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      const Icon(Icons.badge, size: 12, color: Colors.grey),
+                      const SizedBox(width: 3),
+                      Text(
+                        'ID: ${fichaje.empleadoId}',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
+                ],
+              ),
+            ),
+          );
+        } else if (width < 400) {
+          // Pantalla móvil pequeña: columna, fuentes compactas
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: _getTipoColor(
+                          fichaje.tipo,
+                        ).withOpacity(0.2),
+                        child: Icon(
+                          _getTipoIcon(fichaje.tipo),
+                          color: _getTipoColor(fichaje.tipo),
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          fichaje.empleadoNombre,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
                     fichaje.tipo.toUpperCase(),
                     style: TextStyle(
                       color: _getTipoColor(fichaje.tipo),
@@ -297,60 +388,234 @@ class _FichajesPageState extends State<FichajesPage> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today,
+                        size: 13,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${fichaje.fechaHora.day.toString().padLeft(2, '0')}/${fichaje.fechaHora.month.toString().padLeft(2, '0')}/${fichaje.fechaHora.year}  ${fichaje.fechaHora.hour.toString().padLeft(2, '0')}:${fichaje.fechaHora.minute.toString().padLeft(2, '0')}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      const Icon(Icons.badge, size: 13, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        'ID: ${fichaje.empleadoId}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                const SizedBox(width: 6),
-                Text(
-                  fichaje.fechaHora != null
-                      ? '${fichaje.fechaHora.day.toString().padLeft(2, '0')}/${fichaje.fechaHora.month.toString().padLeft(2, '0')}/${fichaje.fechaHora.year}  ${fichaje.fechaHora.hour.toString().padLeft(2, '0')}:${fichaje.fechaHora.minute.toString().padLeft(2, '0')}'
-                      : EmployeesStrings.noDate,
-                  style: const TextStyle(fontSize: 13, color: Colors.grey),
-                ),
-              ],
+          );
+        } else if (width < 800) {
+          // Pantalla móvil grande/tablet: dos filas principales, usando Wrap para evitar desbordes
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                const Icon(Icons.badge, size: 16, color: Colors.grey),
-                const SizedBox(width: 6),
-                Text(
-                  'ID Empleado:  {fichaje.empleadoId}',
-                  style: const TextStyle(fontSize: 13, color: Colors.grey),
-                ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 10,
+                    runSpacing: 6,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: _getTipoColor(
+                          fichaje.tipo,
+                        ).withOpacity(0.2),
+                        child: Icon(
+                          _getTipoIcon(fichaje.tipo),
+                          color: _getTipoColor(fichaje.tipo),
+                        ),
+                      ),
+                      Text(
+                        fichaje.empleadoNombre,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getTipoColor(fichaje.tipo).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          fichaje.tipo.toUpperCase(),
+                          style: TextStyle(
+                            color: _getTipoColor(fichaje.tipo),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 10,
+                    runSpacing: 6,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.calendar_today,
+                            size: 15,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${fichaje.fechaHora.day.toString().padLeft(2, '0')}/${fichaje.fechaHora.month.toString().padLeft(2, '0')}/${fichaje.fechaHora.year}  ${fichaje.fechaHora.hour.toString().padLeft(2, '0')}:${fichaje.fechaHora.minute.toString().padLeft(2, '0')}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.badge, size: 15, color: Colors.grey),
+                          const SizedBox(width: 6),
+                          Text(
+                            'ID: ${fichaje.empleadoId}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Construye una fila de información con icono, etiqueta y valor.
-  Widget _buildInfoRow({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: Colors.grey),
-        const SizedBox(width: 6),
-        Text(
-          "$label ",
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
-          ),
-        ),
-      ],
+          );
+        } else {
+          // Pantalla muy ancha: todo en fila, más separación y alineación central
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: _getTipoColor(
+                      fichaje.tipo,
+                    ).withOpacity(0.2),
+                    child: Icon(
+                      _getTipoIcon(fichaje.tipo),
+                      color: _getTipoColor(fichaje.tipo),
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 28),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      fichaje.empleadoNombre,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getTipoColor(fichaje.tipo).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      fichaje.tipo.toUpperCase(),
+                      style: TextStyle(
+                        color: _getTipoColor(fichaje.tipo),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 32),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today,
+                        size: 18,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${fichaje.fechaHora.day.toString().padLeft(2, '0')}/${fichaje.fechaHora.month.toString().padLeft(2, '0')}/${fichaje.fechaHora.year}  ${fichaje.fechaHora.hour.toString().padLeft(2, '0')}:${fichaje.fechaHora.minute.toString().padLeft(2, '0')}',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 32),
+                  Row(
+                    children: [
+                      const Icon(Icons.badge, size: 18, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Text(
+                        'ID Empleado: ${fichaje.empleadoId}',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }
