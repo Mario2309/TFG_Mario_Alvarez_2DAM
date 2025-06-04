@@ -208,7 +208,6 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
   /// Muestra una previsualización del archivo en un diálogo según su tipo.
   Future<void> _previewFile(BuildContext context, EmployeeFile file) async {
     final fileType = file.fileType.toLowerCase();
-    Widget content;
     // Botón de descarga directa para todos los tipos
     Future<void> _descargarArchivo() async {
       try {
@@ -225,17 +224,9 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
       }
     }
 
+    Widget previewWidget;
     if (fileType == 'pdf') {
-      content = Column(
-        children: [
-          Expanded(child: SfPdfViewer.network(file.filePath)),
-          ElevatedButton.icon(
-            onPressed: _descargarArchivo,
-            icon: const Icon(Icons.download),
-            label: const Text('Descargar'),
-          ),
-        ],
-      );
+      previewWidget = SfPdfViewer.network(file.filePath);
     } else if ({
       'png',
       'jpg',
@@ -244,26 +235,15 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
       'bmp',
       'webp',
     }.contains(fileType)) {
-      content = Column(
-        children: [
-          Expanded(
-            child: Image.network(
-              file.filePath,
-              fit: BoxFit.contain,
-              errorBuilder:
-                  (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image, size: 80),
-            ),
-          ),
-          ElevatedButton.icon(
-            onPressed: _descargarArchivo,
-            icon: const Icon(Icons.download),
-            label: const Text('Descargar'),
-          ),
-        ],
+      previewWidget = Image.network(
+        file.filePath,
+        fit: BoxFit.contain,
+        errorBuilder:
+            (context, error, stackTrace) =>
+                const Icon(Icons.broken_image, size: 80),
       );
     } else if (fileType == 'mp3') {
-      content = Column(
+      previewWidget = Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -274,97 +254,115 @@ class _FilesEmployeePageState extends State<FilesEmployeePage> {
             textAlign: TextAlign.center,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final url = Uri.parse(file.filePath);
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'No se pudo abrir el archivo .mp3 en el navegador.',
-                        ),
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.play_arrow),
-                label: const Text('Reproducir'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  backgroundColor: Colors.blue,
-                ),
-              ),
-              const SizedBox(width: 20),
-              ElevatedButton.icon(
-                onPressed: _descargarArchivo,
-                icon: const Icon(Icons.download),
-                label: const Text('Descargar'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  backgroundColor: Colors.green,
-                ),
-              ),
-            ],
-          ),
         ],
       );
     } else {
-      content = Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Text(
-              'Vista previa no soportada para este tipo de archivo.',
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-          ElevatedButton.icon(
-            onPressed: _descargarArchivo,
-            icon: const Icon(Icons.download),
-            label: const Text('Descargar'),
-          ),
-        ],
+      previewWidget = Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Text(
+          'Vista previa no soportada para este tipo de archivo.',
+          style: const TextStyle(fontSize: 16),
+        ),
       );
     }
+
     await showDialog(
       context: context,
       builder:
           (context) => Dialog(
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.8,
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 40,
+            ),
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: 4 / 5,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
                     children: [
-                      Text(
-                        file.fileName,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              file.fileName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.of(context).pop(),
+                      const Divider(),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: previewWidget,
+                        ),
                       ),
+                      const SizedBox(height: 12),
+                      if (fileType == 'mp3')
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () async {
+                                final url = Uri.parse(file.filePath);
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(
+                                    url,
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'No se pudo abrir el archivo .mp3 en el navegador.',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.play_arrow),
+                              label: const Text('Reproducir'),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                backgroundColor: Colors.blue,
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            ElevatedButton.icon(
+                              onPressed: _descargarArchivo,
+                              icon: const Icon(Icons.download),
+                              label: const Text('Descargar'),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                backgroundColor: Colors.green,
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        ElevatedButton.icon(
+                          onPressed: _descargarArchivo,
+                          icon: const Icon(Icons.download),
+                          label: const Text('Descargar'),
+                        ),
                     ],
                   ),
-                  const Divider(),
-                  Expanded(child: content),
-                ],
+                ),
               ),
             ),
           ),
