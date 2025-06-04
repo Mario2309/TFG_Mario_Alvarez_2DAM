@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nexuserp/presentation/pages/login.dart';
 import 'edit_profile_page.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../../core/utils/profile_page_strings.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -125,6 +126,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 },
               ),
+              const SizedBox(height: 16),
+              SettingTile(
+                title: 'Manual de usuario',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const _ManualPdfViewerPage(),
+                    ),
+                  );
+                },
+              ),
               const Spacer(),
               Center(
                 child: ElevatedButton(
@@ -200,6 +213,38 @@ class SettingTile extends StatelessWidget {
                 color: Color(0xFFA0AEC0), // Lighter icon color
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ManualPdfViewerPage extends StatelessWidget {
+  const _ManualPdfViewerPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Manual de usuario')),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: AspectRatio(
+            aspectRatio: 3 / 4, // Relación vertical para que se vea más pequeño
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300, width: 2),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: SfPdfViewer.asset('assets/manual/Manual de usuario.pdf'),
+            ),
           ),
         ),
       ),
