@@ -73,7 +73,7 @@ flutter:
   assets:
     - assets/images/NexusERP.png
     - assets/icons/google_icon.png
-    - assets/manual/manual de usuario.pdf
+    - assets/manual/Manual_de_usuario.pdf
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

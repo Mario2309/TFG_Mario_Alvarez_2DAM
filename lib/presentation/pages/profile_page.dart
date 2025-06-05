@@ -243,7 +243,7 @@ class _ManualPdfViewerPage extends StatelessWidget {
                   ),
                 ],
               ),
-              child: SfPdfViewer.asset('assets/manual/Manual de usuario.pdf'),
+              child: SfPdfViewer.asset('assets/manual/Manual_de_usuario.pdf'),
             ),
           ),
         ),
