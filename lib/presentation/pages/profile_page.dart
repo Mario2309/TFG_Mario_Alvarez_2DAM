@@ -35,8 +35,8 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
+            // Cambiado de Column a ListView para que todo sea desplazable y responsive
             children: [
               const Text(
                 ProfilePageStrings.profile,
@@ -138,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 },
               ),
-              const Spacer(),
+              const SizedBox(height: 32),
               Center(
                 child: ElevatedButton(
                   onPressed: () async {
@@ -168,6 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -227,26 +228,48 @@ class _ManualPdfViewerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Manual de usuario')),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: AspectRatio(
-            aspectRatio: 3 / 4, // Relación vertical para que se vea más pequeño
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300, width: 2),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final size = MediaQuery.of(context).size;
+          double maxWidth = size.width * 0.95;
+          double maxHeight = size.height * 0.85;
+          double aspectRatio = size.width < 600 ? 3 / 4 : 4 / 5;
+
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: maxWidth,
+                    maxHeight: maxHeight,
                   ),
-                ],
+                  child: AspectRatio(
+                    aspectRatio: aspectRatio,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                      child: SfPdfViewer.asset(
+                        'assets/manual/Manual_de_usuario.pdf',
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              child: SfPdfViewer.asset('assets/manual/Manual_de_usuario.pdf'),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
